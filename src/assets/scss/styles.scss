@@ -1,0 +1,129 @@
+@import '__colors.scss';
+@import '__typography.scss';
+@import '__antd.scss';
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter';
+    box-sizing: border-box;
+}
+
+
+body {
+    background: #f8f8f8;
+}
+
+svg {
+    width: 16px;
+    height: 16px;
+}
+
+@keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, -20%, 0);
+        -webkit-transform: translate3d(0, -20%, 0);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+        -webkit-transform: translate3d(0, 0, 0);
+    }
+}
+
+// --------- flex ---------
+.d-flex {
+    display: flex;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.d-iflex {
+    display: inline-flex;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.fd-col {
+    flex-direction: column !important;
+}
+.fw-wrap {
+    flex-wrap: wrap !important;
+}
+.flex-1 {
+    flex: 1 !important;
+}
+
+.ai-start {
+    align-items: flex-start !important;
+}
+.ai-end {
+    align-items: flex-end !important;
+}
+.ai-center {
+    align-items: center !important;
+}
+
+.jc-start {
+    justify-content: flex-start !important;
+}
+.jc-end {
+    justify-content: flex-end !important;
+}
+.jc-sb {
+    justify-content: space-between !important;
+}
+.jc-sa {
+    justify-content: space-around !important;
+}
+
+.gap-4 {
+    gap: 4px !important;
+}
+.gap-8 {
+    gap: 8px !important;
+}
+.gap-12 {
+    gap: 12px !important;
+}
+.gap-16 {
+    gap: 16px !important;
+}
+.gap-24 {
+    gap: 24px !important;
+}
+.gap-32 {
+    gap: 32px !important;
+}
+.gap-48 {
+    gap: 48px !important;
+}
+
+// --------- width ---------
+.w-100 {
+    width: 100% !important;
+}
+
+// --------- margin ---------
+.mt-05 {
+    margin-top: 0.5rem !important;
+}
+.mt-1 {
+    margin-top: 1rem !important;
+}
+.mt-2 {
+    margin-top: 2rem !important;
+}
+.ml-1 {
+    margin-left: 1rem !important;
+}
+.mb-05 {
+    margin-bottom: 0.5rem !important;
+}
+
+// padding
+.p-1 {
+    padding: 1rem !important;
+}
+.p-8 {
+    padding: 8px !important;
+}

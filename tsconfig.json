@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+      "target": "ESNext",
+      "lib": ["DOM", "DOM.Iterable", "ESNext"],
+      "module": "ESNext",
+      "skipLibCheck": true,
+      "baseUrl": "src",
+      "paths": {
+          "hooks/*": ["hooks/*"],
+          "pages/*": ["pages/*"],
+          "utils/*": ["utils/*"],
+          "types/*": ["types/*"],
+          "store/*": ["store/*"],
+          "assets/*": ["assets/*"],
+          "services/*": ["services/*"],
+          "components/*": ["components/*"],
+      },
+
+      /* Bundler mode */
+      "moduleResolution": "node",
+      "allowSyntheticDefaultImports": true,
+      "allowImportingTsExtensions": true,
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "noEmit": true,
+      "jsx": "react-jsx",
+
+      /* Linting */
+      "strict": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src", ".eslintrc.cjs", "vite.config.ts"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

@@ -1,0 +1,17 @@
+build:
+  stage: build
+  image: node:20
+  script:
+    - yarn install
+    - yarn run build
+  artifacts:
+    paths:
+      - dist
+
+deploy:
+  stage: deploy
+  image: 
+    name: amazon/aws-cli
+    entrypoint: [""]
+  script:
+    - aws --region us-east-1 s3 sync dist/ s3://go-renty-front-bucket/

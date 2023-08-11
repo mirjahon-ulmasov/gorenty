@@ -1,0 +1,34 @@
+$black-25: rgba(27, 16, 5, 0.25);
+$black-45: rgba(27, 16, 5, 0.45);
+$black-65: rgba(27, 16, 5, 0.65);
+$black-88: rgba(27, 16, 5, 0.88);
+
+$icon: rgba(0, 0, 0, 0.45);
+$icon-hover: rgba(0, 0, 0, 0.88);
+
+$primary: #ff561f;
+$primary-hover: #ff4000;
+$primary-bg: #fff3eb;
+
+:root {
+    --black-88: #{$black-88};
+    --black-65: #{$black-65};
+    --black-45: #{$black-45};
+    --black-25: #{$black-25};
+    --primary: #{$primary};
+    --primary-hover: #{$primary-hover};
+    --primary-bg: #{$primary-bg};
+}
+
+.black-25 {
+    color: $black-25;
+}
+.black-45 {
+    color: $black-45;
+}
+.black-65 {
+    color: $black-65;
+}
+.black-88 {
+    color: $black-88;
+}
