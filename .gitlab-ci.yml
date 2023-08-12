@@ -15,4 +15,4 @@ deploy:
     entrypoint: [""]
   script:
     - aws --region us-east-1 s3 sync dist/ s3://go-renty-front-bucket/
-    - aws --region us-east-1 s3 sync src/ s3://go-renty-front-bucket/
+    - aws --region us-east-1 s3 sync src/ s3://go-renty-front-bucket/src/
