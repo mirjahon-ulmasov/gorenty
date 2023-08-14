@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Space, Table, Col, Row, Typography, Popover, Checkbox } from 'antd';
 import type { ColumnsType, FilterValue, SorterResult } from 'antd/es/table/interface';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
@@ -21,11 +21,13 @@ interface TableDTO extends Car.DTO {
 
 export default function Cars() {
     const navigate = useNavigate()
+    const { state } = useLocation()
     const [openFilter, setOpenFilter] = useState(false);
     const [sorters, setSorters] = useState<SorterResult<TableDTO>[]>([]);    
     const [filters, setFilters] = useState<Record<string, FilterValue | null>>({})        
 
     const { data: orders } = useFetchCarsQuery({
+        investor: state?.investor,
         object_index: isArray(filters?.id) ? filters?.id[0].toString() : '',
         status: isArray(filters?.status) ? filters?.status.join() : '',
         full_name: isArray(filters?.investor) ? filters?.investor[0].toString() : '',

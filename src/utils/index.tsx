@@ -12,7 +12,7 @@ export function getStatus(value: ALL_STATUS, type: format) {
                 case CLIENT_STATUS.VIP:
                     return 'VIP'
                 case CLIENT_STATUS.BLOCK:
-                    return 'Black'
+                    return 'Blok'
                 default:
                     return 'Unknown'
             }
@@ -24,7 +24,7 @@ export function getStatus(value: ALL_STATUS, type: format) {
                 case CAR_STATUS.FREE:
                     return 'Bo’sh'
                 case CAR_STATUS.BLOCK:
-                    return 'Black'
+                    return 'Blok'
                 default:
                     return 'Unknown'
             }

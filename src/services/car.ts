@@ -49,7 +49,23 @@ export const carAPI = carWithTags.injectEndpoints({
                 url: `/vehicle_image/${id}/`,
                 method: 'DELETE',
             }),
-        })
+        }),
+
+        blockCar: build.mutation<unknown, number>({
+            query: id => ({
+                url: `/vehicle/${id}/block/`,
+                method: 'PATCH'
+            }),
+            invalidatesTags: ['Car'],
+        }),
+
+        unblockCar: build.mutation<unknown, number>({
+            query: id => ({
+                url: `/vehicle/${id}/unblock/`,
+                method: 'PATCH'
+            }),
+            invalidatesTags: ['Car'],
+        }),
     }),
 })
 
@@ -60,4 +76,6 @@ export const {
     useUpdateCarMutation,
     useAddCarImageMutation,
     useDeleteCarImageMutation,
+    useBlockCarMutation,
+    useUnblockCarMutation
 } = carAPI

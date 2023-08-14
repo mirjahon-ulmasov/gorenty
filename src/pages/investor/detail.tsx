@@ -114,7 +114,7 @@ export default function InvestorDetail() {
                                     </BorderBox>
                                 </Col>
                                 <Col span={24}>
-                                    <StyledLink to='/order/list' className='ml-1'>
+                                    <StyledLink to='/order/list' state={{ investor: investorID }} className='ml-1'>
                                         Investorga tegishli buyurtmalar {investor?.orders_count}
                                     </StyledLink>
                                 </Col>
@@ -139,7 +139,7 @@ export default function InvestorDetail() {
                                     </BorderBox>
                                 </Col>
                                 <Col span={24}>
-                                    <StyledLink to='/order/list' className='ml-1'>
+                                    <StyledLink to='/car/list' className='ml-1' state={{ investor: investorID }}>
                                         Investorga tegishli avtomobillar {investor?.vehicles_count}
                                     </StyledLink>
                                 </Col>

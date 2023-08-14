@@ -200,7 +200,7 @@ export default function EditOrder() {
             <CustomBreadcrumb
                 items={[
                     { title: 'Buyurtmalar', link: '/order' },
-                    { title: orderID as string, link: `/order/${orderID}/detail` },
+                    { title: order?.object_index as string, link: `/order/${orderID}/detail` },
                     { title: 'Ma’lumotlarni o’zgartirish' },
                 ]}
             />

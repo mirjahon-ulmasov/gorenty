@@ -46,6 +46,9 @@ export type SearchParams = Partial<{
     vehicle_plate_number: string
 
     // ------ COMMON ------
+    vehicle: string
+    customer: string
+    investor: string
     search: string
     title: string
     object_index: string

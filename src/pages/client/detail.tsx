@@ -3,10 +3,8 @@ import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { 
     Button, Col, DatePickerProps, 
-    Row, Space, Typography, Form, 
-    InputNumber, Modal 
+    Row, Space, Typography
 } from 'antd'
-import { ExclamationCircleOutlined } from '@ant-design/icons'
 import clsx from 'clsx'
 import { 
     CustomBreadcrumb, CustomDatePicker, Payment, 
@@ -17,7 +15,6 @@ import { formatPhone, getStatus } from 'utils/index'
 import { CLIENT_STATUS } from 'types/index'
 import { useFetchClientQuery } from 'services/client'
 import { TBranch } from 'types/api'
-import { LockIcon } from 'assets/images/Icons'
 
 const { Title } = Typography
 
@@ -25,36 +22,11 @@ export default function ClientDetail() {
     const navigate = useNavigate()
     const { clientID } = useParams()
 
-    const [modal, contextHolder] = Modal.useModal();
     const [isOpenPayment, setIsOpenPayment] = useState(false);
-
     const { data: client } = useFetchClientQuery(clientID as string)
 
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
-    };
-
-    const confirm = () => {
-        modal.confirm({
-            title: 'Buyurtmani yopmoqchimisiz?',
-            icon: <ExclamationCircleOutlined />,
-            content: (
-                <Form>
-                    <Form.Item
-                        name="note"
-                        label="Avtomobilni yurgan kilometrini kiriting"
-                        labelCol={{ span: 24 }}
-                        wrapperCol={{ span: 24 }}
-                        rules={[]}
-                    >
-                        <InputNumber size="large" placeholder="100000" style={{ width: '100%' }}/>
-                    </Form.Item>
-                </Form>
-            ),
-            okText: 'Tasdiqlsh',
-            cancelText: 'Bekor qilish',
-            centered: true
-        });
     };
 
     return (
@@ -85,14 +57,6 @@ export default function ClientDetail() {
                                         }
                                     >
                                         O’zgartirish
-                                    </Button>
-                                    <Button 
-                                        className='d-flex' 
-                                        size="large" 
-                                        type='default' 
-                                        onClick={confirm} icon={<LockIcon />}
-                                    >
-                                        Blok
                                     </Button>
                                 </Space>
                             </div>  
@@ -152,7 +116,7 @@ export default function ClientDetail() {
                                     </BorderBox>
                                 </Col>
                                 <Col span={24}>
-                                    <StyledLink to='/order/list' className='ml-1'>
+                                    <StyledLink to='/order/list' state={{ customer: clientID }} className='ml-1'>
                                         Mijozga tegishli buyurtmalar {client?.orders_count}
                                     </StyledLink>
                                 </Col>
@@ -281,7 +245,6 @@ export default function ClientDetail() {
                     </BillingHistory>
                 </Col>
             </Row>
-            {contextHolder}
         </>
     )
 }

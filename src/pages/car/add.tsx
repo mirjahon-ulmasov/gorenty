@@ -22,6 +22,7 @@ const { Title } = Typography
 
 export default function AddCar() {
     const navigate = useNavigate();
+    const [form] = Form.useForm()
     const [isToning, setIsToning] = useState(false)
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
     const [searchedInvestor, setSearchedInvestor] = useState('')
@@ -36,6 +37,9 @@ export default function AddCar() {
 
     function changeToning(e: CheckboxChangeEvent) {
         setIsToning(e.target.checked)
+        
+        if(e.target.checked) return;
+        form.setFieldValue('toning', null)
     }
 
     // ---------------- Submit ----------------
@@ -75,6 +79,7 @@ export default function AddCar() {
             />
             <Title level={3}>Yangi avtomobil qo’shish</Title>
             <Form
+                form={form}
                 autoComplete="off"
                 style={{ maxWidth: 1200, marginTop: 20 }}
                 onFinish={onFinish}

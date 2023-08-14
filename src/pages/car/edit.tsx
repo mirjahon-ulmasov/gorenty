@@ -77,6 +77,9 @@ export default function EditCar() {
     // ---------------- Toning ----------------
     function changeToning(e: CheckboxChangeEvent) {
         setIsToning(e.target.checked)
+
+        if(e.target.checked) return;
+        form.setFieldValue('toning', null)
     }
 
     // ------------- Image Upload -------------

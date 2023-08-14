@@ -16,7 +16,7 @@ import {
     StyledLink, BillingHistory, Status  
 } from 'components/input'
 import { BucketFile, CarBrand, Investor } from 'types/api'
-import { useFetchCarQuery } from 'services/car'
+import { useBlockCarMutation, useFetchCarQuery, useUnblockCarMutation } from 'services/car'
 import { LockIcon } from 'assets/images/Icons'
 import { CAR_STATUS } from 'types/index';
 import { getStatus } from 'utils/index';
@@ -29,6 +29,8 @@ export default function CarDetail() {
     const [modal, contextHolder] = Modal.useModal();
     const [isOpenPayment, setIsOpenPayment] = useState(false);
 
+    const [blockCar] = useBlockCarMutation()
+    const [unblockCar] = useUnblockCarMutation()
     const { data: car } = useFetchCarQuery(carID as string)
 
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
@@ -37,23 +39,22 @@ export default function CarDetail() {
 
     const confirm = () => {
         modal.confirm({
-            title: 'Buyurtmani yopmoqchimisiz?',
+            title: car?.status === CAR_STATUS.BLOCK 
+                ? "Хотите разблокировать машину?"
+                : 'Хотите заблокировать машину?',
             icon: <ExclamationCircleOutlined />,
-            content: (
-                <Form>
-                    <Form.Item
-                        name="note"
-                        label="Avtomobilni yurgan kilometrini kiriting"
-                        labelCol={{ span: 24 }}
-                        wrapperCol={{ span: 24 }}
-                        rules={[]}
-                    >
-                        <InputNumber size="large" placeholder="100000" style={{ width: '100%' }}/>
-                    </Form.Item>
-                </Form>
-            ),
-            okText: 'Tasdiqlsh',
-            cancelText: 'Bekor qilish',
+            content: "",
+            okText: 'Подтвердить',
+            cancelText: 'Отменить',
+            onOk() {
+                if(!car?.id) return;
+
+                if(car?.status === CAR_STATUS.BLOCK ) {
+                    unblockCar(car.id)
+                } else {
+                    blockCar(car.id)
+                }
+            },
             centered: true
         });
     };
@@ -93,7 +94,7 @@ export default function CarDetail() {
                                         type='default' 
                                         onClick={confirm} icon={<LockIcon />}
                                     >
-                                        Blok
+                                        {car?.status !== CAR_STATUS.BLOCK ? "Bloklash" : "Blokdan chiqarish"}
                                     </Button>
                                 </Space>
                             </div>
@@ -139,7 +140,7 @@ export default function CarDetail() {
                                     </BorderBox>
                                 </Col>
                                 <Col span={24}>
-                                    <StyledLink to='/order/list' className='ml-1'>
+                                    <StyledLink to='/order/list' state={{ vehicle: carID }} className='ml-1'>
                                         Avtomobilga tegishli buyurtmalar
                                     </StyledLink>
                                 </Col>
