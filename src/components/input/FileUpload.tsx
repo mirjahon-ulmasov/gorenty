@@ -54,7 +54,7 @@ export function CustomUpload(props: CustomUploadProps) {
 
     return (
         <>
-            <Upload {...exProps} {...props} progress={{ showInfo: true }} listType="picture-card">
+            <Upload {...exProps} {...props} progress={{ showInfo: false }} listType="picture-card">
                 {(props.fileList?.length || 0) >= 8 ? null : (
                     uploadButton
                 )}

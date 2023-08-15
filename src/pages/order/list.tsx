@@ -7,7 +7,7 @@ import { isArray } from 'lodash';
 import type { TableProps } from 'antd';
 import type { Order } from 'types/api';
 import { useFetchOrdersQuery } from 'services';
-import { DownloadIcon, FilterIcon, PlusIcon } from 'assets/images/Icons';
+import { DownloadIcon, FilterIcon, PlusIcon } from 'components/input';
 import { getColumnSearchProps } from 'utils/search';
 import { Tabs } from 'components/input';
 import { ORDER_STATUS } from 'types/index';

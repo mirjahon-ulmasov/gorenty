@@ -25,7 +25,7 @@ import { useAppSelector } from 'hooks/redux';
 import { disabledDate, formatDate, getStatus } from 'utils/index';
 import { CAR_STATUS, CLIENT_STATUS, ORDER_STATUS } from 'types/index';
 import { BucketFile, Car, CarBrand, Client, Order, TBranch } from 'types/api';
-import { PlusIcon } from 'assets/images/Icons';
+import { PlusIcon } from 'components/input';
 import 'moment/dist/locale/ru'
 
 const { Title } = Typography
@@ -57,7 +57,7 @@ export default function EditOrder() {
         { brand: [brandID as number], plate_number: searchedCar, status: CAR_STATUS.FREE }, 
         { skip: !brandID }
     )
-    const [editOrder] = useUpdateOrderMutation()
+    const [editOrder, { isLoading: editLoading }] = useUpdateOrderMutation()
     const [addOrderImage] = useAddOrderImageMutation()
     const [deleteOrderImage] = useDeleteOrderImageMutation()
     const { user } = useAppSelector(state => state.auth)
@@ -435,8 +435,17 @@ export default function EditOrder() {
                         </Row>
                         <div style={{ marginTop: 32 }}>
                             <Space size='large'>
-                                <Button type='primary' size='large' htmlType='submit'>O’zgarishlarn saqlash</Button>
-                                <Button size='large' onClick={() => navigate('/order')} >Bekor qilish</Button>
+                                <Button 
+                                    type='primary' 
+                                    size='large' 
+                                    htmlType='submit' 
+                                    loading={editLoading}
+                                >
+                                    O’zgarishlarn saqlash
+                                </Button>
+                                <Button size='large' onClick={() => navigate('/order')} >
+                                    Bekor qilish
+                                </Button>
                             </Space>
                         </div>
                     </Form>

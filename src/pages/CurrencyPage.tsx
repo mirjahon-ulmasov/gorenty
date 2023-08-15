@@ -6,7 +6,7 @@ import {
 import toast from 'react-hot-toast'
 import clsx from 'clsx'
 import { CustomBreadcrumb } from 'components/input'
-import { PlusIcon } from 'assets/images/Icons'
+import { PlusIcon } from 'components/input'
 import { Currency } from 'types/api'
 import { 
     useCreateCurrencyMutation, useFetchCurrenciesQuery, 

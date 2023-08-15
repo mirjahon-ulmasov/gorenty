@@ -1,5 +1,5 @@
 import { Select, SelectProps } from 'antd'
-import { SelectArrowIcon } from 'assets/images/Icons'
+import { SelectArrowIcon } from 'components/input'
 
 export const CustomSelect = (props: SelectProps) => {
     return <Select suffixIcon={<SelectArrowIcon />} {...props} />

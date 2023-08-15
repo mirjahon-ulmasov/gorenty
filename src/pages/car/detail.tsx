@@ -17,7 +17,7 @@ import {
 } from 'components/input'
 import { BucketFile, CarBrand, Investor } from 'types/api'
 import { useBlockCarMutation, useFetchCarQuery, useUnblockCarMutation } from 'services/car'
-import { LockIcon } from 'assets/images/Icons'
+import { LockIcon } from 'components/input'
 import { CAR_STATUS } from 'types/index';
 import { getStatus } from 'utils/index';
 
@@ -132,13 +132,21 @@ export default function CarDetail() {
                                         <StyledTextL2>{car?.model ?? '-'}</StyledTextL2>
                                     </BorderBox>
                                 </Col>
-                                <Col span={24}>
-                                    <BorderBox className='d-flex jc-start fw-wrap gap-12'>
-                                        {(car?.vehicle_images as BucketFile[])?.map((el) => (
-                                            <SmallImg key={el.id} src={el.image.file} alt='car' />
-                                        ))}
-                                    </BorderBox>
-                                </Col>
+                                {(car?.vehicle_images && car.vehicle_images.length > 0) && (
+                                    <Col span={24}>
+                                        <BorderBox className='d-flex jc-start fw-wrap gap-12'>
+                                            {(car?.vehicle_images as BucketFile[])?.map((file) => (
+                                                <SmallImg 
+                                                    width={90} 
+                                                    height={90} 
+                                                    key={file.id} 
+                                                    src={file.image.file} 
+                                                    alt='car' 
+                                                />
+                                            ))}
+                                        </BorderBox>
+                                    </Col>
+                                )}
                                 <Col span={24}>
                                     <StyledLink to='/order/list' state={{ vehicle: carID }} className='ml-1'>
                                         Avtomobilga tegishli buyurtmalar

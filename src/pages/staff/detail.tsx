@@ -105,8 +105,14 @@ export default function StaffDetail() {
                                 {(staff?.staff_images && staff.staff_images.length > 0) && (
                                     <Col span={24}>
                                         <BorderBox className='d-flex jc-start fw-wrap gap-12'>
-                                            {(staff?.staff_images as BucketFile[])?.map((el) => (
-                                                <SmallImg key={el.id} src={el.image.file} alt='staff' />
+                                            {(staff.staff_images as BucketFile[])?.map((file) => (
+                                                <SmallImg 
+                                                    width={90} 
+                                                    height={90} 
+                                                    key={file.id} 
+                                                    src={file.image.file} 
+                                                    alt='Staff' 
+                                                />
                                             ))}
                                         </BorderBox>
                                     </Col>

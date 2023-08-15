@@ -1,10 +1,10 @@
-import { Divider, Layout, Space, Button } from 'antd'
-import { useNavigate } from 'react-router-dom'
-import styled from 'styled-components'
-import { CustomSelect } from 'components/input'
-import { HArrowCircleIcon, HBellIcon } from 'assets/images/Icons'
-import logo from 'assets/images/logo.png'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Divider, Layout, Space, Button } from 'antd'
+import styled from 'styled-components'
+import { HArrowCircleIcon, HBellIcon } from 'components/input'
+import { CustomSelect } from 'components/input'
+import logo from '/logo.png'
 
 const { Header } = Layout
 
@@ -25,7 +25,7 @@ export default function MainHeader() {
 
     return (
         <CustomHeader>
-            <img src={logo} alt="Logo" />
+            <img src={'logo'} alt="Logo" />
             <div className='d-flex jc-sb w-100'>
                 <Space size='large'>
                     <div className="d-flex fd-col ai-start gap-4">

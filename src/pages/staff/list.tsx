@@ -8,7 +8,7 @@ import { isArray } from 'lodash'
 import { getColumnSearchProps } from 'utils/search'
 import type { Staff, TBranch, TPosition } from 'types/api'
 import { useFetchBranchesQuery, useFetchStaffListQuery, useFetchStaffPositionsQuery } from 'services'
-import { DownloadIcon, FilterIcon, PlusIcon } from 'assets/images/Icons'
+import { DownloadIcon, FilterIcon, PlusIcon } from 'components/input'
 
 const { Title } = Typography
 

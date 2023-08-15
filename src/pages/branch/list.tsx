@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Button, Col, Row, Typography, Divider } from 'antd'
 import { useFetchBranchesQuery } from 'services'
-import { PlusIcon } from 'assets/images/Icons'
+import { PlusIcon } from 'components/input'
 import styled from 'styled-components'
 import { StyledTextL1, StyledTextL2 } from 'components/input'
 

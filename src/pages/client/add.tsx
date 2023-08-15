@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChangeEvent, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { 
     Button, Col, Form, Input, 
     Row, Space, Typography, UploadFile 
@@ -13,17 +13,18 @@ import { useFetchBranchesQuery } from 'services/branch'
 import { CustomSelect, CustomBreadcrumb, CustomUpload, CustomDatePicker } from 'components/input'
 import { Client } from 'types/api'
 import { formatDate } from 'utils/index';
-import { PlusIcon } from 'assets/images/Icons';
+import { PlusIcon } from 'components/input';
 import clsx from 'clsx';
 
 const { Title } = Typography
 
 export default function AddClient() {
+    const { state } = useLocation()
     const navigate = useNavigate();
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
     const [clientRecords, setClientRecords] = useState<Client.Record[]>([])
 
-    const [createClient] = useCreateClientMutation()
+    const [createClient, { isLoading: createLoading }] = useCreateClientMutation()
     const { data: branches, isLoading: branchesLoading } = useFetchBranchesQuery({})
 
     // ---------------- Client Record ----------------
@@ -77,7 +78,9 @@ export default function AddClient() {
             .unwrap()
             .then(() => {
                 toast.success("Клиент успешно создан")
-                navigate('/client/list')
+                
+                if(state?.order) navigate('/order/add')
+                else navigate('/client/list')
             })
             .catch(() => toast.error("Не удалось создать клиент"))
     };
@@ -285,8 +288,17 @@ export default function AddClient() {
                 </Row>
                 <div style={{ marginTop: '1rem' }}>
                     <Space size='large'>
-                        <Button type='primary' size='large' htmlType='submit'>Yangi mijoz qo’shish</Button>
-                        <Button size='large' onClick={() => navigate('/client/list')} >Bekor qilish</Button>
+                        <Button 
+                            size='large' 
+                            type='primary' 
+                            htmlType='submit'
+                            loading={createLoading}
+                        >
+                            Yangi mijoz qo’shish
+                        </Button>
+                        <Button size='large' onClick={() => navigate('/client/list')}>
+                            Bekor qilish
+                        </Button>
                     </Space>
                 </div>
             </Form>

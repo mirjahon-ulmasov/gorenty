@@ -7,7 +7,7 @@ import { isArray } from 'lodash';
 import type { TableProps } from 'antd';
 import type { Car, CarBrand } from 'types/api';
 import { useFetchCarsQuery } from 'services';
-import { DownloadIcon, FilterIcon, PlusIcon } from 'assets/images/Icons';
+import { DownloadIcon, FilterIcon, PlusIcon } from 'components/input';
 import { getColumnSearchProps } from 'utils/search';
 import { Status } from 'components/input';
 import { getStatus } from 'utils/index';

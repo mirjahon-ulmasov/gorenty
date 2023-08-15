@@ -5,7 +5,7 @@ import {
     SInOutIcon, SInvestorIcon, SOrderIcon,
     SPaymentCategoryIcon, SReportIcon, 
     SWorkerIcon,
-} from 'assets/images/Icons'
+} from 'components/input'
 
 const routes: Route[] = [
     {

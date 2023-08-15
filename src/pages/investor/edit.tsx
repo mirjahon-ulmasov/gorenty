@@ -22,7 +22,7 @@ export default function EditInvestor() {
     const [form] = Form.useForm()
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
 
-    const [editInvestor] = useUpdateInvestorMutation()
+    const [editInvestor, { isLoading: editLoading }] = useUpdateInvestorMutation()
     const [addInvestorImage] = useAddInvestorImageMutation()
     const [deleteInvestorImage] = useDeleteInvestorImageMutation()
     const { data: investor, isError } = useFetchInvestorQuery(investorID as string)
@@ -244,8 +244,20 @@ export default function EditInvestor() {
                 </Row>
                 <div style={{ marginTop: '1rem' }}>
                     <Space size='large'>
-                        <Button type='primary' size='large' htmlType='submit'>O’zgarishlarni saqlash</Button>
-                        <Button size='large' onClick={() => navigate(`/investor/${investorID}/detail`)} >Bekor qilish</Button>
+                        <Button 
+                            size='large' 
+                            type='primary'
+                            htmlType='submit'
+                            loading={editLoading}
+                        >
+                            O’zgarishlarni saqlash
+                        </Button>
+                        <Button 
+                            size='large' 
+                            onClick={() => navigate(`/investor/${investorID}/detail`)}
+                        >
+                            Bekor qilish
+                        </Button>
                     </Space>
                 </div>
             </Form>

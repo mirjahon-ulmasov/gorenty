@@ -19,7 +19,7 @@ import { CLIENT_STATUS } from 'types/index'
 import { BucketFile, Client, TBranch } from 'types/api'
 import { UploadChangeParam } from 'antd/es/upload';
 import clsx from 'clsx';
-import { PlusIcon } from 'assets/images/Icons';
+import { PlusIcon } from 'components/input';
 
 const { Title } = Typography
 
@@ -32,7 +32,7 @@ export default function EditClient() {
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
     const [clientRecords, setClientRecords] = useState<Client.Record[]>([])
 
-    const [editClient] = useUpdateClientMutation()
+    const [editClient, { isLoading: editLoading }] = useUpdateClientMutation()
     const [addClientImage] = useAddClientImageMutation()
     const [deleteClientImage] = useDeleteClientImageMutation()
     const [createClientRecord] = useCreateClientRecordMutation()
@@ -456,8 +456,17 @@ export default function EditClient() {
                 
                 <div style={{ marginTop: '1rem' }}>
                     <Space size='large'>
-                        <Button type='primary' size='large' htmlType='submit'>O’zgarishlarn saqlash</Button>
-                        <Button size='large' onClick={() => navigate(`/client/${clientID}/detail`)} >Bekor qilish</Button>
+                        <Button 
+                            size='large' 
+                            type='primary'
+                            htmlType='submit'
+                            loading={editLoading}
+                        >
+                            O’zgarishlarn saqlash
+                        </Button>
+                        <Button size='large' onClick={() => navigate(`/client/${clientID}/detail`)}>
+                            Bekor qilish
+                        </Button>
                     </Space>
                 </div>
             </Form>

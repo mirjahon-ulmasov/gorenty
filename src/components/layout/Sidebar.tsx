@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Layout } from 'antd';
 import { ROLE, Route } from 'types/index';
 import routes from './routes';
-import { SArrowLeftIcon } from 'assets/images/Icons';
+import { SArrowLeftIcon } from 'components/input';
 
 const { Sider } = Layout;
 

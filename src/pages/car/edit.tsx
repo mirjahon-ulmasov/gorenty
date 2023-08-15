@@ -37,7 +37,7 @@ export default function EditCar() {
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
     const [searchedInvestor, setSearchedInvestor] = useState('')
 
-    const [editCar] = useUpdateCarMutation()
+    const [editCar, { isLoading: editLoading }] = useUpdateCarMutation()
     const [addCarImage] = useAddCarImageMutation()
     const [deleteCarImage] = useDeleteCarImageMutation()
     const { data: car, isError } = useFetchCarQuery(carID as string)
@@ -861,8 +861,15 @@ export default function EditCar() {
                 </Row>
                 <div style={{ marginTop: 30 }}>
                     <Space size='large'>
-                        <Button type='primary' size='large' htmlType='submit'>O’zgarishlarn saqlash</Button>
-                        <Button size='large' onClick={() => navigate(`/client/${carID}/detail`)} >
+                        <Button 
+                            type='primary' 
+                            size='large' 
+                            htmlType='submit'
+                            loading={editLoading}
+                        >
+                            O’zgarishlarn saqlash
+                        </Button>
+                        <Button size='large' onClick={() => navigate(`/client/${carID}/detail`)}>
                             Bekor qilish
                         </Button>
                     </Space>

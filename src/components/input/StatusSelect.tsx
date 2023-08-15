@@ -1,4 +1,4 @@
-import { CheckCircle } from 'assets/images/Icons'
+import { CheckCircle } from 'components/input'
 import clsx from 'clsx'
 import styled from 'styled-components'
 import { ALL_STATUS } from 'types/index'

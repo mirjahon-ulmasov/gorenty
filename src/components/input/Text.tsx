@@ -1,4 +1,4 @@
-import { Typography } from 'antd'
+import { Image, Typography } from 'antd'
 import { Link } from 'react-router-dom'
 import { styled } from 'styled-components'
 
@@ -86,7 +86,7 @@ export const OrderCard = styled(BillingHistory)`
         0px 1px 6px -1px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.02);
 `
 
-export const SmallImg = styled.img<{ w?: number; h?: number }>`
+export const SmallImg = styled(Image)<{ w?: number; h?: number }>`
     width: ${props => props.w ? `${props.w}px` : '90px' };
     height: ${props => props.h ? `${props.h}px` : '90px' };
     border-radius: 4px;

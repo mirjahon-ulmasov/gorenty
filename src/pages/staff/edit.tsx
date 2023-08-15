@@ -24,7 +24,7 @@ export default function EditStaff() {
     const [form] = Form.useForm()
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
 
-    const [editStaff] = useUpdateStaffMutation()
+    const [editStaff, { isLoading: editLoading }] = useUpdateStaffMutation()
     const [addStaffImage] = useAddStaffImageMutation()
     const [deleteStaffImage] = useDeleteStaffImageMutation()
     const { data: staff, isError } = useFetchStaffQuery(staffID as string)
@@ -274,8 +274,17 @@ export default function EditStaff() {
                 </Row>
                 <div style={{ marginTop: '1rem' }}>
                     <Space size='large'>
-                        <Button type='primary' size='large' htmlType='submit'>O’zgarishlarn saqlash</Button>
-                        <Button size='large' onClick={() => navigate(`/staff/${staffID}/detail`)} >Bekor qilish</Button>
+                        <Button 
+                            size='large' 
+                            type='primary' 
+                            htmlType='submit'
+                            loading={editLoading}
+                        >
+                            O’zgarishlarn saqlash
+                        </Button>
+                        <Button size='large' onClick={() => navigate(`/staff/${staffID}/detail`)}>
+                            Bekor qilish
+                        </Button>
                     </Space>
                 </div>
             </Form>

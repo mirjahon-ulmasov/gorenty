@@ -1,5 +1,5 @@
 import { DatePicker, DatePickerProps } from 'antd'
-import { DatePickerIcon } from 'assets/images/Icons'
+import { DatePickerIcon } from 'components/input'
 
 export const CustomDatePicker = (props: DatePickerProps) => {
     return <DatePicker suffixIcon={<DatePickerIcon />} {...props} />

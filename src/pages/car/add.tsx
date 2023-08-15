@@ -27,7 +27,7 @@ export default function AddCar() {
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
     const [searchedInvestor, setSearchedInvestor] = useState('')
 
-    const [createCar] = useCreateCarMutation()
+    const [createCar, { isLoading: createLoading }] = useCreateCarMutation()
     const { data: brands, isLoading: brandsLoading } = useFetchCarBrandsQuery({})
     const { data: branches, isLoading: branchesLoading } = useFetchBranchesQuery({})
     const { data: investors, isLoading: investorsLoading } = useFetchInvestorsQuery({ search: searchedInvestor })
@@ -796,8 +796,17 @@ export default function AddCar() {
                 </Row>
                 <div style={{ marginTop: 30 }}>
                     <Space size='large'>
-                        <Button type='primary' size='large' htmlType='submit'>Yangi avtomobil qo’shish</Button>
-                        <Button size='large' onClick={() => navigate('/car/list')} >Bekor qilish</Button>
+                        <Button 
+                            size='large' 
+                            type='primary' 
+                            htmlType='submit'
+                            loading={createLoading}
+                        >
+                            Yangi avtomobil qo’shish
+                        </Button>
+                        <Button size='large' onClick={() => navigate('/car/list')}>
+                            Bekor qilish
+                        </Button>
                     </Space>
                 </div>
             </Form>

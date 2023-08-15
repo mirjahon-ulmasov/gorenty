@@ -16,7 +16,7 @@ export default function AddBranch() {
     const navigate = useNavigate();
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
 
-    const [createBranch] = useCreateBranchMutation()
+    const [createBranch, { isLoading: createLoading }] = useCreateBranchMutation()
 
     // ---------------- Submit ----------------
     const onFinish = (values: Branch.DTO) => {
@@ -163,8 +163,17 @@ export default function AddBranch() {
                 </Row>
                 <div style={{ marginTop: 30 }}>
                     <Space size='large'>
-                        <Button type='primary' size='large' htmlType='submit'>Yangi filial ochish</Button>
-                        <Button size='large' onClick={() => navigate('/branch/list')} >Bekor qilish</Button>
+                        <Button 
+                            size='large' 
+                            type='primary'
+                            htmlType='submit'
+                            loading={createLoading}
+                        >
+                            Yangi filial ochish
+                        </Button>
+                        <Button size='large' onClick={() => navigate('/branch/list')}>
+                            Bekor qilish
+                        </Button>
                     </Space>
                 </div>
             </Form>

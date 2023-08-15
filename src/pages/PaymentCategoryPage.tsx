@@ -3,7 +3,7 @@ import { Form, Button, Input, Typography, Row, Col, Space } from 'antd'
 import toast from 'react-hot-toast'
 import clsx from 'clsx'
 import { CustomBreadcrumb } from 'components/input'
-import { PlusIcon } from 'assets/images/Icons'
+import { PlusIcon } from 'components/input'
 import { PaymentCategory } from 'types/api'
 import { 
     useCreatePaymentCategoryMutation, useFetchPaymentCategoriesQuery, 

@@ -101,18 +101,24 @@ export default function InvestorDetail() {
                                         <StyledTextL2>{(investor?.branch as TBranch)?.title ?? '-'}</StyledTextL2>
                                     </BorderBox>
                                 </Col>
-                                <Col span={24}>
-                                    <BorderBox>
-                                        <div className='d-flex jc-start fw-wrap gap-12'>
-                                            {(Array.isArray(investor?.investor_images) 
-                                                ? (investor?.investor_images as BucketFile[]) 
-                                                : []
-                                            ).map((file, index) => (
-                                                <SmallImg key={index} src={file.image.file} alt='Investor images'/>
-                                            ))}
-                                        </div>
-                                    </BorderBox>
-                                </Col>
+                                {(investor?.investor_images && investor.investor_images.length > 0) && (
+                                    <Col span={24}>
+                                        <BorderBox>
+                                            <div className='d-flex jc-start fw-wrap gap-12'>
+                                                {(investor?.investor_images as BucketFile[])
+                                                .map((file) => (
+                                                    <SmallImg 
+                                                        width={90} 
+                                                        height={90} 
+                                                        key={file.id} 
+                                                        src={file.image.file} 
+                                                        alt='Investor'
+                                                    />
+                                                ))}
+                                            </div>
+                                        </BorderBox>
+                                    </Col>
+                                )}
                                 <Col span={24}>
                                     <StyledLink to='/order/list' state={{ investor: investorID }} className='ml-1'>
                                         Investorga tegishli buyurtmalar {investor?.orders_count}

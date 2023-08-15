@@ -14,7 +14,7 @@ export default function AddStaff() {
     const navigate = useNavigate();
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
 
-    const [createStaff] = useCreateStaffMutation()
+    const [createStaff, { isLoading: createLoading }] = useCreateStaffMutation()
     const { data: branches, isLoading: branchesLoading } = useFetchBranchesQuery({})
     const { data: positions, isLoading: positionsLoading } = useFetchStaffPositionsQuery({})
 
@@ -201,8 +201,17 @@ export default function AddStaff() {
                 </Row>
                 <div style={{ marginTop: '1rem' }}>
                     <Space size='large'>
-                        <Button type='primary' size='large' htmlType='submit'>Yangi ishchi qo’shish</Button>
-                        <Button size='large' onClick={() => navigate('/staff/list')} >Bekor qilish</Button>
+                        <Button 
+                            size='large' 
+                            type='primary' 
+                            htmlType='submit'
+                            loading={createLoading}
+                        >
+                            Yangi ishchi qo’shish
+                        </Button>
+                        <Button size='large' onClick={() => navigate('/staff/list')}>
+                            Bekor qilish
+                        </Button>
                     </Space>
                 </div>
             </Form>

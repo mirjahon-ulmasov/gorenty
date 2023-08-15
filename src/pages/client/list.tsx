@@ -11,7 +11,7 @@ import { getStatus } from 'utils/index'
 import { Status } from 'components/input'
 import type { Client } from 'types/api'
 import { CLIENT_STATUS } from 'types/index'
-import { DownloadIcon, FilterIcon, PlusIcon } from 'assets/images/Icons'
+import { DownloadIcon, FilterIcon, PlusIcon } from 'components/input'
 
 const { Title } = Typography
 

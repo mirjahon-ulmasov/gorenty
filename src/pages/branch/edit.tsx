@@ -25,7 +25,7 @@ export default function EditBranch() {
     const [form] = Form.useForm()
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
 
-    const [editBranch] = useUpdateBranchMutation()
+    const [editBranch, { isLoading: editLoading }] = useUpdateBranchMutation()
     const [addBranchImage] = useAddBranchImageMutation()
     const [deleteBranchImage] = useDeleteBranchImageMutation()
     const { data: branch, isError } = useFetchBranchQuery(branchID as string)
@@ -233,7 +233,14 @@ export default function EditBranch() {
                 </Row>
                 <div style={{ marginTop: 30 }}>
                     <Space size='large'>
-                        <Button type='primary' size='large' htmlType='submit'>O’zgarishlarn saqlash</Button>
+                        <Button 
+                            size='large' 
+                            type='primary' 
+                            htmlType='submit'
+                            loading={editLoading}
+                        >
+                            O’zgarishlarn saqlash
+                        </Button>
                         <Button size='large' onClick={() => navigate(`/branch/${branchID}/detail`)} >
                             Bekor qilish
                         </Button>

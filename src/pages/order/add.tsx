@@ -23,7 +23,7 @@ import { useAppSelector } from 'hooks/redux';
 import { disabledDate, formatDate, getStatus } from 'utils/index';
 import { CAR_STATUS, CLIENT_STATUS, ORDER_STATUS } from 'types/index';
 import { Car, CarBrand, Client, Order } from 'types/api';
-import { PlusIcon } from 'assets/images/Icons';
+import { PlusIcon } from 'components/input';
 import 'moment/dist/locale/ru'
 
 const { Title } = Typography
@@ -54,7 +54,7 @@ export default function AddOrder() {
         { brand: [brandID as number], plate_number: searchedCar, status: CAR_STATUS.FREE }, 
         { skip: !brandID }
     )
-    const [createOrder] = useCreateOrderMutation()  
+    const [createOrder, { isLoading: createLoading }] = useCreateOrderMutation()  
     const { user } = useAppSelector(state => state.auth)
 
     useEffect(() => {       
@@ -196,7 +196,9 @@ export default function AddOrder() {
                                 </Form.Item>
                             </Col>
                             <Col span={24}>
-                                <StyledLink to='/client/add'>Yangi mijoz qo’shish</StyledLink>
+                                <StyledLink to='/client/add' state={{ order: true }}>
+                                    Yangi mijoz qo’shish
+                                </StyledLink>
                             </Col>
                             <Col span={24}>
                                 <Divider style={{ margin: '16px 0' }}/>
@@ -388,8 +390,17 @@ export default function AddOrder() {
                         </Row>
                         <div style={{ marginTop: 32 }}>
                             <Space size='large'>
-                                <Button type='primary' size='large' htmlType='submit'>Buyurtmani ochish</Button>
-                                <Button size='large' onClick={() => navigate('/order')} >Bekor qilish</Button>
+                                <Button 
+                                    size='large' 
+                                    type='primary' 
+                                    htmlType='submit' 
+                                    loading={createLoading}
+                                >
+                                    Buyurtmani ochish
+                                </Button>
+                                <Button size='large' onClick={() => navigate('/order')} >
+                                    Bekor qilish
+                                </Button>
                             </Space>
                         </div>
                     </Form>

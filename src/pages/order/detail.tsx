@@ -6,6 +6,8 @@ import dayjs from 'dayjs';
 import moment from 'moment'
 import { styled } from 'styled-components'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
+import toast from 'react-hot-toast';
+import axios from 'axios';
 import { 
     Button, Col, DatePickerProps, 
     Row, Space, Typography, Divider, 
@@ -22,11 +24,8 @@ import {
 } from 'services';
 import { CLIENT_STATUS, ORDER_STATUS } from 'types/index'
 import { disabledDate, getStatus } from 'utils/index'
-import { DocumentIcon, FileUploadIcon, PlusIcon } from 'assets/images/Icons'
-import image from 'assets/images/image.png'
-import { Account, Car, CarBrand, Client, TBranch } from 'types/api';
-import axios from 'axios';
-import toast from 'react-hot-toast';
+import { DocumentIcon, FileUploadIcon, PlusIcon } from 'components/input'
+import { Account, BucketFile, Car, CarBrand, Client, TBranch } from 'types/api';
 
 const { Title } = Typography
 
@@ -495,13 +494,21 @@ export default function OrderDetail() {
                                             </Button>
                                         </div>
                                     </Col>
-                                    <Col span={24}>
-                                        <div className='d-flex jc-start fw-wrap gap-12'>
-                                            {[1,2,3].map((_, index) => (
-                                                <SmallImg key={index} src={image} alt='Investor images'/>
-                                            ))}
-                                        </div>
-                                    </Col>
+                                    {(order?.order_images && order.order_images.length > 0) && (
+                                        <Col span={24}>
+                                            <div className='d-flex jc-start fw-wrap gap-12'>
+                                                {(order.order_images as BucketFile[])?.map((file) => (
+                                                    <SmallImg 
+                                                        width={90} 
+                                                        height={90} 
+                                                        key={file.id} 
+                                                        src={file.image.file} 
+                                                        alt='Order' 
+                                                    />
+                                                ))}
+                                            </div>
+                                        </Col>
+                                    )}
                                 </Row>
                             </OrderCard>
                         </Col>

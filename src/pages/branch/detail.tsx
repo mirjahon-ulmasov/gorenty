@@ -9,7 +9,7 @@ import {
 } from 'components/input'
 import { useFetchBranchQuery } from 'services/branch';
 import { BucketFile } from 'types/api'
-import { MinusIcon, PlusIcon } from 'assets/images/Icons'
+import { MinusIcon, PlusIcon } from 'components/input'
 import { formatPhone } from 'utils/index';
 
 const { Title } = Typography
@@ -144,13 +144,21 @@ export default function CarDetail() {
                                 <StyledTextL1 fs={16}>{branch?.description ?? '-'}</StyledTextL1>
                             </BorderBox>
                         </Col>
-                        <Col span={24}>
-                            <BorderBox className='d-flex jc-start fw-wrap gap-12'>
-                                {(branch?.branch_images as BucketFile[])?.map((el) => (
-                                    <SmallImg key={el.id} src={el.image.file} alt='branch' />
-                                ))}
-                            </BorderBox>
-                        </Col>
+                        {(branch?.branch_images && branch.branch_images.length > 0) && (
+                            <Col span={24}>
+                                <BorderBox className='d-flex jc-start fw-wrap gap-12'>
+                                    {(branch.branch_images as BucketFile[])?.map((el) => (
+                                        <SmallImg 
+                                            width={90} 
+                                            height={90} 
+                                            key={el.id} 
+                                            src={el.image.file} 
+                                            alt='Branch' 
+                                        />
+                                    ))}
+                                </BorderBox>
+                            </Col>
+                        )}
                     </Row>
                 </Col>
             </Row>

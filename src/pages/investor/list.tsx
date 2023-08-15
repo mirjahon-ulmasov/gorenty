@@ -8,7 +8,7 @@ import { isArray } from 'lodash'
 import { useFetchInvestorsQuery } from 'services/investor'
 import { getColumnSearchProps } from 'utils/search'
 import type { Investor } from 'types/api'
-import { DownloadIcon, FilterIcon, PlusIcon } from 'assets/images/Icons'
+import { DownloadIcon, FilterIcon, PlusIcon } from 'components/input'
 
 const { Title } = Typography
 

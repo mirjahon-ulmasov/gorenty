@@ -20,7 +20,7 @@ export default function AddInvestor() {
     const navigate = useNavigate();
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
 
-    const [createInvestor] = useCreateInvestorMutation()
+    const [createInvestor, { isLoading: createLoading }] = useCreateInvestorMutation()
     const { data: branches, isLoading: branchesLoading } = useFetchBranchesQuery({})
 
     // ------------- Submit -------------
@@ -179,8 +179,17 @@ export default function AddInvestor() {
                 </Row>
                 <div style={{ marginTop: '1rem' }}>
                     <Space size='large'>
-                        <Button type='primary' size='large' htmlType='submit'>Investor qo’shish</Button>
-                        <Button size='large' onClick={() => navigate('/investor/list')} >Bekor qilish</Button>
+                        <Button 
+                            size='large' 
+                            type='primary'
+                            htmlType='submit'
+                            loading={createLoading}
+                        >
+                            Investor qo’shish
+                        </Button>
+                        <Button size='large' onClick={() => navigate('/investor/list')}>
+                            Bekor qilish
+                        </Button>
                     </Space>
                 </div>
             </Form>
