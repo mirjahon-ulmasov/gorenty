@@ -35,7 +35,7 @@ export function Login() {
             <Row gutter={[24, 0]} align="middle">
                 <Col span={12}>
                     <Image>
-                        <img src="/public/logo-white.png" alt="logo" />
+                        <img src="/logo-white.png" alt="logo" />
                     </Image>
                 </Col>
                 <Col span={12}>
@@ -126,7 +126,7 @@ const Image = styled.div`
             180deg, 
             rgba(255, 86, 31, 0.00) 55.73%, 
             var(--primary) 100%),
-        url('/public/login.png');
+        url('/login.png');
 
     img {
         width: 120px;

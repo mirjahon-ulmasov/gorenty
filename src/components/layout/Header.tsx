@@ -4,7 +4,6 @@ import { Divider, Layout, Space, Button } from 'antd'
 import styled from 'styled-components'
 import { HArrowCircleIcon, HBellIcon } from 'components/input'
 import { CustomSelect } from 'components/input'
-import logo from '/logo.png'
 
 const { Header } = Layout
 
@@ -25,7 +24,7 @@ export default function MainHeader() {
 
     return (
         <CustomHeader>
-            <img src={logo} alt="Logo" />
+            <img src="/logo.png" alt="Logo" />
             <div className='d-flex jc-sb w-100'>
                 <Space size='large'>
                     <div className="d-flex fd-col ai-start gap-4">

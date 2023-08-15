@@ -51,7 +51,12 @@ export default function AddOrder() {
     const { data: carBrands, isLoading: carBrandsLoading } = useFetchCarBrandsQuery({})
     const { data: branches, isLoading: branchesLoading } = useFetchBranchesQuery({})
     const { data: cars, isLoading: carsLoading } = useFetchCarsQuery(
-        { brand: [brandID as number], plate_number: searchedCar, status: CAR_STATUS.FREE }, 
+        {   brand: [brandID as number], 
+            plate_number: searchedCar, 
+            status: orderStatus === ORDER_STATUS.CREATED 
+                ? CAR_STATUS.FREE 
+                : [CAR_STATUS.FREE, CAR_STATUS.BUSY].join(',')
+        }, 
         { skip: !brandID }
     )
     const [createOrder, { isLoading: createLoading }] = useCreateOrderMutation()  
@@ -74,6 +79,15 @@ export default function AddOrder() {
             mileage: car.mileage
         })
     }, [form, car])
+    
+    function changeOrderStatus(status: ORDER_STATUS) {
+        setCar(null)
+        setOrderStatus(status)
+        form.setFieldsValue({
+            vehicle: '',
+            mileage: ''
+        })
+    }
     
     // ---------------- Client ----------------
     const changeClient = (value: number) => {        
@@ -157,7 +171,7 @@ export default function AddOrder() {
                                     <p>Buyurtma statusi</p>
                                     <StatusSelect
                                         activeStatus={orderStatus}
-                                        onSelectStatus={status => setOrderStatus(status)}
+                                        onSelectStatus={changeOrderStatus}
                                         statuses={[
                                             {
                                                 title: getStatus(ORDER_STATUS.BOOKED, 'order'),
@@ -358,7 +372,7 @@ export default function AddOrder() {
                             <Col span={12}>
                                 <Form.Item
                                     name="mileage"
-                                    label="Hozirda bosib o’tilgan masofasi"
+                                    label="Bosib o’tilgan masofasi"
                                     labelCol={{ span: 24 }}
                                     wrapperCol={{ span: 24 }}
                                     rules={[

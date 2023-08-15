@@ -1,44 +1,63 @@
-:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-container {
+:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-container,
+:where(.css-1x2xti3).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-container {
     width: 100px;
     height: 100px;
     margin-block: 0px 13px;
     margin-inline: 0px 13px;
 }
-:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item {
+
+:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item,
+:where(.css-1x2xti3).ant-upload-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item {
     padding: 0;
     border-radius: 4px;
 }
-:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item::before {
+
+:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item::before,
+:where(.css-1x2xti3).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item::before {
     width: 100%;
     height: 100%;
 }
-:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-thumbnail img {
-    // object-fit: none;
+
+:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-thumbnail img,
+:where(.css-1x2xti3).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-thumbnail img {
     object-fit: cover;
 }
-:where(.css-dev-only-do-not-override-1x2xti3).ant-modal .ant-modal-close {
+
+:where(.css-dev-only-do-not-override-1x2xti3).ant-modal .ant-modal-close,
+:where(.css-1x2xti3).ant-modal .ant-modal-close {
     display: none;
 }
-:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-actions .anticon-eye {
+
+:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-actions .anticon-eye,
+:where(.css-1x2xti3).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-actions .anticon-eye {
     width: 28px;
 }
-:where(.css-dev-only-do-not-override-1x2xti3).ant-btn.ant-btn-icon-only {
+
+:where(.css-dev-only-do-not-override-1x2xti3).ant-btn.ant-btn-icon-only,
+:where(.css-1x2xti3).ant-btn.ant-btn-icon-only {
     width: 32px;
 }
-:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper .ant-upload-list .ant-upload-list-item .ant-upload-list-item-actions .ant-upload-list-item-action.ant-btn-sm {
+
+:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper .ant-upload-list .ant-upload-list-item .ant-upload-list-item-actions .ant-upload-list-item-action.ant-btn-sm,
+:where(.css-1x2xti3).ant-upload-wrapper .ant-upload-list .ant-upload-list-item .ant-upload-list-item-actions .ant-upload-list-item-action.ant-btn-sm {
     height: 36px;
     width: 36px;
 }
-:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-actions .anticon-delete {
+
+:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-actions .anticon-delete,
+:where(.css-1x2xti3).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-actions .anticon-delete {
     width: 28px;
 }
+
 .ant-upload-list-item-actions {
     svg {
         width: 28px;
         height: 28px;
     }
 }
-:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-error {
+
+:where(.css-dev-only-do-not-override-1x2xti3).ant-upload-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-error,
+:where(.css-1x2xti3).ant-upload-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-error {
     border: 2px solid;
 }
 
@@ -53,10 +72,12 @@
 :where(.css-1x2xti3).ant-form-item {
     margin-bottom: 0;
 }
+
 :where(.css-dev-only-do-not-override-1x2xti3).ant-col-24.ant-form-item-label,
 :where(.css-dev-only-do-not-override-1x2xti3).ant-col-24.ant-form-item-label {
     padding: 0;
 }
+
 // ------------ REMOVE * ------------
 :where(.css-dev-only-do-not-override-1x2xti3).ant-form-item .ant-form-item-label >label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before,
 :where(.css-1x2xti3).ant-form-item .ant-form-item-label >label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
@@ -64,13 +85,18 @@
 }
 
 // ------------ Checkbox ------------
-:where(.css-dev-only-do-not-override-1x2xti3).ant-checkbox {
+:where(.css-dev-only-do-not-override-1x2xti3).ant-checkbox,
+:where(.css-1x2xti3).ant-checkbox {
     transform: scale(1.3);
 }
-:where(.css-dev-only-do-not-override-1x2xti3).ant-checkbox .ant-checkbox-inner:after {
+
+:where(.css-dev-only-do-not-override-1x2xti3).ant-checkbox .ant-checkbox-inner:after,
+:where(.css-1x2xti3).ant-checkbox .ant-checkbox-inner:after {
     inset-inline-start: 19.5%;
 }
-:where(.css-dev-only-do-not-override-1x2xti3).ant-form label {
+
+:where(.css-dev-only-do-not-override-1x2xti3).ant-form label,
+:where(.css-1x2xti3).ant-form label {
     font-size: 16px;
 }
 
@@ -90,9 +116,11 @@
     object-fit: contain;
 }
 
-:where(.css-dev-only-do-not-override-1x2xti3).ant-image .ant-image-mask .ant-image-mask-info .anticon {
+:where(.css-dev-only-do-not-override-1x2xti3).ant-image .ant-image-mask .ant-image-mask-info .anticon,
+:where(.css-1x2xti3).ant-image .ant-image-mask .ant-image-mask-info .anticon {
     display: none;
 }
+
 .ant-image-mask-info {
     font-size: 14px;
 }

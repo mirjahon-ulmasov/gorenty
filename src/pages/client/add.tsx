@@ -192,7 +192,7 @@ export default function AddClient() {
                             </Col>
                             <Col span={24}>
                                 <Form.Item
-                                    name="licence"
+                                    name="license"
                                     label="Haydovchilik guvohnomasi"
                                     labelCol={{ span: 24 }}
                                     wrapperCol={{ span: 24 }}

@@ -167,19 +167,22 @@ export default function OrderDetail() {
                             <div className='d-flex jc-sb gap-8 fw-wrap'>  
                                 <Title level={3}>Ma’lumotlar</Title>
                                 <Space size="small">
-                                    <Button
-                                        size="large"
-                                        onClick={() =>
-                                            navigate(
-                                                '/order/'.concat(
-                                                    orderID?.toString() as string,
-                                                    '/edit'
+                                    {[ORDER_STATUS.BOOKED, ORDER_STATUS.CREATED]
+                                        .includes(order?.status as ORDER_STATUS) && (
+                                        <Button
+                                            size="large"
+                                            onClick={() =>
+                                                navigate(
+                                                    '/order/'.concat(
+                                                        orderID?.toString() as string,
+                                                        '/edit'
+                                                    )
                                                 )
-                                            )
-                                        }
-                                    >
-                                        O’zgartirish
-                                    </Button>
+                                            }
+                                        >
+                                            O’zgartirish
+                                        </Button>
+                                    )}
                                     <Button
                                         size="large"
                                         onClick={() =>
@@ -283,11 +286,13 @@ export default function OrderDetail() {
                                             <StyledTextL1>Tugash sanasi</StyledTextL1>
                                             <StyledTextL2>{moment(order?.end_date as string).format('LL')}</StyledTextL2>
                                         </div>
-                                        <Button 
-                                            type='primary' 
-                                            onClick={() => setDateModal(true)} 
-                                            icon={<PlusIcon color='white' style={{ width: 22, height: 22 }} />} 
-                                        />
+                                        {order?.status === ORDER_STATUS.CREATED &&(
+                                            <Button 
+                                                type='primary' 
+                                                onClick={() => setDateModal(true)} 
+                                                icon={<PlusIcon color='white' style={{ width: 22, height: 22 }} />} 
+                                            />
+                                        )}
                                     </BorderBox>
                                 </Col>
                                 <Col span={12}>

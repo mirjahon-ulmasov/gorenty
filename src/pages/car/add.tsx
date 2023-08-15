@@ -16,7 +16,7 @@ import {
 import { useAppSelector } from 'hooks/redux';
 import { useCreateCarMutation, useFetchBranchesQuery, useFetchCarBrandsQuery, useFetchInvestorsQuery } from 'services';
 import { Car } from 'types/api';
-import { disabledDate, formatDate } from 'utils/index';
+import { formatDate } from 'utils/index';
 
 const { Title } = Typography
 
@@ -349,9 +349,6 @@ export default function AddCar() {
                                         size='large'
                                         style={{ width: '100%' }}
                                         placeholder='Sanani tanlang' 
-                                        disabledDate={
-                                            date => disabledDate(date as Dayjs)
-                                        }
                                     />
                                 </Form.Item>
                             </Col>
@@ -372,9 +369,6 @@ export default function AddCar() {
                                         size='large'
                                         style={{ width: '100%' }}
                                         placeholder='Sanani tanlang' 
-                                        disabledDate={
-                                            date => disabledDate(date as Dayjs)
-                                        }
                                     />
                                 </Form.Item>
                             </Col>
@@ -403,9 +397,6 @@ export default function AddCar() {
                                                 style={{ width: '100%'}}
                                                 placeholder='Sanani tanlang' 
                                                 disabled={!isToning}
-                                                disabledDate={
-                                                    date => disabledDate(date as Dayjs)
-                                                }
                                             />
                                         </Form.Item>
                                     </Col>
@@ -510,9 +501,6 @@ export default function AddCar() {
                                         size='large'
                                         style={{ width: '100%'}}
                                         placeholder='Sanani tanlang' 
-                                        disabledDate={
-                                            date => disabledDate(date as Dayjs)
-                                        }
                                     />
                                 </Form.Item>
                             </Col>
