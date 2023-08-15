@@ -25,7 +25,7 @@ export default function MainHeader() {
 
     return (
         <CustomHeader>
-            <img src={'logo'} alt="Logo" />
+            <img src={logo} alt="Logo" />
             <div className='d-flex jc-sb w-100'>
                 <Space size='large'>
                     <div className="d-flex fd-col ai-start gap-4">
