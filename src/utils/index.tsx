@@ -54,6 +54,13 @@ export function formatPhone(data: string) {
         .replace(/^(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})$/, '+$1 $2 $3-$4-$5')
 }
 
+export function formatPlate(data: string) {
+    const isCommon = /[a-zA-Z]/.test(data[2]);
+
+    if (isCommon) return data.replace(/(\d+)([A-Z]+)/g, '$1 $2 ');
+    return data.replace(/(\d+)(\d{3})([A-Z]+)/, '$1 $2 $3');
+}
+
 
 export const formatDate = 'YYYY-MM-DD'
 

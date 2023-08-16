@@ -33,10 +33,10 @@ const routes: Route[] = [
         roles: [ROLE.ADMIN, ROLE.OPERATOR],
     },
     {
-        path: '/payment-category',
+        path: '/admin/payment-category',
         title: 'To’lov kategoriyalari',
         icon: SPaymentCategoryIcon,
-        roles: [ROLE.ADMIN, ROLE.OPERATOR],
+        roles: [ROLE.ADMIN],
     },
     {
         path: '/debt',
@@ -51,10 +51,10 @@ const routes: Route[] = [
         roles: [ROLE.ADMIN, ROLE.OPERATOR],
     },
     {
-        path: '/branch',
+        path: '/admin/branch',
         title: 'Filiallar',
         icon: SFilialIcon,
-        roles: [ROLE.ADMIN, ROLE.OPERATOR],
+        roles: [ROLE.ADMIN],
     },
     {
         path: '/currency',
@@ -63,16 +63,16 @@ const routes: Route[] = [
         roles: [ROLE.ADMIN, ROLE.OPERATOR],
     },
     {
-        path: '/report',
+        path: '/admin/report',
         title: 'Moliyaviy hisobotlar',
         icon: SReportIcon,
-        roles: [ROLE.ADMIN, ROLE.OPERATOR],
+        roles: [ROLE.ADMIN],
     },
     {
-        path: '/staff',
+        path: '/admin/staff',
         title: 'Ishchilar',
         icon: SWorkerIcon,
-        roles: [ROLE.ADMIN, ROLE.OPERATOR],
+        roles: [ROLE.ADMIN],
     },
     {
         path: '/changes-log',

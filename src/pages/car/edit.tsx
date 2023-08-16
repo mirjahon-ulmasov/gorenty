@@ -24,7 +24,7 @@ import {
     useUpdateCarMutation 
 } from 'services';
 import { BucketFile, Car, CarBrand, Investor } from 'types/api';
-import { formatDate } from 'utils/index';
+import { formatDate, formatPlate } from 'utils/index';
 
 const { Title } = Typography
 
@@ -51,15 +51,15 @@ export default function EditCar() {
     useEffect(() => {       
         if(isError) return;
 
-        setIsToning(car?.is_toned ?? false)     
+        setIsToning(car?.is_toned ?? false)          
         
         form.setFieldsValue({
             ...car,
-            toning: dayjs(car?.toning),
-            oil_date: dayjs(car?.oil_date),
-            insurance: dayjs(car?.insurance),
-            lease_term: dayjs(car?.lease_term),
-            technical_passport_date: dayjs(car?.technical_passport_date),
+            toning: car?.toning && dayjs(car.toning),
+            oil_date: car?.oil_date && dayjs(car.oil_date),
+            insurance: car?.insurance && dayjs(car.insurance),
+            lease_term: car?.lease_term && dayjs(car.lease_term),
+            technical_passport_date: car?.technical_passport_date && dayjs(car.technical_passport_date),
             brand: (car?.brand as CarBrand.DTO)?.id,
             investor: (car?.investor as Investor.DTO)?.id,
         })
@@ -134,7 +134,7 @@ export default function EditCar() {
             lease_term: (values?.lease_term as Dayjs)?.format(formatDate),
             technical_passport_date: (values?.technical_passport_date as Dayjs)?.format(formatDate),
             vehicle_images: imageFiles.map(file => file.response.id),
-        }    
+        }
 
         editCar(data)
             .unwrap()
@@ -154,7 +154,7 @@ export default function EditCar() {
             <CustomBreadcrumb
                 items={[
                     { title: 'Avtomobillar', link: '/car/list' },
-                    { title: car?.plate_number ?? '-', link: `/car/${carID}/detail` },
+                    { title: formatPlate(car?.plate_number ?? '-'), link: `/car/${carID}/detail` },
                     { title: 'Ma’lumotlarni o’zgartirish' },
                 ]}
             />

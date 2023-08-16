@@ -6,12 +6,14 @@ import {
 import toast from 'react-hot-toast'
 import clsx from 'clsx'
 import { CustomBreadcrumb } from 'components/input'
+import { useAppSelector } from 'hooks/redux'
 import { PlusIcon } from 'components/input'
 import { Currency } from 'types/api'
 import { 
     useCreateCurrencyMutation, useFetchCurrenciesQuery, 
     useUpdateCurrencyMutation 
 } from 'services'
+import { ROLE } from 'types/index'
 
 const { Title } = Typography
 
@@ -20,6 +22,7 @@ export function CurrencyPage() {
     const [createCurrency] = useCreateCurrencyMutation()
     const [updateCurrency] = useUpdateCurrencyMutation()
     const { data: currencyList } = useFetchCurrenciesQuery({})
+    const { user } = useAppSelector(state => state.auth)
 
     useEffect(() => {
         if(!currencyList) return;
@@ -40,6 +43,8 @@ export function CurrencyPage() {
     }
 
     function changeTitle(e: ChangeEvent<HTMLInputElement>, index: number) {
+        if(user?.state !== ROLE.ADMIN) return;
+
         setState(prev => prev.map((el, idx) => {
             if(idx === index) {
                 return { ...el, title: e.target.value }
@@ -49,6 +54,8 @@ export function CurrencyPage() {
     }
 
     function changeRatio(value: number | null, index: number) {
+        if(user?.state !== ROLE.ADMIN) return;
+
         setState(prev => prev.map((el, idx) => {
             if(idx === index && value) {
                 return { ...el, ratio: value }
@@ -84,16 +91,18 @@ export function CurrencyPage() {
             <Title level={3}>Valyuta</Title>
             <Form autoComplete="off" style={{ maxWidth: 460, marginTop: '2rem' }}>
                 <Row gutter={[0, 24]}>
-                    <Col span={24}>
-                        <Button 
-                            size='large' 
-                            className='d-flex' 
-                            icon={<PlusIcon />}
-                            onClick={addNew}
-                        >
-                            Yangi valyuta qo’shish
-                        </Button>
-                    </Col>
+                    {user?.state === ROLE.ADMIN && (
+                        <Col span={24}>
+                            <Button 
+                                size='large' 
+                                className='d-flex' 
+                                icon={<PlusIcon />}
+                                onClick={addNew}
+                            >
+                                Yangi valyuta qo’shish
+                            </Button>
+                        </Col>
+                    )}
                     {state.map((el, index) => (
                         <Col span={24} key={index}>
                             <Form.Item labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
@@ -101,7 +110,7 @@ export function CurrencyPage() {
                                     <Input 
                                         name='title'
                                         size="large" 
-                                        value={el.title} 
+                                        value={el.title}
                                         onChange={e => changeTitle(e, index)} 
                                         placeholder='Valyutaning nomi'
                                     />
@@ -109,9 +118,9 @@ export function CurrencyPage() {
                                     <InputNumber
                                         min={0}
                                         size="large" 
-                                        placeholder='Qiymati'
                                         value={el.ratio}
-                                        onChange={value => changeRatio(value, index)} 
+                                        onChange={value => changeRatio(value, index)}
+                                        placeholder='Qiymati'
                                     />
                                 </Space>
                             </Form.Item>

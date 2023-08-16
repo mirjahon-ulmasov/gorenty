@@ -4,7 +4,7 @@ import type { InputRef } from 'antd';
 import { Button, Space, Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import type { ColumnType, FilterConfirmProps } from 'antd/es/table/interface';
-import { formatPhone } from '.';
+import { formatPhone, formatPlate } from '.';
 
 export const getColumnSearchProps = <T extends object>(
     dataIndex: keyof T | string, 
@@ -34,6 +34,9 @@ export const getColumnSearchProps = <T extends object>(
             }
             if(dataIndex === 'phone_number') {
                 return formatPhone(value as string)
+            }
+            else if(['vehicle.plate_number', 'plate_number'].includes(dataIndex)) {
+                return formatPlate(value as string)
             }
             return value as string;
         }

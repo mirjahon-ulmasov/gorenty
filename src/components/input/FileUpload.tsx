@@ -48,7 +48,7 @@ export function CustomUpload(props: CustomUploadProps) {
     const uploadButton = (
         <div>
             <PlusOutlined />
-            <div style={{ marginTop: 8 }}>Upload</div>
+            <div style={{ marginTop: 8 }}>Загрузить</div>
         </div>
     );
 

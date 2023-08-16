@@ -124,7 +124,6 @@ export default function Orders() {
             dataIndex: ['vehicle', 'brand', 'title'],
             key: 'brand',
             ellipsis: true,
-            // ...getColumnSearchProps('vehicle.brand.title', 'Avtomobil turi'),
         },
         {
             title: 'Avtomobil',

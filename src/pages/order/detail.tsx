@@ -1,5 +1,5 @@
 /* eslint-disable no-constant-condition */
-import { Fragment, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
@@ -8,22 +8,28 @@ import { styled } from 'styled-components'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { v4 as uuid } from 'uuid'
 import { 
     Button, Col, DatePickerProps, 
     Row, Space, Typography, Divider, 
-    Checkbox, Modal, Form, InputNumber 
+    Checkbox, Modal, Form, InputNumber,
+    UploadFile
 } from 'antd'
+import { UploadChangeParam } from 'antd/es/upload';
+import { useAppSelector } from 'hooks/redux';
 import { 
     CustomBreadcrumb, Payment, Status, 
     Label, StyledTextL1, StyledTextL2, 
-    OrderCard, BorderBox, CustomDatePicker, SmallImg  
+    OrderCard, BorderBox, CustomDatePicker, 
+    CustomUpload  
 } from 'components/input'
 import { 
-    useActivateOrderMutation, useCancelOrderMutation, 
+    useActivateOrderMutation, useAddOrderImageMutation, 
+    useCancelOrderMutation, useDeleteOrderImageMutation, 
     useFetchOrderQuery, useFinishOrderMutation 
 } from 'services';
-import { CLIENT_STATUS, ORDER_STATUS } from 'types/index'
-import { disabledDate, getStatus } from 'utils/index'
+import { CLIENT_STATUS, ORDER_STATUS, ROLE } from 'types/index'
+import { disabledDate, formatPlate, getStatus } from 'utils/index'
 import { DocumentIcon, FileUploadIcon, PlusIcon } from 'components/input'
 import { Account, BucketFile, Car, CarBrand, Client, TBranch } from 'types/api';
 
@@ -37,11 +43,75 @@ export default function OrderDetail() {
     const [modal, contextHolder] = Modal.useModal();
     const [extendDate, setExtendDate] = useState<Dayjs | null>(null)
     const [dateModal, setDateModal] = useState(false)
+    const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
 
-    const { data: order } = useFetchOrderQuery(orderID as string)
+    const { data: order, isError } = useFetchOrderQuery(orderID as string)
     const [activateOrder] = useActivateOrderMutation()
     const [cancelOrder] = useCancelOrderMutation()
     const [finishOrder] = useFinishOrderMutation()
+    const [addOrderImage] = useAddOrderImageMutation()
+    const [deleteOrderImage] = useDeleteOrderImageMutation()
+    const { user } = useAppSelector(state => state.auth)
+
+    useEffect(() => {
+        if(isError) return;
+
+        if(order?.order_images) {
+            setImageFiles((order?.order_images as BucketFile[]).map(file => ({
+                uid: uuid(),
+                response: file,
+                status: 'done',
+                name: 'image.png',
+                url: file.image.file
+            })))
+        }
+    }, [order, isError])
+
+    // ------------- Image Upload -------------
+    function changeImage(data: UploadChangeParam<UploadFile<any>>) {
+        setImageFiles(data.fileList)
+
+        if(data.file.status !== 'done') return;
+
+        addOrderImage({ 
+            order: parseInt(orderID as string, 10), 
+            image: data.file.response.id 
+        })
+            .unwrap()
+            .then((response) => {
+                setImageFiles(prev => prev.map(file => {
+                    if(file.response.id === response.image) {
+                        return {
+                            ...file,
+                            response
+                        }
+                    }
+                    return file
+                }))                                        
+            })
+            .catch(() => toast.error('Rasm yuklanmadi'))
+    }
+
+    function removeImage(data: UploadFile<any>) {
+        if(user?.state !== ROLE.ADMIN) {
+            toast.error("У вас нет разрешения на удаление")
+            return false;
+        }
+
+        if(!data.response.id) return true
+                                
+        return deleteOrderImage({ id: data.response.id })
+            .unwrap()
+            .then(() => {
+                toast.success('Rasm muvafaqiyatli o’chirildi');
+                return true;
+            }).catch(() => {
+                toast.error('Rasm o’chirilmadi');
+                return false;
+            })
+    }
+
+    // --------------------------
     
     const orderCar = useMemo(() => {
         return order?.vehicle as Car.DTO | undefined;
@@ -315,7 +385,7 @@ export default function OrderDetail() {
                                     <BorderBox className='fd-col'>
                                         <StyledTextL1>Avtomobil raqami</StyledTextL1>
                                         <StyledTextL2>
-                                            {orderCar?.plate_number ?? '-'}
+                                            {formatPlate(orderCar?.plate_number ?? '-')}
                                         </StyledTextL2>
                                     </BorderBox>
                                 </Col>
@@ -488,32 +558,15 @@ export default function OrderDetail() {
                             <OrderCard>
                                 <Row gutter={[0, 16]}>
                                     <Col span={24}>
-                                        <div className='d-flex gap-4 jc-sb'>
-                                            <StyledTextL2>Rasmlar</StyledTextL2>
-                                            <Button 
-                                                type='default' 
-                                                className='d-flex'
-                                                icon={<FileUploadIcon />} 
-                                            >
-                                                Rasm yuklash
-                                            </Button>
-                                        </div>
+                                        <StyledTextL2>Rasmlar</StyledTextL2>
                                     </Col>
-                                    {(order?.order_images && order.order_images.length > 0) && (
-                                        <Col span={24}>
-                                            <div className='d-flex jc-start fw-wrap gap-12'>
-                                                {(order.order_images as BucketFile[])?.map((file) => (
-                                                    <SmallImg 
-                                                        width={90} 
-                                                        height={90} 
-                                                        key={file.id} 
-                                                        src={file.image.file} 
-                                                        alt='Order' 
-                                                    />
-                                                ))}
-                                            </div>
-                                        </Col>
-                                    )}
+                                    <Col span={24}>
+                                        <CustomUpload   
+                                            fileList={imageFiles} 
+                                            onChange={changeImage}
+                                            onRemove={removeImage} 
+                                        />
+                                    </Col>
                                 </Row>
                             </OrderCard>
                         </Col>

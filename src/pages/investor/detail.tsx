@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button, Col, DatePickerProps, Row, Space, Typography } from 'antd'
 import clsx from 'clsx'
+import { useAppSelector } from 'hooks/redux'
 import { useFetchInvestorQuery } from 'services/investor'
 import { 
     CustomBreadcrumb, CustomDatePicker, Payment, 
@@ -11,6 +12,7 @@ import {
 } from 'components/input'
 import { TBranch, BucketFile } from 'types/api'
 import { formatPhone } from 'utils/index'
+import { ROLE } from 'types/index'
 
 const { Title } = Typography
 
@@ -20,6 +22,7 @@ export default function InvestorDetail() {
     const [isOpenPayment, setIsOpenPayment] = useState(false);
 
     const { data: investor } = useFetchInvestorQuery(investorID as string)
+    const { user } = useAppSelector(state => state.auth)
 
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
@@ -40,21 +43,23 @@ export default function InvestorDetail() {
                             <div className='d-flex jc-sb gap-8 fw-wrap'>
                                 <IDTag>{investor?.object_index}</IDTag>
                                 <Title level={3}>{investor?.full_name ?? '-'}</Title>
-                                <Space size="small">
-                                    <Button
-                                        size="large"
-                                        onClick={() =>
-                                            navigate(
-                                                '/investor/'.concat(
-                                                    investorID?.toString() as string,
-                                                    '/edit'
+                                {user?.state === ROLE.ADMIN && (
+                                    <Space size="small">
+                                        <Button
+                                            size="large"
+                                            onClick={() =>
+                                                navigate(
+                                                    '/investor/'.concat(
+                                                        investorID?.toString() as string,
+                                                        '/edit'
+                                                    )
                                                 )
-                                            )
-                                        }
-                                    >
-                                        O’zgartirish
-                                    </Button>
-                                </Space>
+                                            }
+                                        >
+                                            O’zgartirish
+                                        </Button>
+                                    </Space>
+                                )}
                             </div>
                         </Col>
                         <Col span={24}>

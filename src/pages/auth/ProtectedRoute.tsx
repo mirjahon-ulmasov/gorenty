@@ -5,9 +5,10 @@ import { ROLE } from 'types/index'
 
 interface PropTypes {
     roles: ROLE[]
+    isRoot?: boolean
 }
 
-export function ProtectedRoute({ roles }: PropTypes) {
+export function ProtectedRoute({ roles, isRoot = false }: PropTypes) {
     const location = useLocation()
     const { isLoggedIn, user } = useAppSelector(state => state.auth)
 
@@ -16,6 +17,8 @@ export function ProtectedRoute({ roles }: PropTypes) {
     if (!isLoggedIn || !roles.includes(role)) {
         return <Navigate to="/login" state={{ from: location }} replace />
     }
+
+    if(!isRoot) return <Outlet />
 
     return (
         <MainLayout role={role}>

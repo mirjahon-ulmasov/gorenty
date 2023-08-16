@@ -20,7 +20,7 @@ import {
     StyledLink, StyledTextL1, StyledTextL2, StatusSelect 
 } from 'components/input'
 import { useAppSelector } from 'hooks/redux';
-import { disabledDate, formatDate, getStatus } from 'utils/index';
+import { disabledDate, formatDate, formatPlate, getStatus } from 'utils/index';
 import { CAR_STATUS, CLIENT_STATUS, ORDER_STATUS } from 'types/index';
 import { Car, CarBrand, Client, Order } from 'types/api';
 import { PlusIcon } from 'components/input';
@@ -524,7 +524,7 @@ export default function AddOrder() {
                                                     <div className='d-flex fd-col ai-start gap-4'>
                                                         <StyledTextL1>Avtomobil raqami</StyledTextL1>
                                                         <StyledTextL2>
-                                                            {car?.plate_number ?? '-'}
+                                                            {formatPlate(car?.plate_number ?? '-')}
                                                         </StyledTextL2>
                                                     </div>
                                                 </Col>

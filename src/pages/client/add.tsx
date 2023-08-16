@@ -8,13 +8,12 @@ import {
 import toast from 'react-hot-toast'
 import type { Dayjs } from 'dayjs';
 import _ from 'lodash'
-import { useCreateClientMutation } from 'services/client'
-import { useFetchBranchesQuery } from 'services/branch'
+import clsx from 'clsx';
+import { useFetchBranchesQuery, useCreateClientMutation } from 'services'
 import { CustomSelect, CustomBreadcrumb, CustomUpload, CustomDatePicker } from 'components/input'
 import { Client } from 'types/api'
 import { formatDate } from 'utils/index';
 import { PlusIcon } from 'components/input';
-import clsx from 'clsx';
 
 const { Title } = Typography
 

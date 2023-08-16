@@ -1,25 +1,33 @@
 /* eslint-disable no-constant-condition */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { 
     Button, Col, DatePickerProps, 
     Row, Space, Typography, 
-    Checkbox, Modal
+    Checkbox, Modal, UploadFile
 } from 'antd'
 import clsx from 'clsx';
 import moment from 'moment'
+import { UploadChangeParam } from 'antd/es/upload';
+import { v4 as uuid } from 'uuid'
+import toast from 'react-hot-toast';
+import { useAppSelector } from 'hooks/redux';
 import { 
     CustomBreadcrumb, Payment, Label, 
     StyledTextL1, StyledTextL2, BorderBox, 
-    CustomDatePicker, SmallImg, IDTag, 
-    StyledLink, BillingHistory, Status  
+    CustomDatePicker, IDTag, StyledLink, 
+    BillingHistory, Status, CustomUpload  
 } from 'components/input'
 import { BucketFile, CarBrand, Investor } from 'types/api'
-import { useBlockCarMutation, useFetchCarQuery, useUnblockCarMutation } from 'services/car'
+import { 
+    useAddCarImageMutation, useBlockCarMutation, 
+    useDeleteCarImageMutation, useFetchCarQuery, 
+    useUnblockCarMutation 
+} from 'services/car'
 import { LockIcon } from 'components/input'
-import { CAR_STATUS } from 'types/index';
-import { getStatus } from 'utils/index';
+import { CAR_STATUS, ROLE } from 'types/index';
+import { formatPlate, getStatus } from 'utils/index';
 
 const { Title } = Typography
 
@@ -28,10 +36,73 @@ export default function CarDetail() {
     const { carID } = useParams()
     const [modal, contextHolder] = Modal.useModal();
     const [isOpenPayment, setIsOpenPayment] = useState(false);
+    const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
 
     const [blockCar] = useBlockCarMutation()
     const [unblockCar] = useUnblockCarMutation()
-    const { data: car } = useFetchCarQuery(carID as string)
+    const { data: car, isError } = useFetchCarQuery(carID as string)
+    const { user } = useAppSelector(state => state.auth)
+    const [addCarImage] = useAddCarImageMutation()
+    const [deleteCarImage] = useDeleteCarImageMutation()
+
+    useEffect(() => {
+        if(isError) return;
+
+        if(car?.vehicle_images) {
+            setImageFiles((car?.vehicle_images as BucketFile[]).map(file => ({
+                uid: uuid(),
+                response: file,
+                status: 'done',
+                name: 'image.png',
+                url: file.image.file
+            })))
+        }
+    }, [car, isError])
+
+    // ------------- Image Upload -------------
+    function changeImage(data: UploadChangeParam<UploadFile<any>>) {
+        setImageFiles(data.fileList)
+
+        if(data.file.status !== 'done') return;
+
+        addCarImage({ 
+            vehicle: parseInt(carID as string, 10), 
+            image: data.file.response.id 
+        })
+            .unwrap()
+            .then((response) => {
+                setImageFiles(prev => prev.map(file => {
+                    if(file.response.id === response.image) {
+                        return {
+                            ...file,
+                            response
+                        }
+                    }
+                    return file
+                }))                                        
+            })
+            .catch(() => toast.error('Rasm yuklanmadi'))
+    }
+
+    function removeImage(data: UploadFile<any>) {
+        if(user?.state !== ROLE.ADMIN) {
+            toast.error("У вас нет разрешения на удаление")
+            return false;
+        }
+        if(!data.response.id) return true
+                                
+        return deleteCarImage({ id: data.response.id })
+            .unwrap()
+            .then(() => {
+                toast.success('Rasm muvafaqiyatli o’chirildi');
+                return true;
+            }).catch(() => {
+                toast.error('Rasm o’chirilmadi');
+                return false;
+            })
+    }
+
+    // --------------------------
 
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
@@ -64,7 +135,7 @@ export default function CarDetail() {
             <CustomBreadcrumb
                 items={[
                     { title: 'Avtomobillar', link: '/car/list' },
-                    { title: car?.plate_number ?? '-' },
+                    { title: formatPlate(car?.plate_number ?? '-') },
                 ]}
             />
             <Row gutter={[48, 24]}>
@@ -73,30 +144,32 @@ export default function CarDetail() {
                         <Col span={24}>
                             <div className='d-flex jc-sb gap-8 fw-wrap'>  
                                 <IDTag>{car?.object_index}</IDTag>
-                                <Title level={3}>{car?.plate_number ?? '-'}</Title>
-                                <Space size="small">
-                                    <Button
-                                        size="large"
-                                        onClick={() =>
-                                            navigate(
-                                                '/car/'.concat(
-                                                    carID?.toString() as string,
-                                                    '/edit'
-                                                )
-                                            )
-                                        }
-                                    >
-                                        O’zgartirish
-                                    </Button>
-                                    <Button 
-                                        className='d-flex' 
-                                        size="large" 
-                                        type='default' 
-                                        onClick={confirm} icon={<LockIcon />}
-                                    >
-                                        {car?.status !== CAR_STATUS.BLOCK ? "Bloklash" : "Blokdan chiqarish"}
-                                    </Button>
-                                </Space>
+                                <Title level={3}>{formatPlate(car?.plate_number ?? '-')}</Title>
+                                {user?.state === ROLE.ADMIN && (
+                                    <Space size="small">
+                                            <Button
+                                                size="large"
+                                                onClick={() =>
+                                                    navigate(
+                                                        '/car/'.concat(
+                                                            carID?.toString() as string,
+                                                            '/edit'
+                                                        )
+                                                    )
+                                                }
+                                            >
+                                                O’zgartirish
+                                            </Button>
+                                        <Button 
+                                            className='d-flex' 
+                                            size="large" 
+                                            type='default' 
+                                            onClick={confirm} icon={<LockIcon />}
+                                        >
+                                            {car?.status !== CAR_STATUS.BLOCK ? "Bloklash" : "Blokdan chiqarish"}
+                                        </Button>
+                                    </Space>
+                                )}
                             </div>
                         </Col>
                         <Col span={24}>
@@ -107,7 +180,9 @@ export default function CarDetail() {
                                 <Col span={12}>
                                     <BorderBox className='fd-col'>
                                         <StyledTextL1>Davlat raqami</StyledTextL1>
-                                        <StyledTextL2>{car?.plate_number ?? '-'}</StyledTextL2>
+                                        <StyledTextL2>
+                                            {formatPlate(car?.plate_number ?? '-')}
+                                        </StyledTextL2>
                                     </BorderBox>
                                 </Col>
                                 <Col span={12}>
@@ -132,21 +207,22 @@ export default function CarDetail() {
                                         <StyledTextL2>{car?.model ?? '-'}</StyledTextL2>
                                     </BorderBox>
                                 </Col>
-                                {(car?.vehicle_images && car.vehicle_images.length > 0) && (
-                                    <Col span={24}>
-                                        <BorderBox className='d-flex jc-start fw-wrap gap-12'>
-                                            {(car?.vehicle_images as BucketFile[])?.map((file) => (
-                                                <SmallImg 
-                                                    width={90} 
-                                                    height={90} 
-                                                    key={file.id} 
-                                                    src={file.image.file} 
-                                                    alt='car' 
+                                <Col span={24} className='mt-1'>
+                                    <BorderBox className='fd-col'>
+                                        <Row gutter={[0, 16]}>
+                                            <Col span={24}>
+                                                <StyledTextL2>Rasmlar</StyledTextL2>
+                                            </Col>
+                                            <Col span={24}>
+                                                <CustomUpload   
+                                                    fileList={imageFiles} 
+                                                    onChange={changeImage}
+                                                    onRemove={removeImage} 
                                                 />
-                                            ))}
-                                        </BorderBox>
-                                    </Col>
-                                )}
+                                            </Col>
+                                        </Row>
+                                    </BorderBox>
+                                </Col>
                                 <Col span={24}>
                                     <StyledLink to='/order/list' state={{ vehicle: carID }} className='ml-1'>
                                         Avtomobilga tegishli buyurtmalar

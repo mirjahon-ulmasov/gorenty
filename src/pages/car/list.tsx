@@ -4,6 +4,7 @@ import { Button, Space, Table, Col, Row, Typography, Popover, Checkbox } from 'a
 import type { ColumnsType, FilterValue, SorterResult } from 'antd/es/table/interface';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { isArray } from 'lodash';
+import { useAppSelector } from 'hooks/redux';
 import type { TableProps } from 'antd';
 import type { Car, CarBrand } from 'types/api';
 import { useFetchCarsQuery } from 'services';
@@ -11,7 +12,7 @@ import { DownloadIcon, FilterIcon, PlusIcon } from 'components/input';
 import { getColumnSearchProps } from 'utils/search';
 import { Status } from 'components/input';
 import { getStatus } from 'utils/index';
-import { CAR_STATUS } from 'types/index';
+import { CAR_STATUS, ROLE } from 'types/index';
 
 const { Title } = Typography
 
@@ -24,7 +25,8 @@ export default function Cars() {
     const { state } = useLocation()
     const [openFilter, setOpenFilter] = useState(false);
     const [sorters, setSorters] = useState<SorterResult<TableDTO>[]>([]);    
-    const [filters, setFilters] = useState<Record<string, FilterValue | null>>({})        
+    const [filters, setFilters] = useState<Record<string, FilterValue | null>>({})
+    const { user } = useAppSelector(state => state.auth)
 
     const { data: orders } = useFetchCarsQuery({
         investor: state?.investor,
@@ -177,13 +179,15 @@ export default function Cars() {
                         <Button icon={<DownloadIcon />}>
                             Yuklash
                         </Button>
-                        <Button 
-                            icon={<PlusIcon />}
-                            className='d-flex' 
-                            onClick={() => navigate('/car/add')} 
-                        >
-                            Yangi avtomobil qo’shish
-                        </Button>
+                        {user?.state === ROLE.ADMIN && (
+                            <Button 
+                                icon={<PlusIcon />}
+                                className='d-flex' 
+                                onClick={() => navigate('/car/add')} 
+                            >
+                                Yangi avtomobil qo’shish
+                            </Button>
+                        )}
                     </Space>
                 </Col>
             </Row>

@@ -3,12 +3,14 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Space, Table, Col, Row, Typography, Popover } from 'antd'
 import type { ColumnsType, FilterValue, SorterResult } from 'antd/es/table/interface'
+import { useAppSelector } from 'hooks/redux'
 import type { TableProps } from 'antd'
 import { isArray } from 'lodash'
 import { useFetchInvestorsQuery } from 'services/investor'
 import { getColumnSearchProps } from 'utils/search'
 import type { Investor } from 'types/api'
 import { DownloadIcon, FilterIcon, PlusIcon } from 'components/input'
+import { ROLE } from 'types/index'
 
 const { Title } = Typography
 
@@ -29,7 +31,8 @@ const content = (
 export default function Investors() {
     const navigate = useNavigate()
     const [sorters, setSorters] = useState<SorterResult<TableDTO>[]>([]);    
-    const [filters, setFilters] = useState<Record<string, FilterValue | null>>({}) 
+    const [filters, setFilters] = useState<Record<string, FilterValue | null>>({})
+    const { user } = useAppSelector(state => state.auth)
 
     const { data: investors } = useFetchInvestorsQuery({
         object_index: isArray(filters?.id) ? filters?.id[0].toString() : '',
@@ -131,9 +134,11 @@ export default function Investors() {
                         <Button icon={<DownloadIcon />}>
                             Yuklash
                         </Button>
-                        <Button onClick={() => navigate('/investor/add')} className='d-flex' icon={<PlusIcon />}>
-                            Yangi investor qo’shish
-                        </Button>
+                        {user.state === ROLE.ADMIN &&(
+                            <Button onClick={() => navigate('/investor/add')} className='d-flex' icon={<PlusIcon />}>
+                                Yangi investor qo’shish
+                            </Button>
+                        )}
                     </Space>
                 </Col>
             </Row>

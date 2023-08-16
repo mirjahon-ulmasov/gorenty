@@ -47,8 +47,8 @@ export default function EditClient() {
 
         form.setFieldsValue({
             ...client,
-            birth_date: dayjs(client?.birth_date),
-            branch: (client?.branch as TBranch)?.id
+            branch: (client?.branch as TBranch)?.id,
+            birth_date: client?.birth_date && dayjs(client.birth_date)
         })
         
         setClientRecords(client?.customer_records?.map(record => ({

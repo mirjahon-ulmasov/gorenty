@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Dayjs } from 'dayjs'
-import { CAR_STATUS, CLIENT_STATUS, ORDER_STATUS, ALL_STATUS } from '.'
+import { CAR_STATUS, CLIENT_STATUS, ORDER_STATUS, ALL_STATUS, ROLE } from '.'
 
 /* eslint-disable @typescript-eslint/no-namespace */
 export type ResultList<T> = Partial<{
@@ -68,7 +68,7 @@ export type SearchParams = Partial<{
 export declare namespace Account {
     export interface DTO {
         id: number
-        state: number
+        state: ROLE
         full_name: string
         phone_number: string
         token: {

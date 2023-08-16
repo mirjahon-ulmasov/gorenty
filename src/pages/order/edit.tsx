@@ -22,7 +22,7 @@ import {
     Payment, Status, StyledTextL1, StyledTextL2 
 } from 'components/input'
 import { useAppSelector } from 'hooks/redux';
-import { disabledDate, formatDate, getStatus } from 'utils/index';
+import { disabledDate, formatDate, formatPlate, getStatus } from 'utils/index';
 import { CAR_STATUS, CLIENT_STATUS, ORDER_STATUS } from 'types/index';
 import { BucketFile, Car, CarBrand, Client, Order, TBranch } from 'types/api';
 import { PlusIcon } from 'components/input';
@@ -555,7 +555,7 @@ export default function EditOrder() {
                                                     <div className='d-flex fd-col ai-start gap-4'>
                                                         <StyledTextL1>Avtomobil raqami</StyledTextL1>
                                                         <StyledTextL2>
-                                                            {car?.plate_number ?? '-'}
+                                                            {formatPlate(car?.plate_number ?? '-')}
                                                         </StyledTextL2>
                                                     </div>
                                                 </Col>

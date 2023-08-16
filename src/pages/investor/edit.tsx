@@ -33,8 +33,8 @@ export default function EditInvestor() {
 
         form.setFieldsValue({
             ...investor,
-            birth_date: dayjs(investor?.birth_date),
-            branch: (investor?.branch as TBranch)?.id
+            branch: (investor?.branch as TBranch)?.id,
+            birth_date: investor?.birth_date && dayjs(investor.birth_date)
         })
         if(investor?.investor_images) {
             setImageFiles((investor.investor_images as BucketFile[]).map(file => ({

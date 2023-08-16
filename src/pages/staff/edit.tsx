@@ -36,8 +36,8 @@ export default function EditStaff() {
 
         form.setFieldsValue({
             ...staff,
-            position: (staff?.position as TPosition)?.id,
-            branch: (staff?.branch as TBranch)?.id
+            branch: (staff?.branch as TBranch)?.id,
+            position: (staff?.position as TPosition)?.id
         })
         if(staff?.staff_images) {
             setImageFiles((staff?.staff_images as BucketFile[]).map(file => ({
