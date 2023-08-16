@@ -43,12 +43,14 @@ export const orderAPI = orderWithTags.injectEndpoints({
                 method: 'POST',
                 body: data,
             }),
+            invalidatesTags: ['Order'],
         }),
         deleteOrderImage: build.mutation<unknown, { id: number }>({
             query: ({ id }) => ({
                 url: `/order_image/${id}/`,
                 method: 'DELETE',
             }),
+            invalidatesTags: ['Order'],
         }),
 
         activateOrder: build.mutation<unknown, { id: number, mileage: number }>({

@@ -43,12 +43,14 @@ export const carAPI = carWithTags.injectEndpoints({
                 method: 'POST',
                 body: data,
             }),
+            invalidatesTags: ['Car'],
         }),
         deleteCarImage: build.mutation<unknown, { id: number }>({
             query: ({ id }) => ({
                 url: `/vehicle_image/${id}/`,
                 method: 'DELETE',
             }),
+            invalidatesTags: ['Car'],
         }),
 
         blockCar: build.mutation<unknown, number>({
