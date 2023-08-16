@@ -30,7 +30,7 @@ import {
 } from 'services';
 import { CLIENT_STATUS, ORDER_STATUS, ROLE } from 'types/index'
 import { disabledDate, formatPlate, getStatus } from 'utils/index'
-import { DocumentIcon, FileUploadIcon, PlusIcon } from 'components/input'
+import { DocumentIcon, PlusIcon } from 'components/input'
 import { Account, BucketFile, Car, CarBrand, Client, TBranch } from 'types/api';
 
 const { Title } = Typography

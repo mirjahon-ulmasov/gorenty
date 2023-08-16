@@ -134,7 +134,7 @@ export default function Investors() {
                         <Button icon={<DownloadIcon />}>
                             Yuklash
                         </Button>
-                        {user.state === ROLE.ADMIN &&(
+                        {user?.state === ROLE.ADMIN &&(
                             <Button onClick={() => navigate('/investor/add')} className='d-flex' icon={<PlusIcon />}>
                                 Yangi investor qo’shish
                             </Button>
