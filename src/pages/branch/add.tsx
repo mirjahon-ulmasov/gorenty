@@ -30,7 +30,7 @@ export default function AddBranch() {
             .unwrap()
             .then(() => {
                 toast.success("Филиал успешно создан")
-                navigate('/branch/list')
+                navigate('/admin/branch/list')
             })
             .catch(() => toast.error("Не удалось создать филиал"))
     };
@@ -43,7 +43,7 @@ export default function AddBranch() {
         <>
             <CustomBreadcrumb
                 items={[
-                    { title: 'Filiallar', link: '/branch/list' },
+                    { title: 'Filiallar', link: '/admin/branch/list' },
                     { title: 'Yangi filial qo’shish' },
                 ]}
             />
@@ -171,7 +171,7 @@ export default function AddBranch() {
                         >
                             Yangi filial ochish
                         </Button>
-                        <Button size='large' onClick={() => navigate('/branch/list')}>
+                        <Button size='large' onClick={() => navigate('/admin/branch/list')}>
                             Bekor qilish
                         </Button>
                     </Space>

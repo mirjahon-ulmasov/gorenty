@@ -24,7 +24,7 @@ export default function CarDetail() {
         <>
             <CustomBreadcrumb
                 items={[
-                    { title: 'Filiallar', link: '/branch/list' },
+                    { title: 'Filiallar', link: '/admin/branch/list' },
                     { title: branch?.title ?? '-' },
                 ]}
             />
@@ -39,7 +39,7 @@ export default function CarDetail() {
                                         size="large"
                                         onClick={() =>
                                             navigate(
-                                                '/branch/'.concat(
+                                                '/admin/branch/'.concat(
                                                     branchID?.toString() as string,
                                                     '/edit'
                                                 )

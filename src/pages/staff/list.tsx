@@ -128,7 +128,7 @@ export default function StaffList() {
     const rowProps = (record: TableDTO) => {
         return {
             onClick: () =>
-                navigate('/staff/'
+                navigate('/admin/staff/'
                     .concat((record.id as number).toString(), '/detail')
                 ),
         }
@@ -148,7 +148,7 @@ export default function StaffList() {
                         <Button icon={<DownloadIcon />}>
                             Yuklash
                         </Button>
-                        <Button onClick={() => navigate('/staff/add')} className='d-flex' icon={<PlusIcon />}>
+                        <Button onClick={() => navigate('/admin/staff/add')} className='d-flex' icon={<PlusIcon />}>
                             Yangi ishchi qo’shish
                         </Button>
                     </Space>

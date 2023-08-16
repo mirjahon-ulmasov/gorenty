@@ -101,7 +101,7 @@ export default function EditStaff() {
             .unwrap()
             .then(() => {
                 toast.success("Сотрудник успешно изменен")
-                navigate(`/staff/${staffID}/detail`)
+                navigate(`/admin/staff/${staffID}/detail`)
             })
             .catch(() => toast.error("Не удалось изменить сотрудник"))
     }
@@ -114,8 +114,8 @@ export default function EditStaff() {
         <>
             <CustomBreadcrumb
                 items={[
-                    { title: 'Ishchilar', link: '/staff/list' },
-                    { title: staff?.full_name ?? '-', link: `/staff/${staffID}/detail` },
+                    { title: 'Ishchilar', link: '/admin/staff/list' },
+                    { title: staff?.full_name ?? '-', link: `/admin/staff/${staffID}/detail` },
                     { title: 'Ma’lumotlarni o’zgartirish' }
                 ]}
             />
@@ -282,7 +282,7 @@ export default function EditStaff() {
                         >
                             O’zgarishlarn saqlash
                         </Button>
-                        <Button size='large' onClick={() => navigate(`/staff/${staffID}/detail`)}>
+                        <Button size='large' onClick={() => navigate(`/admin/staff/${staffID}/detail`)}>
                             Bekor qilish
                         </Button>
                     </Space>

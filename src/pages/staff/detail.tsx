@@ -29,7 +29,7 @@ export default function StaffDetail() {
         <>
             <CustomBreadcrumb
                 items={[
-                    { title: 'Ishchilar', link: '/staff/list' },
+                    { title: 'Ishchilar', link: '/admin/staff/list' },
                     { title: staff?.full_name ?? '-' },
                 ]}
             />
@@ -44,7 +44,7 @@ export default function StaffDetail() {
                                     size="large"
                                     onClick={() =>
                                         navigate(
-                                            '/staff/'.concat(
+                                            '/admin/staff/'.concat(
                                                 staffID?.toString() as string,
                                                 '/edit'
                                             )

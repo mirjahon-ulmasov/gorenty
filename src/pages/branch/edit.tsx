@@ -97,7 +97,7 @@ export default function EditBranch() {
             .unwrap()
             .then(() => {
                 toast.success("Филиал успешно изменен")
-                navigate('/branch/list')
+                navigate('/admin/branch/list')
             })
             .catch(() => toast.error("Не удалось изменить филиал"))
     };
@@ -110,8 +110,8 @@ export default function EditBranch() {
         <>
             <CustomBreadcrumb
                 items={[
-                    { title: 'Filiallar', link: '/branch/list' },
-                    { title: branch?.title ?? '-', link: `/branch/${branchID}/detail` },
+                    { title: 'Filiallar', link: '/admin/branch/list' },
+                    { title: branch?.title ?? '-', link: `/admin/branch/${branchID}/detail` },
                     { title: 'Ma’lumotlarni o’zgartirish' },
                 ]}
             />
@@ -241,7 +241,7 @@ export default function EditBranch() {
                         >
                             O’zgarishlarn saqlash
                         </Button>
-                        <Button size='large' onClick={() => navigate(`/branch/${branchID}/detail`)} >
+                        <Button size='large' onClick={() => navigate(`/admin/branch/${branchID}/detail`)} >
                             Bekor qilish
                         </Button>
                     </Space>

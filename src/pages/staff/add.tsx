@@ -31,7 +31,7 @@ export default function AddStaff() {
             .unwrap()
             .then(() => {
                 toast.success("Сотрудник успешно создан")
-                navigate('/staff/list')
+                navigate('/admin/staff/list')
             })
             .catch(() => toast.error("Не удалось создать сотрудник"))
     };
@@ -44,7 +44,7 @@ export default function AddStaff() {
         <>
             <CustomBreadcrumb
                 items={[
-                    { title: 'Ishchilar', link: '/staff/list' },
+                    { title: 'Ishchilar', link: '/admin/staff/list' },
                     { title: 'Yangi ishchi qo’shish' },
                 ]}
             />
@@ -209,7 +209,7 @@ export default function AddStaff() {
                         >
                             Yangi ishchi qo’shish
                         </Button>
-                        <Button size='large' onClick={() => navigate('/staff/list')}>
+                        <Button size='large' onClick={() => navigate('/admin/staff/list')}>
                             Bekor qilish
                         </Button>
                     </Space>

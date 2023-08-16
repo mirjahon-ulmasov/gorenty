@@ -12,7 +12,7 @@ export default function Branches() {
     const { data: branches } = useFetchBranchesQuery({})
 
     function navigateToDetail(id: unknown) {
-        navigate('/branch/'.concat((id as number).toString(), '/detail'))
+        navigate('/admin/branch/'.concat((id as number).toString(), '/detail'))
     }
 
     function navigateToOrders(event: React.MouseEvent<HTMLElement, MouseEvent>, id: unknown) {
@@ -27,7 +27,7 @@ export default function Branches() {
                     <Title level={3}>Filiallar</Title>
                 </Col>
                 <Col>
-                    <Button icon={<PlusIcon />} className="d-flex" onClick={() => navigate('/branch/add')}>
+                    <Button icon={<PlusIcon />} className="d-flex" onClick={() => navigate('/admin/branch/add')}>
                         Yangi filial qo’shish
                     </Button>
                 </Col>

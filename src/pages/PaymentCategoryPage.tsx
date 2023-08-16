@@ -58,7 +58,7 @@ export function PaymentCategoryPage() {
         <>
             <CustomBreadcrumb
                 items={[
-                    { title: 'To’lov kategoriyalari', link: '/payment-category' },
+                    { title: 'To’lov kategoriyalari', link: '/admin/payment-category' },
                     { title: 'To’lov kategoriyalari ro’yxati' },
                 ]}
             />
