@@ -1,0 +1,30 @@
+[
+    {
+        "id": 1,
+        "object_index": "2023-07-11",
+        "vehicle_plate": "01 M 976 QB",
+        "end_date": "11:32 , 12.03.23",
+        "rest_day": 24
+    },
+    {
+        "id": 2,
+        "object_index": "2023-07-31",
+        "vehicle_plate": "01 M 976 QB",
+        "end_date": "11:32 , 12.03.23",
+        "rest_day": 6
+    },
+    {
+        "id": 3,
+        "object_index": "2023-07-17",
+        "vehicle_plate": "01 M 976 QB",
+        "end_date": "11:32 , 12.03.23",
+        "rest_day": 9
+    },
+    {
+        "id": 4,
+        "object_index": "2023-07-26",
+        "vehicle_plate": "01 M 976 QB",
+        "end_date": "11:32 , 12.03.23",
+        "rest_day": 15
+    }
+]

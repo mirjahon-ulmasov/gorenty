@@ -93,3 +93,19 @@ export const SmallImg = styled(Image)<{ w?: number; h?: number }>`
     object-fit: cover;
     object-position: center;
 `
+
+export const Card = styled.div<{ w?: number, p?: string, gap?: number, ai?: string}>`
+    display: flex;
+    width: ${props => props.w ? `${props.w}px` : 'auto'};
+    padding: ${props => props.p ? props.p : '24px 32px'};
+    flex-direction: column;
+    gap: ${props => props.gap ? `${props.gap}px` : '8px'};
+    align-items: ${props => props.ai ? props.ai : 'flex-start'};
+    border-radius: 16px;
+    background: #FFF3EB;
+    transition: 0.2s ease-in;
+
+    &:hover {
+        background: #FFD9C2;
+    }
+`

@@ -1,0 +1,52 @@
+[
+    {
+        "label": "Mon.",
+        "type": "Ustanovka",
+        "value": 2800
+    },
+    {
+        "label": "Mon.",
+        "type": "Profilaktika",
+        "value": 2260
+    },
+    {
+        "label": "Tues.",
+        "type": "Ustanovka",
+        "value": 1800
+    },
+    {
+        "label": "Tues.",
+        "type": "Profilaktika",
+        "value": 1300
+    },
+    {
+        "label": "Wed.",
+        "type": "Ustanovka",
+        "value": 950
+    },
+    {
+        "label": "Wed.",
+        "type": "Profilaktika",
+        "value": 900
+    },
+    {
+        "label": "Thur.",
+        "type": "Ustanovka",
+        "value": 500
+    },
+    {
+        "label": "Thur.",
+        "type": "Profilaktika",
+        "value": 390
+    },
+    {
+        "label": "Fri.",
+        "type": "Ustanovka",
+        "value": 170
+    },
+    {
+        "label": "Fri.",
+        "type": "Profilaktika",
+        "value": 100
+    }
+]

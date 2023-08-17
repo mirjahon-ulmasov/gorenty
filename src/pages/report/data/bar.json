@@ -1,0 +1,27 @@
+[
+    {
+        "label": "Mon.",
+        "type": "Ustanovka",
+        "value": 2800
+    },
+    {
+        "label": "Tues.",
+        "type": "Ustanovka",
+        "value": 1800
+    },
+    {
+        "label": "Wed.",
+        "type": "Ustanovka",
+        "value": 950
+    },
+    {
+        "label": "Thur.",
+        "type": "Ustanovka",
+        "value": 500
+    },
+    {
+        "label": "Fri.",
+        "type": "Ustanovka",
+        "value": 170
+    }
+]
