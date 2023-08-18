@@ -14,7 +14,7 @@ interface TableDTO {
     key: string;
 }
 
-export default function Toning() {
+export default function Insurance() {
     const [sorters, setSorters] = useState<SorterResult<TableDTO>[]>([]);    
     const [filters, setFilters] = useState<Record<string, FilterValue | null>>({})
     
@@ -89,11 +89,11 @@ export default function Toning() {
             <CustomBreadcrumb
                 items={[
                     { title: 'Moliyaviy hisobotlar', link: '/admin/report' },
-                    { title: 'Tonirovka' },
+                    { title: 'Sug’urta' },
                 ]}
             />
             <div className='d-flex jc-sb ai-center mt-1 mb-2'>
-                <Title level={3}>Tonirovka</Title>
+                <Title level={3}>Sug’urta</Title>
                 <RangePicker />
             </div>
             <Table

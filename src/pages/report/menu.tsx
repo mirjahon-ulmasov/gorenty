@@ -30,7 +30,7 @@ export default function Menu() {
                         <RToningIcon />
                         <StyledTextL2>Tonirovka</StyledTextL2>
                     </Card>
-                    <Card gap={12} p='48px 24px' w={250} ai='center' onClick={() => navigate("orders")}>
+                    <Card gap={12} p='48px 24px' w={250} ai='center' onClick={() => navigate("insurance")}>
                         <RInsuranceIcon />
                         <StyledTextL2>Sug’urta</StyledTextL2>
                     </Card>

@@ -56,8 +56,8 @@ export default function Orders() {
     ]
 
     // ---------------- Table Change ----------------
-    const handleChange: TableProps<TableDTO>['onChange'] = (_pagination, _filters, sorter) => {
-        setFilters(_filters);
+    const handleChange: TableProps<TableDTO>['onChange'] = (_pagination, filters, sorter) => {
+        setFilters(filters);
 
         if (!sorter) return;
 
