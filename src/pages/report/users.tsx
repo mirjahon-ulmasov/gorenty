@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Typography, Row, Col, DatePicker, Space, Select, Divider } from 'antd'
+import { Typography, Row, Col, DatePicker, Divider } from 'antd'
 import { Line, Bar } from '@ant-design/plots'
 import { CustomBreadcrumb } from 'components/input'
 import { getBarConfig, getLineConfig } from 'utils/config'
@@ -8,7 +8,7 @@ import barData from "./data/bar.json"
 const { Title } = Typography
 const { RangePicker } = DatePicker
 
-export default function Incomes() {
+export default function Users() {
     const [lineData, setLineData] = useState([])
 
     useEffect(() => {
@@ -34,15 +34,15 @@ export default function Incomes() {
             <CustomBreadcrumb
                 items={[
                     { title: 'Moliyaviy hisobotlar', link: '/admin/report' },
-                    { title: 'Daromad' },
+                    { title: 'Gorentyga qo’shilganlar' },
                 ]}
             />
-            <Title level={3}>Daromad</Title>
+            <Title level={3}>Gorentyga qo’shilganlar</Title>
             <Row gutter={[0, 32]}>
                 <Col span={24}>
                     <div className='d-flex jc-sb ai-center mt-2'>
                         <Title level={5}>
-                            Vaqt bo’yicha barcha Gorenty daromadi
+                            Vaqt bo’yicha barcha Gorentyga qo’shilganlar
                         </Title>
                         <RangePicker />
                     </div>
@@ -50,40 +50,10 @@ export default function Incomes() {
                 </Col>
                 <Divider style={{ margin: '10px 0'}}/>
                 <Col span={24}>
-                    <Title level={5}>
-                        Kategoriya bo’yicha keltirilgan daromad
-                    </Title>
                     <div className='d-flex jc-sb ai-center mt-2'>
-                        <Space size='middle'>
-                            <Select
-                                defaultValue="lucy"
-                                style={{ width: 120 }}
-                                allowClear
-                                options={[{ value: 'lucy', label: 'Lucy' }]}
-                            />
-                            <Select
-                                defaultValue="lucy"
-                                style={{ width: 120 }}
-                                allowClear
-                                options={[{ value: 'lucy', label: 'Lucy' }]}
-                            />
-                        </Space>
-                        <RangePicker />
-                    </div>
-                    <Line {...lineConfig} className='mt-2' />
-                </Col>
-                <Divider style={{ margin: '10px 0'}}/>
-                <Col span={24}>
-                    <Title level={5}>
-                        Daromad keltirish reytingi
-                    </Title>
-                    <div className='d-flex jc-sb ai-center mt-2'>
-                        <Select
-                            defaultValue="lucy"
-                            style={{ width: 120 }}
-                            allowClear
-                            options={[{ value: 'lucy', label: 'Lucy' }]}
-                        />
+                        <Title level={5}>
+                            Gorentyga qo’shilganlar reytingi
+                        </Title>
                         <RangePicker />
                     </div>
                     <Bar color='#1BBE72' {...barConfig} className='mt-2' />

@@ -1,14 +1,13 @@
-import { Typography, DatePicker, TableProps, Table } from 'antd'
+import { Typography, TableProps, Table, Button } from 'antd'
 import type { ColumnsType, FilterValue, SorterResult } from 'antd/es/table/interface';
-import { CustomBreadcrumb } from 'components/input'
+import { CustomBreadcrumb, DownloadIcon } from 'components/input'
 import { useMemo, useState } from 'react';
 import { getColumnSearchProps } from 'utils/search';
-import data from "./data/table.json"
 import { isArray } from 'lodash';
 import { useFetchOrdersQuery } from 'services/order';
+import data from "./data/table.json"
 
 const { Title } = Typography
-const { RangePicker } = DatePicker
 
 interface TableDTO {
     key: string;
@@ -71,7 +70,7 @@ export default function Insurance() {
             ...getColumnSearchProps('vehicle_plate', 'Avtomobil'),
         },
         {
-            title: 'Tonirovka tugash sanasi',
+            title: 'Sug’urta tugash sanasi',
             dataIndex: 'end_date',
             key: 'end_date',
             sorter: true,
@@ -94,7 +93,9 @@ export default function Insurance() {
             />
             <div className='d-flex jc-sb ai-center mt-1 mb-2'>
                 <Title level={3}>Sug’urta</Title>
-                <RangePicker />
+                <Button icon={<DownloadIcon />}>
+                    Yuklash
+                </Button>
             </div>
             <Table
                 columns={columns}

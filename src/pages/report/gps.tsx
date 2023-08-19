@@ -2,8 +2,8 @@ import { Typography, TableProps, Table, Button } from 'antd'
 import type { ColumnsType, FilterValue, SorterResult } from 'antd/es/table/interface';
 import { CustomBreadcrumb, DownloadIcon } from 'components/input'
 import { useMemo, useState } from 'react';
-import { getColumnSearchProps } from 'utils/search';
 import { isArray } from 'lodash';
+import { getColumnSearchProps } from 'utils/search';
 import { useFetchOrdersQuery } from 'services/order';
 import data from "./data/table.json"
 
@@ -13,7 +13,7 @@ interface TableDTO {
     key: string;
 }
 
-export default function Toning() {
+export default function GPSReport() {
     const [sorters, setSorters] = useState<SorterResult<TableDTO>[]>([]);    
     const [filters, setFilters] = useState<Record<string, FilterValue | null>>({})
     
@@ -70,13 +70,20 @@ export default function Toning() {
             ...getColumnSearchProps('vehicle_plate', 'Avtomobil'),
         },
         {
-            title: 'Tonirovka tugash sanasi',
+            title: 'GPS qo’yilgan sana',
             dataIndex: 'end_date',
             key: 'end_date',
             sorter: true,
         },
         {
-            title: 'Qolgan kun',
+            title: 'Investor',
+            dataIndex: "vehicle_plate",
+            key: 'vehicle_plate',
+            ellipsis: true,
+            ...getColumnSearchProps('vehicle_plate', 'Investor'),
+        },
+        {
+            title: 'Summa',
             dataIndex: 'rest_day',
             key: 'rest_day',
             sorter: true,
@@ -88,11 +95,11 @@ export default function Toning() {
             <CustomBreadcrumb
                 items={[
                     { title: 'Moliyaviy hisobotlar', link: '/admin/report' },
-                    { title: 'Tonirovka' },
+                    { title: 'GPS' },
                 ]}
             />
             <div className='d-flex jc-sb ai-center mt-1 mb-2'>
-                <Title level={3}>Tonirovka</Title>
+                <Title level={3}>GPS</Title>
                 <Button icon={<DownloadIcon />}>
                     Yuklash
                 </Button>

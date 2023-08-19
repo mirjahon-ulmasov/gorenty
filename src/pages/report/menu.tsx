@@ -34,19 +34,19 @@ export default function Menu() {
                         <RInsuranceIcon />
                         <StyledTextL2>Sug’urta</StyledTextL2>
                     </Card>
-                    <Card gap={12} p='48px 24px' w={250} ai='center' onClick={() => navigate("orders")}>
+                    <Card gap={12} p='48px 24px' w={250} ai='center' onClick={() => navigate("oil")}>
                         <ROilIcon />
                         <StyledTextL2>Moy</StyledTextL2>
                     </Card>
-                    <Card gap={12} p='48px 24px' w={250} ai='center' onClick={() => navigate("orders")}>
+                    <Card gap={12} p='48px 24px' w={250} ai='center' onClick={() => navigate("outgoings")}>
                         <ROutgoingsIcon />
                         <StyledTextL2>Chiqim/harajat</StyledTextL2>
                     </Card>
-                    <Card gap={12} p='48px 24px' w={250} ai='center' onClick={() => navigate("orders")}>
+                    <Card gap={12} p='48px 24px' w={250} ai='center' onClick={() => navigate("users")}>
                         <RUserIcon />
                         <StyledTextL2>Gorentyga qo’shilganlar</StyledTextL2>
                     </Card>
-                    <Card gap={12} p='48px 24px' w={250} ai='center' onClick={() => navigate("orders")}>
+                    <Card gap={12} p='48px 24px' w={250} ai='center' onClick={() => navigate("gps")}>
                         <RGPSIcon />
                         <StyledTextL2>GPS otchet</StyledTextL2>
                     </Card>

@@ -1,15 +1,14 @@
-import { Typography, Row, Col, DatePicker, Space, Select, Divider } from 'antd'
-import { Line } from '@ant-design/plots'
-import { Bar } from '@ant-design/plots'
-import { CustomBreadcrumb } from 'components/input'
 import { useEffect, useMemo, useState } from 'react'
+import { Typography, Row, Col, DatePicker, Space, Select, Divider } from 'antd'
+import { Line, Bar } from '@ant-design/plots'
+import { CustomBreadcrumb } from 'components/input'
 import { getBarConfig, getLineConfig } from 'utils/config'
 import barData from "./data/bar.json"
 
 const { Title } = Typography
 const { RangePicker } = DatePicker
 
-export default function Orders() {
+export default function Outgoings() {
     const [lineData, setLineData] = useState([])
 
     useEffect(() => {
@@ -35,15 +34,15 @@ export default function Orders() {
             <CustomBreadcrumb
                 items={[
                     { title: 'Moliyaviy hisobotlar', link: '/admin/report' },
-                    { title: 'Buyurtmalar soni' },
+                    { title: 'Qilingan harajatlar' },
                 ]}
             />
-            <Title level={3}>Buyurtmalar soni</Title>
+            <Title level={3}>Qilingan harajatlar</Title>
             <Row gutter={[0, 32]}>
                 <Col span={24}>
                     <div className='d-flex jc-sb ai-center mt-2'>
                         <Title level={5}>
-                            Vaqt bo’yicha barcha buyurtmalar soni
+                            Vaqt bo’yicha qilingan harajatlar 
                         </Title>
                         <RangePicker />
                     </div>
@@ -52,7 +51,7 @@ export default function Orders() {
                 <Divider style={{ margin: '10px 0'}}/>
                 <Col span={24}>
                     <Title level={5}>
-                        Kategoriya bo’yicha barcha buyurtmalar soni
+                        Kategoriya bo’yicha keltirilgan daromad
                     </Title>
                     <div className='d-flex jc-sb ai-center mt-2'>
                         <Space size='middle'>
@@ -76,7 +75,7 @@ export default function Orders() {
                 <Divider style={{ margin: '10px 0'}}/>
                 <Col span={24}>
                     <Title level={5}>
-                        Buyurtmalar soni reytingi
+                        Daromad keltirish reytingi
                     </Title>
                     <div className='d-flex jc-sb ai-center mt-2'>
                         <Select
