@@ -1,6 +1,5 @@
 import { Typography, Row, Col, DatePicker, Space, Select, Divider } from 'antd'
-import { Line } from '@ant-design/plots'
-import { Bar } from '@ant-design/plots'
+import { Line, Bar } from '@ant-design/plots'
 import { CustomBreadcrumb } from 'components/input'
 import { useEffect, useMemo, useState } from 'react'
 import { getBarConfig, getLineConfig } from 'utils/config'
