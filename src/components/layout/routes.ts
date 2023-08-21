@@ -39,13 +39,13 @@ const routes: Route[] = [
         roles: [ROLE.ADMIN],
     },
     {
-        path: '/debt',
+        path: '/admin/debt',
         title: 'Qarzlar',
         icon: SDebtIcon,
         roles: [ROLE.ADMIN, ROLE.OPERATOR],
     },
     {
-        path: '/in-out',
+        path: '/admin/in-out',
         title: 'Kirim-chiqim',
         icon: SInOutIcon,
         roles: [ROLE.ADMIN, ROLE.OPERATOR],

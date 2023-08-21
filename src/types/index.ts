@@ -35,4 +35,14 @@ export enum ORDER_STATUS {
     CANCELLED,
 }
 
-export type ALL_STATUS = CLIENT_STATUS | CAR_STATUS | ORDER_STATUS
+export enum DEBT {
+    GORENTY_DEBTS = 1,
+    GORENTY_OWES
+}
+
+export enum EXCHANGE {
+    IN = 1,
+    OUT
+}
+
+export type ALL_STATUS = CLIENT_STATUS | CAR_STATUS | ORDER_STATUS | DEBT | EXCHANGE

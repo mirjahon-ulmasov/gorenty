@@ -1,8 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import {
     Client, Investor, Car, Order, ProtectedRoute, 
-    NotFound, PaymentCategoryPage, Login, 
-    CurrencyPage, Staff, Branch, Report
+    NotFound, PaymentCategoryPage, Login, DebtPage,
+    CurrencyPage, Staff, Branch, Report, InOut
 } from 'pages';
 import { ROLE } from 'types/index';
 
@@ -21,6 +21,8 @@ function App() {
                     <Route path="staff/*" element={<Staff />} />
                     <Route path="branch/*" element={<Branch />} />
                     <Route path="report/*" element={<Report />} />
+                    <Route path="in-out/*" element={<InOut />} />
+                    <Route path="debt" element={<DebtPage />} />
                     <Route path="payment-category" element={<PaymentCategoryPage />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />

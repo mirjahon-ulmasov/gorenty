@@ -44,6 +44,11 @@ export const Label = styled.div`
     background: rgba(27, 16, 5, 0.02);
 `
 
+export const LargeLabel = styled(Label)`
+    border-radius: 8px;
+    padding: 24px;
+`
+
 export const BorderBox = styled.div<{ bg?: string; p?: string; gap?: string }>`
     display: flex;
     justify-content: space-between;
