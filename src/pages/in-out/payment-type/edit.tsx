@@ -18,7 +18,7 @@ import { EXCHANGE } from 'types/index';
 const { Title } = Typography
 
 
-export default function AddInOut() {
+export default function EditPaymentType() {
     const navigate = useNavigate();
     const [exchangeStatus, setExchangeStatus] = useState<EXCHANGE>(EXCHANGE.IN)
 
@@ -51,10 +51,11 @@ export default function AddInOut() {
             <CustomBreadcrumb
                 items={[
                     { title: 'Kirim-chiqim', link: '/admin/in-out' },
-                    { title: 'Kirim-chiqim qilish' },
+                    { title: 'To’lov turlari', link: '/admin/in-out/payment-type' },
+                    { title: 'Yangi to’lov turi qo’shish' },
                 ]}
             />
-            <Title level={3}>Kirim-chiqim qilish</Title>
+            <Title level={3}>Yangi to’lov turi qo’shish</Title>
             <Form
                 autoComplete="off"
                 style={{ maxWidth: 460, marginTop: '1rem' }}

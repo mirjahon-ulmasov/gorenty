@@ -1,5 +1,5 @@
 import dayjs, { Dayjs } from 'dayjs'
-import { CAR_STATUS, CLIENT_STATUS, ORDER_STATUS, ALL_STATUS } from 'types/index'
+import { CAR_STATUS, CLIENT_STATUS, ORDER_STATUS, ALL_STATUS, PAYMENT_METHOD } from 'types/index'
 
 export type format = 'client' | 'car' | 'order'
 
@@ -70,3 +70,11 @@ export const disabledDate = (current: Dayjs): boolean => {
     if (!current) return false;
     return current.isBefore(dayjs().subtract(1, 'day'))
 };
+
+export function getPaymentMethods() {
+    return [
+        { value: PAYMENT_METHOD.CASH, label: 'Naqd' },
+        { value: PAYMENT_METHOD.PLASTIC_CARD, label: 'Plastik Karta' },
+        { value: PAYMENT_METHOD.BANK_ACCOUNT, label: 'Bank hisob raqami' },
+    ]
+}

@@ -45,4 +45,10 @@ export enum EXCHANGE {
     OUT
 }
 
+export enum PAYMENT_METHOD {
+    CASH = 1,
+    PLASTIC_CARD,
+    BANK_ACCOUNT
+}
+
 export type ALL_STATUS = CLIENT_STATUS | CAR_STATUS | ORDER_STATUS | DEBT | EXCHANGE

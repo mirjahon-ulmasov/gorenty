@@ -6,7 +6,7 @@ const { Text } = Typography
 
 export const StyledTextL1 = styled(Text)<{ fs?: number }>`
     font-weight: 400;
-    color: rgba(27, 16, 5, 0.88);
+    color: var(--black-88);
     font-size: ${props => (props.fs ? `${props.fs}px` : '14px')};
     line-height: ${props => (props.fs ? `${props.fs + 8}px` : '22px')};
 `
@@ -17,14 +17,15 @@ export const StyledTextL2 = styled(Text)<{ fs?: number }>`
     line-height: ${props => (props.fs ? `${props.fs + 8}px` : '24px')};
 `
 
-export const StyledLink = styled(Link)`
-    color: #ff561f;
+export const StyledLink = styled(Link)<{ color?: string, underline?: number }>`
     font-size: 16px;
     font-weight: 400;
     line-height: 24px;
+    color: ${props => (props.color ? props.color : '#ff561f')} ;
+    text-decoration-line: ${props => props.underline ? 'underline' : 'none'};
 
     &:hover {
-        color: #eb3a00;
+        color: ${props => (props.color ? props.color : '#eb3a00')} ;
     }
 `
 
@@ -33,7 +34,7 @@ export const IDTag = styled.div`
     border-radius: 4px;
     padding: 5px 8px;
     min-width: max-content;
-    color: rgba(27, 16, 5, 0.88);
+    color: var(--black-88);
 `
 
 export const Label = styled.div`

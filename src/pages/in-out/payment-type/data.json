@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "title": "Asakabank",
+        "number": "545987439856349845",
+        "owner": null,
+        "issue_date": null
+    },
+    {
+        "id": 2,
+        "title": "Plastik karta Uzcard",
+        "number": "8600 8883 3323 4556",
+        "owner": "Kamolov Jasur",
+        "issue_date": "10/33"
+    },
+    {
+        "id": 3,
+        "title": "Plastik karta Humo",
+        "number": "9840 7687 6664 2333 ",
+        "owner": "Ahmedov Mahmud",
+        "issue_date": "10/33"
+    }
+]

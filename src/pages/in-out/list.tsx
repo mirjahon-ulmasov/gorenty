@@ -161,7 +161,7 @@ export default function InOuts() {
                         <Button 
                             icon={<PaymentCardIcon />}
                             className='d-flex' 
-                            onClick={() => navigate('/admin/in-out/payment-types')} 
+                            onClick={() => navigate('/admin/in-out/payment-type')} 
                         >
                             To’lov turlari
                         </Button>
