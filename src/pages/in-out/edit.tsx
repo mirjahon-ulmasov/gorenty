@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { 
     Button, Col, Form, Input, InputNumber, 
     Row, Space, Typography 
@@ -19,6 +19,7 @@ const { Title } = Typography
 
 
 export default function EditInOut() {
+    const { inOutID } = useParams()
     const navigate = useNavigate();
     const [exchangeStatus, setExchangeStatus] = useState<EXCHANGE>(EXCHANGE.IN)
 
@@ -51,7 +52,7 @@ export default function EditInOut() {
             <CustomBreadcrumb
                 items={[
                     { title: 'Kirim-chiqim', link: '/admin/in-out' },
-                    { title: 'K-14212', link: '/admin/in-out/1' },
+                    { title: 'K-14212', link: `/admin/in-out/${inOutID}/detail` },
                     { title: 'Ma’lumotlarni o’zgartirish' },
                 ]}
             />
@@ -155,6 +156,31 @@ export default function EditInOut() {
                                 {
                                     required: true,
                                     message: 'Iltimos to’lov kategoriyasi tanlang',
+                                },
+                            ]}
+                        >
+                            <CustomSelect
+                                allowClear
+                                size="large"
+                                placeholder='Tanlang'
+                                loading={paymentCategoriesLoading}
+                                options={paymentCategories?.map(category => ({
+                                    value: category.id,
+                                    label: category.title
+                                }))}
+                            ></CustomSelect>
+                        </Form.Item>
+                    </Col>
+                    <Col span={24}>
+                        <Form.Item
+                            name="staff"
+                            label="Ishchi"
+                            labelCol={{ span: 24 }}
+                            wrapperCol={{ span: 24 }}
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Iltimos ishchini tanlang',
                                 },
                             ]}
                         >

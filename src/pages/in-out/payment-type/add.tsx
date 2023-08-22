@@ -138,7 +138,7 @@ export default function AddPaymentType() {
                         </Form.Item>
                     </Col>
                 </Row>
-                <div style={{ marginTop: '1rem' }}>
+                <div style={{ marginTop: '2rem' }}>
                     <Space size='large'>
                         <Button 
                             size='large' 

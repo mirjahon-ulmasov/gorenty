@@ -1,16 +1,14 @@
 import { useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Button, Space, Table, Col, Row, Typography, Popover, Checkbox } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { Button, Space, Table, Col, Row, Typography } from 'antd';
 import type { ColumnsType, FilterValue, SorterResult } from 'antd/es/table/interface';
-import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { isArray } from 'lodash';
 import type { TableProps } from 'antd';
 import type { Order } from 'types/api';
 import { useFetchOrdersQuery } from 'services';
 import { getColumnSearchProps } from 'utils/search';
 import { 
-    DownloadIcon, FilterIcon, LargeLabel, 
-    PaymentCardIcon, 
+    DownloadIcon, LargeLabel, PaymentCardIcon, 
     PlusIcon, StyledTextL1, StyledTextL2 
 } from 'components/input';
 
@@ -22,15 +20,10 @@ interface TableDTO extends Order.DTO {
 
 export default function InOuts() {
     const navigate = useNavigate()
-    const { state } = useLocation()
-    const [openFilter, setOpenFilter] = useState(false);
     const [sorters, setSorters] = useState<SorterResult<TableDTO>[]>([]);    
     const [filters, setFilters] = useState<Record<string, FilterValue | null>>({})        
 
     const { data: orders } = useFetchOrdersQuery({
-        customer: state?.customer,
-        vehicle: state?.vehicle,
-        investor: state?.investor,
         object_index: isArray(filters?.id) ? filters?.id[0].toString() : '',
         customer_full_name: isArray(filters?.client) ? filters?.client[0].toString() : '',
         vehicle_plate_number: isArray(filters?.plate_number) ? filters?.plate_number[0].toString() : '',
@@ -68,33 +61,6 @@ export default function InOuts() {
         })
     };
 
-    // ----------- Filter -----------
-    const onChange = (e: CheckboxChangeEvent) => {
-        console.log(`checked = ${e.target.checked}`);
-    };
-    function toggleFilter(newOpen: boolean) {
-        setOpenFilter(newOpen);
-    }
-    const closeFilter = () => {
-        setOpenFilter(false);
-    };
-    const FilterContent = (
-        <div className='d-flex fd-col gap-8 ai-start' style={{ padding: '12px 12px 6px' }}>
-            <Checkbox onChange={onChange}>Remont - bajarilganlar</Checkbox>
-            <Checkbox onChange={onChange}>Remont - bajarilmaganlar</Checkbox>
-            <Checkbox onChange={onChange}>Muddati o’tib ketganlar</Checkbox>
-            <Checkbox onChange={onChange}>Jarimasi mavjudlar</Checkbox>
-            <div style={{ marginTop: 10 }}>
-                <Space size='small'>
-                    <Button type='primary' size='middle' htmlType='submit'>Tasdiqlash</Button>
-                    <Button size='middle' onClick={closeFilter}>Bekor qilish</Button>
-                </Space>
-            </div>
-        </div>
-    );
-
-    // --------------------------------
-
     const columns: ColumnsType<TableDTO> = [
         {
             title: 'ID',
@@ -105,30 +71,35 @@ export default function InOuts() {
             ...getColumnSearchProps('object_index', 'ID'),
         },
         {
-            title: 'Mijoz',
+            title: 'Turi',
             dataIndex: ['customer', 'full_name'],
             key: 'client',
             ellipsis: true,
-            ...getColumnSearchProps('customer.full_name', 'Mijoz'),
         },
         {
-            title: 'Avtomobil turi',
+            title: 'Filial',
             dataIndex: ['vehicle', 'brand', 'title'],
             key: 'brand',
             ellipsis: true,
         },
         {
-            title: 'Avtomobil',
+            title: 'To’lov turi',
             dataIndex: ['vehicle', 'plate_number'],
             key: 'plate_number',
             ellipsis: true,
-            ...getColumnSearchProps('vehicle.plate_number', 'Avtomobil'),
         },
         {
-            title: 'Olingan sana',
+            title: 'Summa',
             dataIndex: 'start_date',
             key: 'start_date',
             sorter: true,
+        },
+        {
+            title: 'Kategoriya',
+            dataIndex: ['vehicle', 'plate_number'],
+            key: 'plate_number',
+            ellipsis: true,
+            ...getColumnSearchProps('object_index', 'Kategoriya'),
         },
         {
             title: 'Tugash sanasi',
@@ -155,9 +126,6 @@ export default function InOuts() {
                 </Col>
                 <Col>
                     <Space size='middle'>
-                        <Popover open={openFilter} onOpenChange={toggleFilter} placement="bottomRight" content={FilterContent} trigger="click">
-                            <Button icon={<FilterIcon />}>Filtrlash</Button>
-                        </Popover>
                         <Button 
                             icon={<PaymentCardIcon />}
                             className='d-flex' 

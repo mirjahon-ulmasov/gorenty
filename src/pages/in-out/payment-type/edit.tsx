@@ -1,30 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'
-import { 
-    Button, Col, Form, Input, InputNumber, 
-    Row, Space, Typography 
-} from 'antd'
+import { useNavigate, useParams } from 'react-router-dom'
+import { Button, Col, Form, Input, Row, Space, Typography } from 'antd'
 import toast from 'react-hot-toast';
 import _ from 'lodash';
 import { Investor } from 'types/api';
 import { 
-    useCreateInvestorMutation, useFetchPaymentCategoriesQuery, 
-    useFetchBranchesQuery 
-} from 'services';
-import { CustomBreadcrumb, CustomSelect, StatusSelect } from 'components/input'
-import { EXCHANGE } from 'types/index';
+    useCreateInvestorMutation } from 'services';
+import { CustomBreadcrumb, CustomSelect } from 'components/input'
+import { getPaymentMethods } from 'utils/index';
 
 const { Title } = Typography
 
-
 export default function EditPaymentType() {
     const navigate = useNavigate();
-    const [exchangeStatus, setExchangeStatus] = useState<EXCHANGE>(EXCHANGE.IN)
-
+    const { paymentID } = useParams()
     const [createInvestor, { isLoading: createLoading }] = useCreateInvestorMutation()
-    const { data: branches, isLoading: branchesLoading } = useFetchBranchesQuery({})
-    const { data: paymentCategories, isLoading: paymentCategoriesLoading } = useFetchPaymentCategoriesQuery({})
+
+    console.log(paymentID);
+    
 
     // ------------- Submit -------------
     const onFinish = (values: Investor.DTO) => {
@@ -50,12 +43,13 @@ export default function EditPaymentType() {
         <>
             <CustomBreadcrumb
                 items={[
-                    { title: 'Kirim-chiqim', link: '/admin/in-out' },
-                    { title: 'To’lov turlari', link: '/admin/in-out/payment-type' },
-                    { title: 'Yangi to’lov turi qo’shish' },
+                    { title: 'Kirim-chiqim', link: '/admin/in-out/list' },
+                    { title: 'To’lov turlari', link: '/admin/in-out/payment-type/list' },
+                    { title: 'Asaka Bank karta' },
+                    { title: 'Ma’lumotlarni o’zgartirish' },
                 ]}
             />
-            <Title level={3}>Yangi to’lov turi qo’shish</Title>
+            <Title level={3}>Ma’lumotlarni o’zgartirish</Title>
             <Form
                 autoComplete="off"
                 style={{ maxWidth: 460, marginTop: '1rem' }}
@@ -64,97 +58,31 @@ export default function EditPaymentType() {
             >
                 <Row gutter={[0, 8]}>
                     <Col span={24}>
-                        <StatusSelect
-                            activeStatus={exchangeStatus}
-                            onSelectStatus={status => setExchangeStatus(status)}
-                            statuses={[
-                                {
-                                    title: "Kirim",
-                                    value: EXCHANGE.IN,
-                                },
-                                {
-                                    title: "Chiqim",
-                                    value: EXCHANGE.OUT,
-                                }
-                            ]} 
-                        /> 
-                    </Col>
-                    <Col span={24}>
                         <Form.Item
-                            name="payment_types"
-                            label="To’lov turi"
-                            labelCol={{ span: 24 }}
-                            wrapperCol={{ span: 24 }}
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Iltimos to’lov turini tanlang',
-                                },
-                            ]}
-                        >
-                            <CustomSelect
-                                allowClear
-                                size="large"
-                                placeholder='Tanlang'
-                                loading={branchesLoading}
-                                options={branches?.map(branch => ({
-                                    value: branch.id,
-                                    label: branch.title
-                                }))}
-                            ></CustomSelect>
-                        </Form.Item>
-                    </Col>
-                    <Col span={24}>
-                        <Form.Item
-                            name="branch"
-                            label="Fillial"
-                            labelCol={{ span: 24 }}
-                            wrapperCol={{ span: 24 }}
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Iltimos fillialni tanlang',
-                                },
-                            ]}
-                        >
-                            <CustomSelect
-                                allowClear
-                                size="large"
-                                placeholder='Tanlang'
-                                loading={branchesLoading}
-                                options={branches?.map(branch => ({
-                                    value: branch.id,
-                                    label: branch.title
-                                }))}
-                            ></CustomSelect>
-                        </Form.Item>
-                    </Col>
-                    <Col span={24}>
-                        <Form.Item
-                            name="sum"
-                            label="Summa"
+                            name="title"
+                            label="To’lov turi nomi"
                             labelCol={{ span: 24 }}
                             wrapperCol={{ span: 24 }}
                             rules={[
                                 { 
                                     required: true, 
-                                    message: 'Iltimos summani kiriting' 
+                                    message: 'Iltimos to’lov turini kiriting' 
                                 }
                             ]}
                         >
-                            <InputNumber size="large" placeholder='Summani yozing'/>
+                            <Input size="large" placeholder='To’lov turini nomlang'/>
                         </Form.Item>
                     </Col>
                     <Col span={24}>
                         <Form.Item
-                            name="payment_category"
-                            label="To’lov kategoriyasi"
+                            name="payment_methods"
+                            label="To’lov usuli"
                             labelCol={{ span: 24 }}
                             wrapperCol={{ span: 24 }}
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Iltimos to’lov kategoriyasi tanlang',
+                                    message: 'Iltimos to’lov usulini tanlang',
                                 },
                             ]}
                         >
@@ -162,56 +90,60 @@ export default function EditPaymentType() {
                                 allowClear
                                 size="large"
                                 placeholder='Tanlang'
-                                loading={paymentCategoriesLoading}
-                                options={paymentCategories?.map(category => ({
-                                    value: category.id,
-                                    label: category.title
-                                }))}
+                                options={getPaymentMethods()}
                             ></CustomSelect>
                         </Form.Item>
                     </Col>
                     <Col span={24}>
                         <Form.Item
-                            name="staff"
-                            label="Ishchi"
+                            name="number"
+                            label="Plastik karta raqami"
                             labelCol={{ span: 24 }}
                             wrapperCol={{ span: 24 }}
                             rules={[
-                                {
-                                    required: true,
-                                    message: 'Iltimos ishchini tanlang',
-                                },
+                                { 
+                                    required: true, 
+                                    message: 'Iltimos karta raqamini kiriting' 
+                                }
                             ]}
                         >
-                            <CustomSelect
-                                allowClear
-                                size="large"
-                                placeholder='Tanlang'
-                                loading={paymentCategoriesLoading}
-                                options={paymentCategories?.map(category => ({
-                                    value: category.id,
-                                    label: category.title
-                                }))}
-                            ></CustomSelect>
+                            <Input size="large" placeholder='0000 0000 0000 0000'/>
                         </Form.Item>
                     </Col>
                     <Col span={24}>
                         <Form.Item
-                            name="description"
-                            label="Zametka"
+                            name="issue_date"
+                            label="Plastik karta muddati"
                             labelCol={{ span: 24 }}
                             wrapperCol={{ span: 24 }}
+                            rules={[
+                                { 
+                                    required: true, 
+                                    message: 'Iltimos karta muddatini kiriting' 
+                                }
+                            ]}
                         >
-                            <Input.TextArea
-                                showCount
-                                maxLength={100}
-                                style={{ height: 120 }}
-                                placeholder="Biror ma’lumot yozib qo’yish"
-                            />
+                            <Input size="large" placeholder='00/00'/>
+                        </Form.Item>
+                    </Col>
+                    <Col span={24}>
+                        <Form.Item
+                            name="owner"
+                            label="Plastik karta egasi"
+                            labelCol={{ span: 24 }}
+                            wrapperCol={{ span: 24 }}
+                            rules={[
+                                { 
+                                    required: true, 
+                                    message: 'Iltimos karta egasini kiriting' 
+                                }
+                            ]}
+                        >
+                            <Input size="large" placeholder='Kartadagi ism familiyani yozing'/>
                         </Form.Item>
                     </Col>
                 </Row>
-                <div style={{ marginTop: '1rem' }}>
+                <div style={{ marginTop: '2rem' }}>
                     <Space size='large'>
                         <Button 
                             size='large' 
@@ -219,9 +151,9 @@ export default function EditPaymentType() {
                             htmlType='submit'
                             loading={createLoading}
                         >
-                            Kirimni tasdiqlash
+                            O’zgarishlarni tasdiqlash
                         </Button>
-                        <Button size='large' onClick={() => navigate('/admin/in-out/list')}>
+                        <Button size='large' onClick={() => navigate('/admin/in-out/payment-type/list')}>
                             Bekor qilish
                         </Button>
                     </Space>
