@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, Space, Table, Col, Row, Typography, Popover } from 'antd'
+import { Button, Space, Table, Col, Row, Typography } from 'antd'
 import type { ColumnsType, FilterValue, SorterResult } from 'antd/es/table/interface'
 import { useAppSelector } from 'hooks/redux'
 import type { TableProps } from 'antd'
 import { isArray } from 'lodash'
 import { useFetchInvestorsQuery } from 'services/investor'
 import { getColumnSearchProps } from 'utils/search'
-import type { Investor } from 'types/api'
-import { DownloadIcon, FilterIcon, PlusIcon } from 'components/input'
+import type { Investor, Pagination } from 'types/api'
+import { DownloadIcon, PlusIcon } from 'components/input'
 import { ROLE } from 'types/index'
 
 const { Title } = Typography
@@ -18,23 +18,18 @@ interface TableDTO extends Investor.DTO {
     key: string
 }
 
-// Filter
-const text = <span>Title</span>
-
-const content = (
-    <div>
-        <p>Content</p>
-        <p>Content</p>
-    </div>
-)
-
 export default function Investors() {
     const navigate = useNavigate()
     const [sorters, setSorters] = useState<SorterResult<TableDTO>[]>([]);    
     const [filters, setFilters] = useState<Record<string, FilterValue | null>>({})
+    const [pagination, setPagination] = useState<Pagination>({
+        page: 1,
+        page_size: 10
+    })
     const { user } = useAppSelector(state => state.auth)
 
     const { data: investors } = useFetchInvestorsQuery({
+        ...pagination,
         object_index: isArray(filters?.id) ? filters?.id[0].toString() : '',
         full_name: isArray(filters?.full_name) ? filters?.full_name[0].toString() : '',
         phone_number: isArray(filters?.phone_number) ? filters?.phone_number[0].toString() : '',
@@ -128,9 +123,6 @@ export default function Investors() {
                 </Col>
                 <Col>
                     <Space size="middle">
-                        <Popover placement="bottomRight" title={text} content={content} trigger="click">
-                            <Button icon={<FilterIcon />}>Filtrlash</Button>
-                        </Popover>
                         <Button icon={<DownloadIcon />}>
                             Yuklash
                         </Button>
@@ -146,9 +138,22 @@ export default function Investors() {
                 columns={columns}
                 dataSource={dataSource}
                 onChange={handleChange}
-                pagination={{ pageSize: 30 }}
-                scroll={{ y: 500 }}
                 onRow={rowProps}
+                pagination={{
+                    total: investors?.count,
+                    current: pagination.page,
+                    pageSize: pagination.page_size,
+                    pageSizeOptions: [10, 20, 50, 100],
+                    position: ['bottomCenter'], 
+                    onChange(page, page_size) {
+                        setPagination({ page, page_size})
+                    },
+                }}
+                scroll={{ y: 600 }} // x: 1200
+                footer={() => investors?.count 
+                    ? `${investors?.count} ta ma’lumot topildi` 
+                    : 'Ma’lumot topilmadi'
+                }
             />
         </>
     )

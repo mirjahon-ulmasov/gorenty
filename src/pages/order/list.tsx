@@ -5,7 +5,7 @@ import type { ColumnsType, FilterValue, SorterResult } from 'antd/es/table/inter
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { isArray } from 'lodash';
 import type { TableProps } from 'antd';
-import type { Order } from 'types/api';
+import type { Order, Pagination } from 'types/api';
 import { useFetchOrdersQuery } from 'services';
 import { DownloadIcon, FilterIcon, PlusIcon } from 'components/input';
 import { getColumnSearchProps } from 'utils/search';
@@ -18,15 +18,27 @@ interface TableDTO extends Order.DTO {
     key: string;
 }
 
+const tabs = [
+    { value: ORDER_STATUS.CREATED, title: 'Aktiv buyurtmalar'},
+    { value: ORDER_STATUS.BOOKED, title: 'Bron qilinganlar'},
+    { value: ORDER_STATUS.FINISHED, title: 'Tugagan buyurtmalar'},
+    { value: ORDER_STATUS.CANCELLED, title: 'Bekor qilinganlar'},
+]
+
 export default function Orders() {
     const navigate = useNavigate()
     const { state } = useLocation()
     const [openFilter, setOpenFilter] = useState(false);
     const [activeTab, setActiveTab] = useState(ORDER_STATUS.CREATED)
     const [sorters, setSorters] = useState<SorterResult<TableDTO>[]>([]);    
-    const [filters, setFilters] = useState<Record<string, FilterValue | null>>({})        
+    const [filters, setFilters] = useState<Record<string, FilterValue | null>>({})    
+    const [pagination, setPagination] = useState<Pagination>({
+        page: 1,
+        page_size: 10
+    })    
 
     const { data: orders } = useFetchOrdersQuery({
+        ...pagination,
         status: activeTab,
         customer: state?.customer,
         vehicle: state?.vehicle,
@@ -46,14 +58,6 @@ export default function Orders() {
             key: idx.toString()
         })) || []
     }, [orders])
-
-
-    const tabs = [
-        { value: ORDER_STATUS.CREATED, title: 'Aktiv buyurtmalar'},
-        { value: ORDER_STATUS.BOOKED, title: 'Bron qilinganlar'},
-        { value: ORDER_STATUS.FINISHED, title: 'Tugagan buyurtmalar'},
-        { value: ORDER_STATUS.CANCELLED, title: 'Bekor qilinganlar'},
-    ]
 
     // ---------------- Table Change ----------------
     const handleChange: TableProps<TableDTO>['onChange'] = (_pagination, filters, sorter) => {
@@ -184,9 +188,22 @@ export default function Orders() {
                 columns={columns}
                 dataSource={dataSource}
                 onChange={handleChange}
-                pagination={{ pageSize: 30 }}
-                scroll={{ y: 500 }}
                 onRow={rowProps}
+                pagination={{
+                    total: orders?.count,
+                    current: pagination.page,
+                    pageSize: pagination.page_size,
+                    pageSizeOptions: [10, 20, 50, 100],
+                    position: ['bottomCenter'], 
+                    onChange(page, page_size) {
+                        setPagination({ page, page_size})
+                    },
+                }}
+                scroll={{ y: 600 }} // x: 1200
+                footer={() => orders?.count 
+                    ? `${orders?.count} ta ma’lumot topildi` 
+                    : 'Ma’lumot topilmadi'
+                }
             />
         </>
     );

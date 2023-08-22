@@ -6,7 +6,7 @@ import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { isArray } from 'lodash';
 import { useAppSelector } from 'hooks/redux';
 import type { TableProps } from 'antd';
-import type { Car, CarBrand } from 'types/api';
+import type { Car, CarBrand, Pagination } from 'types/api';
 import { useFetchCarsQuery } from 'services';
 import { DownloadIcon, FilterIcon, PlusIcon } from 'components/input';
 import { getColumnSearchProps } from 'utils/search';
@@ -26,9 +26,14 @@ export default function Cars() {
     const [openFilter, setOpenFilter] = useState(false);
     const [sorters, setSorters] = useState<SorterResult<TableDTO>[]>([]);    
     const [filters, setFilters] = useState<Record<string, FilterValue | null>>({})
+    const [pagination, setPagination] = useState<Pagination>({
+        page: 1,
+        page_size: 10
+    })
     const { user } = useAppSelector(state => state.auth)
 
-    const { data: orders } = useFetchCarsQuery({
+    const { data: cars } = useFetchCarsQuery({
+        ...pagination,
         investor: state?.investor,
         object_index: isArray(filters?.id) ? filters?.id[0].toString() : '',
         status: isArray(filters?.status) ? filters?.status.join() : '',
@@ -41,11 +46,11 @@ export default function Cars() {
     })
 
     const dataSource: TableDTO[] = useMemo(() => {
-        return orders?.results?.map((el, idx) => ({
+        return cars?.results?.map((el, idx) => ({
             ...el,
             key: idx.toString()
         })) || []
-    }, [orders])
+    }, [cars])
 
     // ---------------- Table Change ----------------
     const handleChange: TableProps<TableDTO>['onChange'] = (_pagination, _filters, sorter) => {
@@ -195,9 +200,22 @@ export default function Cars() {
                 columns={columns}
                 dataSource={dataSource}
                 onChange={handleChange}
-                pagination={{ pageSize: 30 }}
-                scroll={{ y: 500 }}
                 onRow={rowProps}
+                pagination={{
+                    total: cars?.count,
+                    current: pagination.page,
+                    pageSize: pagination.page_size,
+                    pageSizeOptions: [10, 20, 50, 100],
+                    position: ['bottomCenter'], 
+                    onChange(page, page_size) {
+                        setPagination({ page, page_size})
+                    },
+                }}
+                scroll={{ y: 600 }} // x: 1200
+                footer={() => cars?.count 
+                    ? `${cars?.count} ta ma’lumot topildi` 
+                    : 'Ma’lumot topilmadi'
+                }
             />
         </>
     )

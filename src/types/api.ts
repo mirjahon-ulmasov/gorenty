@@ -30,11 +30,17 @@ export interface File {
     file: string
 }
 
+export interface Pagination {
+    page: number
+    page_size: number
+}
+
 export type TPosition = TBranch
 
 export type SearchParams = Partial<{
     full_name: string
     phone_number: string
+    title: string
     branch: string
     balance: number
     position: string
@@ -49,13 +55,12 @@ export type SearchParams = Partial<{
     vehicle: string
     customer: string
     investor: string
+    
     search: string
-    title: string
-    object_index: string
     ordering: string
-    page_size: number
+    object_index: string
     status: ALL_STATUS | string
-}>
+}> & Partial<Pagination>
 
 // type NullableAll<T> = {
 //     [K in keyof T]: T[K] | null

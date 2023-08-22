@@ -6,7 +6,7 @@ import type { ColumnsType, FilterValue, SorterResult } from 'antd/es/table/inter
 import type { TableProps } from 'antd'
 import { isArray } from 'lodash'
 import { getColumnSearchProps } from 'utils/search'
-import type { Staff, TBranch, TPosition } from 'types/api'
+import type { Pagination, Staff, TBranch, TPosition } from 'types/api'
 import { useFetchBranchesQuery, useFetchStaffListQuery, useFetchStaffPositionsQuery } from 'services'
 import { DownloadIcon, FilterIcon, PlusIcon } from 'components/input'
 
@@ -30,7 +30,10 @@ export default function StaffList() {
     const navigate = useNavigate()
     const [sorters, setSorters] = useState<SorterResult<TableDTO>[]>([]);    
     const [filters, setFilters] = useState<Record<string, FilterValue | null>>({})  
-
+    const [pagination, setPagination] = useState<Pagination>({
+        page: 1,
+        page_size: 10
+    })
     const { data: staffPositions } = useFetchStaffPositionsQuery({
         title: ''
     })
@@ -38,6 +41,7 @@ export default function StaffList() {
         title: ''
     })
     const { data: staff } = useFetchStaffListQuery({
+        ...pagination,
         object_index: isArray(filters?.id) ? filters?.id[0].toString() : '',
         branch: isArray(filters?.branch) ? filters?.branch.join() : '',
         position: isArray(filters?.position) ? filters?.position.join() : '',
@@ -158,9 +162,22 @@ export default function StaffList() {
                 columns={columns}
                 dataSource={dataSource}
                 onChange={handleChange}
-                pagination={{ pageSize: 30 }}
-                scroll={{ y: 500 }}
                 onRow={rowProps}
+                pagination={{
+                    total: staff?.count,
+                    current: pagination.page,
+                    pageSize: pagination.page_size,
+                    pageSizeOptions: [10, 20, 50, 100],
+                    position: ['bottomCenter'], 
+                    onChange(page, page_size) {
+                        setPagination({ page, page_size})
+                    },
+                }}
+                scroll={{ y: 600 }} // x: 1200
+                footer={() => staff?.count 
+                    ? `${staff?.count} ta ma’lumot topildi` 
+                    : 'Ma’lumot topilmadi'
+                }
             />
         </>
     )

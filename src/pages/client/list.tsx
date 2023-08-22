@@ -11,6 +11,7 @@ import { getStatus } from 'utils/index'
 import { Status, DownloadIcon, PlusIcon } from 'components/input'
 import type { Client } from 'types/api'
 import { CLIENT_STATUS } from 'types/index'
+import { Pagination } from 'types/api-2'
 
 const { Title } = Typography
 
@@ -22,8 +23,13 @@ export default function Clients() {
     const navigate = useNavigate()
     const [sorters, setSorters] = useState<SorterResult<TableDTO>[]>([]);    
     const [filters, setFilters] = useState<Record<string, FilterValue | null>>({})  
+    const [pagination, setPagination] = useState<Pagination>({
+        page: 1,
+        page_size: 10
+    })
 
     const { data: clients } = useFetchClientsQuery({
+        ...pagination,
         object_index: isArray(filters?.id) ? filters?.id[0].toString() : '',
         status: isArray(filters?.status) ? filters?.status.join() : '',
         full_name: isArray(filters?.full_name) ? filters?.full_name[0].toString() : '',
@@ -157,9 +163,22 @@ export default function Clients() {
                 columns={columns}
                 dataSource={dataSource}
                 onChange={handleChange}
-                pagination={{ pageSize: 30 }}
-                scroll={{ y: 500 }}
                 onRow={rowProps}
+                pagination={{
+                    total: clients?.count,
+                    current: pagination.page,
+                    pageSize: pagination.page_size,
+                    pageSizeOptions: [10, 20, 50, 100],
+                    position: ['bottomCenter'], 
+                    onChange(page, page_size) {
+                        setPagination({ page, page_size})
+                    },
+                }}
+                scroll={{ y: 600 }} // x: 1200
+                footer={() => clients?.count 
+                    ? `${clients?.count} ta ma’lumot topildi` 
+                    : 'Ma’lumot topilmadi'
+                }
             />
         </>
     )
