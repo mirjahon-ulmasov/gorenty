@@ -12,4 +12,4 @@ export * from './auth/ProtectedRoute'
 export * from './PaymentCategoryPage'
 export * from './CurrencyPage'
 export * from './DebtPage'
-
+export * from './LogsPage'

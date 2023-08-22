@@ -75,7 +75,7 @@ const routes: Route[] = [
         roles: [ROLE.ADMIN],
     },
     {
-        path: '/changes-log',
+        path: '/log',
         title: 'O’zgarishlar jurnali',
         icon: SChangesLogIcon,
         roles: [ROLE.ADMIN, ROLE.OPERATOR],

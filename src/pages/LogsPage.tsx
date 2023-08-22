@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Button, Space, Table, Col, Row, Typography } from 'antd'
+import { Button, Table, Typography } from 'antd'
 import type { ColumnsType, FilterValue, SorterResult } from 'antd/es/table/interface'
 import type { TableProps } from 'antd'
 import { isArray } from 'lodash'
 import { useFetchClientsQuery } from 'services/client'
 import { getColumnSearchProps } from 'utils/search'
 import { getStatus } from 'utils/index'
-import { Status, DownloadIcon, PlusIcon } from 'components/input'
 import type { Client } from 'types/api'
 import { CLIENT_STATUS } from 'types/index'
+import { Status, DownloadIcon } from 'components/input'
 
 const { Title } = Typography
 
@@ -18,8 +17,7 @@ interface TableDTO extends Client.DTO {
     key: string
 }
 
-export default function Clients() {
-    const navigate = useNavigate()
+export function LogsPage() {
     const [sorters, setSorters] = useState<SorterResult<TableDTO>[]>([]);    
     const [filters, setFilters] = useState<Record<string, FilterValue | null>>({})  
 
@@ -42,8 +40,8 @@ export default function Clients() {
     }, [clients])
 
     // ---------------- Table Change ----------------
-    const handleChange: TableProps<TableDTO>['onChange'] = (_pagination, filters, sorter) => {
-        setFilters(filters);        
+    const handleChange: TableProps<TableDTO>['onChange'] = (_pagination, _filters, sorter) => {
+        setFilters(_filters);        
 
         if (!sorter) return;
 
@@ -110,7 +108,6 @@ export default function Clients() {
                 },
             ],
             filterSearch: true,
-            // onFilter: (value, record) => record.status === value,
         },
         {
             title: 'Mijoz balansi',
@@ -127,39 +124,19 @@ export default function Clients() {
         },
     ]
 
-    const rowProps = (record: TableDTO) => {
-        return {
-            onClick: () =>
-                navigate('/client/'
-                    .concat((record.id as number).toString(), '/detail')
-                ),
-        }
-    }
 
     return (
         <>
-            <Row justify="space-between" style={{ marginBottom: '2rem' }}>
-                <Col>
-                    <Title level={3}>Mijozlar</Title>
-                </Col>
-                <Col>
-                    <Space size="middle">
-                        <Button icon={<DownloadIcon />}>
-                            Yuklash
-                        </Button>
-                        <Button onClick={() => navigate('/client/add')} className='d-flex' icon={<PlusIcon />}>
-                            Yangi mijoz qo’shish
-                        </Button>
-                    </Space>
-                </Col>
-            </Row>
+            <div className='d-flex jc-sb mb-2'>
+                <Title level={3}>O’zgarishlar jurnali</Title>
+                <Button icon={<DownloadIcon />}>Yuklash</Button>
+            </div>
             <Table
                 columns={columns}
                 dataSource={dataSource}
                 onChange={handleChange}
                 pagination={{ pageSize: 30 }}
                 scroll={{ y: 500 }}
-                onRow={rowProps}
             />
         </>
     )
