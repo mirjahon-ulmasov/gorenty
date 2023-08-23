@@ -4,6 +4,13 @@ import { styled } from 'styled-components'
 
 const { Text } = Typography
 
+export const StyledText = styled(Text)<{ fs?: number, fw?: number, color?: string }>`
+    font-weight: ${props => (props.fw ? props.fw : 400)};
+    font-size: ${props => (props.fs ? `${props.fs}px` : '16px')};
+    color: ${props => (props.color ? props.color : 'var(--black-65)')};
+    line-height: ${props => (props.fs ? `${props.fs + 8}px` : '22px')};
+`
+
 export const StyledTextL1 = styled(Text)<{ fs?: number }>`
     font-weight: 400;
     color: var(--black-88);

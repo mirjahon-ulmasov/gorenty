@@ -83,12 +83,15 @@ export default function MainHeader() {
                             ]}
                         />
                     </Space.Compact>
-                    <Button size='large' icon={
-                        <span style={{ position: 'relative' }}>
-                            <HBellIcon />
-                            <Dot/>
-                        </span>
-                    }>
+                    <Button size='large'
+                        onClick={() => navigate('/notifications')}
+                        icon={
+                            <span style={{ position: 'relative' }}>
+                                <HBellIcon />
+                                <Dot/>
+                            </span>
+                        }
+                    >
                         Xabarlar (5)
                     </Button>
                 </Space>

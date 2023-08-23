@@ -2,7 +2,8 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import {
     Client, Investor, Car, Order, ProtectedRoute, 
     NotFound, PaymentCategoryPage, Login, DebtPage,
-    CurrencyPage, Staff, Branch, Report, InOut, LogsPage
+    CurrencyPage, Staff, Branch, Report, InOut, LogsPage, 
+    NotificationsPage
 } from 'pages';
 import { ROLE } from 'types/index';
 
@@ -18,6 +19,7 @@ function App() {
                 <Route path="investor/*" element={<Investor />} />
                 <Route path="currency" element={<CurrencyPage />} />
                 <Route path="log" element={<LogsPage />} />
+                <Route path="notifications" element={<NotificationsPage />} />
                 <Route path="admin" element={<ProtectedRoute roles={[ROLE.ADMIN]} />}>
                     <Route path="staff/*" element={<Staff />} />
                     <Route path="branch/*" element={<Branch />} />
