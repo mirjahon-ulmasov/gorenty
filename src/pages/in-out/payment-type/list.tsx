@@ -4,12 +4,15 @@ import {
     Card, CustomBreadcrumb, PlusIcon, 
     StyledLink, StyledTextL1, StyledTextL2 
 } from "components/input";
-import data from "./data.json"
+import { useFetchPaymentsQuery } from "services/payment";
+import { formatCardNumber } from "utils/index";
 
 const { Title } = Typography
 
 export default function PaymentTypes() {
+    const { data: payments } = useFetchPaymentsQuery();
     const navigate = useNavigate()
+
     return (
         <>
             <CustomBreadcrumb
@@ -28,15 +31,20 @@ export default function PaymentTypes() {
                 Yangi to’lov turi qo’shish
             </Button>
             <div className="d-flex fd-col ai-start gap-16 mt-2">
-                {data.map((payment, index) => (
+                {payments?.map((payment, index) => (
                     <Card key={index} w={500} p="32px">
                         <StyledTextL2 fs={18}>{payment.title}</StyledTextL2>
-                        <StyledTextL1 fs={16}>{payment.number}</StyledTextL1>
-                        {payment.owner && (
-                            <StyledTextL1 fs={16}>{payment.owner}</StyledTextL1>
+                        {payment.account && (
+                            <StyledTextL1 fs={16}>{payment.account}</StyledTextL1>
                         )}
-                        {payment.issue_date && (
-                            <StyledTextL1 fs={16}>{payment.issue_date}</StyledTextL1>
+                        {payment.card_number && (
+                            <StyledTextL1 fs={16}>{formatCardNumber(payment.card_number)}</StyledTextL1>
+                        )}
+                        {payment.card_name && (
+                            <StyledTextL1 fs={16}>{payment.card_name}</StyledTextL1>
+                        )}
+                        {payment.card_date && (
+                            <StyledTextL1 fs={16}>{payment.card_date}</StyledTextL1>
                         )}
                         <StyledLink 
                             underline={1} 

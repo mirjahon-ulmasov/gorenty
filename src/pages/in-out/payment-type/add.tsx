@@ -1,40 +1,50 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Fragment, useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { Button, Col, Form, Input, Row, Space, Typography } from 'antd'
 import toast from 'react-hot-toast';
 import _ from 'lodash';
-import { Investor } from 'types/api';
-import { 
-    useCreateInvestorMutation } from 'services';
 import { CustomBreadcrumb, CustomSelect } from 'components/input'
+import { useCreatePaymentMutation } from 'services';
 import { getPaymentMethods } from 'utils/index';
+import { PAYMENT_METHOD } from 'types/index';
+import { Payment } from 'types/payment';
 
 const { Title } = Typography
 
 export default function AddPaymentType() {
     const navigate = useNavigate();
-    const [createInvestor, { isLoading: createLoading }] = useCreateInvestorMutation()
+    const [form] = Form.useForm<Payment.DTOUpload>()
+    const [paymentType, setPaymentType] = useState()
+    const [createPayment, { isLoading: createLoading }] = useCreatePaymentMutation()
 
     // ------------- Submit -------------
-    const onFinish = (values: Investor.DTO) => {
+    const onFinish = (values: Payment.DTOUpload) => {
 
-        const data: Investor.DTO = {
-            ...values,
+        let data = values
+
+        if(paymentType === PAYMENT_METHOD.CASH) {
+            data = {...values, account: '', card_date: '', card_name: '', card_number: ''}
+        }
+        else if(paymentType === PAYMENT_METHOD.BANK) {
+            data = {...values, card_date: '', card_name: '', card_number: ''}
+        }
+        else if(paymentType === PAYMENT_METHOD.CARD) {
+            data = {...values, account: ''}
         }
 
-        createInvestor(data)
+        createPayment(data)
             .unwrap()
             .then(() => {
-                toast.success("Инвестор успешно создан")
-                navigate('/investor/list')
+                toast.success("Платеж успешно добавлен")
+                navigate('/admin/in-out/payment-type/list')
             })
-            .catch(() => toast.error("Не удалось создать инвестор"))
+            .catch(() => toast.error("Не удалось добавить платеж"))
     };
 
     const onFinishFailed = (errorInfo: any) => {
         console.log('Failed: ', errorInfo)        
     }
-
+    
     return (
         <>
             <CustomBreadcrumb
@@ -46,6 +56,7 @@ export default function AddPaymentType() {
             />
             <Title level={3}>Yangi to’lov turi qo’shish</Title>
             <Form
+                form={form}
                 autoComplete="off"
                 style={{ maxWidth: 460, marginTop: '1rem' }}
                 onFinish={onFinish}
@@ -70,73 +81,79 @@ export default function AddPaymentType() {
                     </Col>
                     <Col span={24}>
                         <Form.Item
-                            name="payment_methods"
+                            name="state"
                             label="To’lov usuli"
                             labelCol={{ span: 24 }}
                             wrapperCol={{ span: 24 }}
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Iltimos to’lov usulini tanlang',
-                                },
-                            ]}
+                            rules={[{ required: true, message: 'Iltimos to’lov usulini tanlang' }]}
                         >
                             <CustomSelect
                                 allowClear
                                 size="large"
                                 placeholder='Tanlang'
                                 options={getPaymentMethods()}
+                                value={paymentType}
+                                onChange={(type) => setPaymentType(type)}
                             ></CustomSelect>
                         </Form.Item>
                     </Col>
-                    <Col span={24}>
-                        <Form.Item
-                            name="number"
-                            label="Plastik karta raqami"
-                            labelCol={{ span: 24 }}
-                            wrapperCol={{ span: 24 }}
-                            rules={[
-                                { 
-                                    required: true, 
-                                    message: 'Iltimos karta raqamini kiriting' 
-                                }
-                            ]}
-                        >
-                            <Input size="large" placeholder='0000 0000 0000 0000'/>
-                        </Form.Item>
-                    </Col>
-                    <Col span={24}>
-                        <Form.Item
-                            name="issue_date"
-                            label="Plastik karta muddati"
-                            labelCol={{ span: 24 }}
-                            wrapperCol={{ span: 24 }}
-                            rules={[
-                                { 
-                                    required: true, 
-                                    message: 'Iltimos karta muddatini kiriting' 
-                                }
-                            ]}
-                        >
-                            <Input size="large" placeholder='00/00'/>
-                        </Form.Item>
-                    </Col>
-                    <Col span={24}>
-                        <Form.Item
-                            name="owner"
-                            label="Plastik karta egasi"
-                            labelCol={{ span: 24 }}
-                            wrapperCol={{ span: 24 }}
-                            rules={[
-                                { 
-                                    required: true, 
-                                    message: 'Iltimos karta egasini kiriting' 
-                                }
-                            ]}
-                        >
-                            <Input size="large" placeholder='Kartadagi ism familiyani yozing'/>
-                        </Form.Item>
-                    </Col>
+                    {paymentType === PAYMENT_METHOD.CARD && (
+                        <Fragment>
+                            <Col span={24}>
+                                <Form.Item
+                                    name="card_number"
+                                    label="Plastik karta raqami"
+                                    labelCol={{ span: 24 }}
+                                    wrapperCol={{ span: 24 }}
+                                    rules={[
+                                        { required: true, message: 'Iltimos karta raqamini kiriting' },
+                                        { max: 16, min: 16, message: 'Karta 16ta raqamdan iborat bo’lishi kerak'}
+                                    ]}
+
+                                >
+                                    <Input size="large" placeholder='8600 0000 0000 0000'/>
+                                </Form.Item>
+                            </Col>
+                            <Col span={24}>
+                                <Form.Item
+                                    name="card_date"
+                                    label="Plastik karta muddati"
+                                    labelCol={{ span: 24 }}
+                                    wrapperCol={{ span: 24 }}
+                                    rules={[{ required: true, message: 'Iltimos karta sanasini kiriting' }]}
+                                >
+                                    <Input size="large" placeholder='00/00'/>
+                                </Form.Item>
+                            </Col>
+                            <Col span={24}>
+                                <Form.Item
+                                    name="card_name"
+                                    label="Plastik karta egasi"
+                                    labelCol={{ span: 24 }}
+                                    wrapperCol={{ span: 24 }}
+                                    rules={[{ required: true, message: 'Iltimos karta egasini kiriting' }]}
+                                >
+                                    <Input size="large" placeholder='Kartadagi ism familiyani yozing'/>
+                                </Form.Item>
+                            </Col>
+                        </Fragment>
+                    )}
+                    {paymentType === PAYMENT_METHOD.BANK && (
+                        <Col span={24}>
+                            <Form.Item
+                                name="account"
+                                label="Bank hisob raqami"
+                                labelCol={{ span: 24 }}
+                                wrapperCol={{ span: 24 }}
+                                rules={[
+                                    { required: true, message: 'Iltimos karta raqamini kiriting' },
+                                ]}
+
+                            >
+                                <Input size="large" placeholder='40702810038170000000'/>
+                            </Form.Item>
+                        </Col>
+                    )}
                 </Row>
                 <div style={{ marginTop: '2rem' }}>
                     <Space size='large'>

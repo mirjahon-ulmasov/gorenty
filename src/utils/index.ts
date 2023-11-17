@@ -74,7 +74,11 @@ export const disabledDate = (current: Dayjs): boolean => {
 export function getPaymentMethods() {
     return [
         { value: PAYMENT_METHOD.CASH, label: 'Naqd' },
-        { value: PAYMENT_METHOD.PLASTIC_CARD, label: 'Plastik Karta' },
-        { value: PAYMENT_METHOD.BANK_ACCOUNT, label: 'Bank hisob raqami' },
+        { value: PAYMENT_METHOD.CARD, label: 'Plastik Karta' },
+        { value: PAYMENT_METHOD.BANK, label: 'Bank hisob raqami' },
     ]
+}
+
+export function formatCardNumber(data: string) {
+    return data.match(/.{1,4}/g)?.join(" ")
 }

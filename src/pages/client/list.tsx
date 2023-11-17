@@ -11,7 +11,7 @@ import { getStatus } from 'utils/index'
 import { Status, DownloadIcon, PlusIcon } from 'components/input'
 import type { Client } from 'types/api'
 import { CLIENT_STATUS } from 'types/index'
-import { Pagination } from 'types/api-2'
+import { Pagination } from 'types/api'
 
 const { Title } = Typography
 

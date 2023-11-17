@@ -35,6 +35,15 @@ export enum ORDER_STATUS {
     CANCELLED,
 }
 
+export enum PAYMENT_METHOD {
+    BANK = 1,
+    CARD,
+    CASH,
+}
+
+export type ID = number | string
+
+// TODO
 export enum DEBT {
     GORENTY_DEBTS = 1,
     GORENTY_OWES
@@ -43,12 +52,6 @@ export enum DEBT {
 export enum EXCHANGE {
     IN = 1,
     OUT
-}
-
-export enum PAYMENT_METHOD {
-    CASH = 1,
-    PLASTIC_CARD,
-    BANK_ACCOUNT
 }
 
 export type ALL_STATUS = CLIENT_STATUS | CAR_STATUS | ORDER_STATUS | DEBT | EXCHANGE
