@@ -49,9 +49,9 @@ export enum DEBT {
     GORENTY_OWES
 }
 
-export enum EXCHANGE {
-    IN = 1,
-    OUT
+export enum TRANSACTION {
+    INCOME = 1,
+    OUTCOME
 }
 
-export type ALL_STATUS = CLIENT_STATUS | CAR_STATUS | ORDER_STATUS | DEBT | EXCHANGE
+export type ALL_STATUS = CLIENT_STATUS | CAR_STATUS | ORDER_STATUS | DEBT | TRANSACTION

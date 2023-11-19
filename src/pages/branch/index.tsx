@@ -3,6 +3,7 @@ import Branches from './list';
 import AddBranch from './add';
 import EditBranch from './edit';
 import BranchDetail from './detail';
+import BranchPayments from './payment';
 
 export function Branch() {
     return (
@@ -12,6 +13,7 @@ export function Branch() {
 			<Route path="/add" element={<AddBranch />} />
 			<Route path="/:branchID/edit" element={<EditBranch />} />
 			<Route path="/:branchID/detail" element={<BranchDetail />} />
+			<Route path="/:branchID/payment" element={<BranchPayments />} />
 		</Routes>
     );
 }

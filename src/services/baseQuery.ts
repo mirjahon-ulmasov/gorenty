@@ -65,4 +65,5 @@ const baseQueryWithReauth = async (
 export const api = createApi({
     baseQuery: baseQueryWithReauth,
     endpoints: _builder => ({}),
+    tagTypes: ['BranchPaymentLog']
 })

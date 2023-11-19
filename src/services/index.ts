@@ -9,3 +9,4 @@ export * from './order'
 export * from './others'
 export * from './staff'
 export * from './payment'
+export * from "./branch-payment"

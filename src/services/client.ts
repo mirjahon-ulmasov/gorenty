@@ -17,7 +17,7 @@ export const clientAPI = clientWithTags.injectEndpoints({
         }),
         fetchClient: build.query<Client.DTO, string>({
             query: id => `/customer/${id}/`,
-            providesTags: () => ['Client'],
+            providesTags: () => ['Client', 'BranchPaymentLog'],
         }),
         createClient: build.mutation<unknown, Client.DTO>({
             query: data => ({

@@ -1,4 +1,4 @@
-/* eslint-disable no-constant-condition */
+
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import type { Dayjs } from 'dayjs';

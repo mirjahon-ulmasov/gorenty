@@ -1,4 +1,4 @@
-/* eslint-disable no-constant-condition */
+
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button, Col, DatePickerProps, Row, Space, Typography } from 'antd'

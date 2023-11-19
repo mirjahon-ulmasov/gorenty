@@ -1,4 +1,3 @@
-/* eslint-disable no-constant-condition */
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { 
@@ -6,14 +5,15 @@ import {
     Row, Space, Typography
 } from 'antd'
 import clsx from 'clsx'
+import toast from 'react-hot-toast'
 import { 
     CustomBreadcrumb, CustomDatePicker, Payment, 
     Status, BillingHistory, BorderBox, IDTag, 
     Label, StyledLink, StyledTextL1, StyledTextL2  
 } from 'components/input'
 import { formatPhone, getStatus } from 'utils/index'
-import { CLIENT_STATUS } from 'types/index'
-import { useFetchClientQuery } from 'services/client'
+import { CLIENT_STATUS, ID, TRANSACTION } from 'types/index'
+import { useCustomerIncomeMutation, useCustomerOutcomeMutation, useFetchClientQuery } from 'services'
 import { TBranch } from 'types/api'
 
 const { Title } = Typography
@@ -22,8 +22,10 @@ export default function ClientDetail() {
     const navigate = useNavigate()
     const { clientID } = useParams()
 
-    const [isOpenPayment, setIsOpenPayment] = useState(false);
+    const [transactionType, setTransactionType] = useState<TRANSACTION>();
     const { data: client } = useFetchClientQuery(clientID as string)
+    const [customerIncome] = useCustomerIncomeMutation()
+    const [customerOutcome] = useCustomerOutcomeMutation()
 
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
@@ -70,18 +72,38 @@ export default function ClientDetail() {
                                     <BorderBox p='20px 12px'>
                                         <Title level={3}>{client?.balance?.toLocaleString()}</Title>
                                         <Space>
-                                            <Button size="middle" onClick={() => setIsOpenPayment(true)}>
+                                            <Button size="middle" onClick={() => setTransactionType(TRANSACTION.INCOME)}>
                                                 Balansni to’ldirish
                                             </Button>
-                                            <Button size="middle">
+                                            <Button size="middle" onClick={() => setTransactionType(TRANSACTION.OUTCOME)}>
                                                 Balansni yechish
                                             </Button>
                                         </Space>
                                     </BorderBox>
                                 </Col>
-                                {isOpenPayment && (
+                                {transactionType && (
                                     <Col span={24}>
-                                        <Payment onClose={() => setIsOpenPayment(false)} />
+                                        <Payment
+                                            btnText={transactionType === TRANSACTION.INCOME ? 'To’ldirish' : 'Yechish'}
+                                            onClose={() => setTransactionType(undefined)} 
+                                            onSubmit={(data) => {
+                                                if(transactionType === TRANSACTION.INCOME) {
+                                                    customerIncome({ ...data, customer: clientID as ID }).unwrap()
+                                                        .then(() => {
+                                                            setTransactionType(undefined)
+                                                            toast.success("Баланс пополнен")
+                                                        })
+                                                        .catch(() => toast.error("Что-то пошло не так"))
+                                                } else {
+                                                    customerOutcome({ ...data, customer: clientID as ID }).unwrap()
+                                                        .then(() => {
+                                                            setTransactionType(undefined)
+                                                            toast.success("Списано с баланса")
+                                                        })
+                                                        .catch(() => toast.error("Что-то пошло не так"))
+                                                }
+                                            }}
+                                        />
                                     </Col>
                                 )}
                                 <Col span={24}>
@@ -164,7 +186,7 @@ export default function ClientDetail() {
                                     </Col>
                                     <Col>
                                         <Space size='small'>
-                                            <Button size='middle' onClick={() => setIsOpenPayment(true)}>
+                                            <Button size='middle'>
                                                 Harajat qo’shish
                                             </Button>
                                             <CustomDatePicker placeholder='Sana' size='middle' onChange={onChange} />
@@ -172,11 +194,6 @@ export default function ClientDetail() {
                                     </Col>
                                 </Row>
                             </Col>
-                            {isOpenPayment && (
-                                <Col span={24}>
-                                    <Payment onClose={() => setIsOpenPayment(false)} />
-                                </Col>
-                            )}
                             <Col span={24}>
                                 <BorderBox className={clsx('bill', true ? 'income' : 'outgoings')}>
                                     <div className='d-flex jc-sb w-100'>

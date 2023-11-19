@@ -1,4 +1,4 @@
-/* eslint-disable no-constant-condition */
+
 import { useNavigate, useParams } from 'react-router-dom'
 import { 
     Button, Col, Row, Space, Typography, 
@@ -35,6 +35,19 @@ export default function CarDetail() {
                             <div className='d-flex jc-sb'>  
                                 <Title level={3}>{branch?.title ?? '-'}</Title>
                                 <Space size="small">
+                                    <Button
+                                        size="large"
+                                        onClick={() =>
+                                            navigate(
+                                                '/admin/branch/'.concat(
+                                                    branchID?.toString() as string,
+                                                    '/payment'
+                                                )
+                                            )
+                                        }
+                                    >
+                                        Hisoblar
+                                    </Button>
                                     <Button
                                         size="large"
                                         onClick={() =>

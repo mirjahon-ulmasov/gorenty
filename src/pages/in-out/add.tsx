@@ -13,14 +13,14 @@ import {
     useFetchBranchesQuery 
 } from 'services';
 import { CustomBreadcrumb, CustomSelect, StatusSelect } from 'components/input'
-import { EXCHANGE } from 'types/index';
+import { TRANSACTION } from 'types/index';
 
 const { Title } = Typography
 
 
 export default function AddInOut() {
     const navigate = useNavigate();
-    const [exchangeStatus, setExchangeStatus] = useState<EXCHANGE>(EXCHANGE.IN)
+    const [exchangeStatus, setExchangeStatus] = useState<TRANSACTION>(TRANSACTION.IN)
 
     const [createInvestor, { isLoading: createLoading }] = useCreateInvestorMutation()
     const { data: branches, isLoading: branchesLoading } = useFetchBranchesQuery({})
@@ -69,11 +69,11 @@ export default function AddInOut() {
                             statuses={[
                                 {
                                     title: "Kirim",
-                                    value: EXCHANGE.IN,
+                                    value: TRANSACTION.IN,
                                 },
                                 {
                                     title: "Chiqim",
-                                    value: EXCHANGE.OUT,
+                                    value: TRANSACTION.OUT,
                                 }
                             ]} 
                         /> 
