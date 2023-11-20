@@ -1,32 +1,59 @@
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button, Col, DatePickerProps, Row, Space, Typography } from 'antd'
 import clsx from 'clsx'
+import toast from 'react-hot-toast'
 import { useAppSelector } from 'hooks/redux'
-import { useFetchInvestorQuery } from 'services/investor'
+import { 
+    useFetchInvestorQuery, useInvestorIncomeMutation, 
+    useInvestorOutcomeMutation 
+} from 'services'
 import { 
     CustomBreadcrumb, CustomDatePicker, Payment, 
     BillingHistory, BorderBox, IDTag, 
     Label, StyledLink, StyledTextL1, StyledTextL2, SmallImg  
 } from 'components/input'
 import { TBranch, BucketFile } from 'types/api'
+import { PaymentLog } from 'types/branch-payment'
 import { formatPhone } from 'utils/index'
-import { ROLE } from 'types/index'
+import { ID, ROLE, TRANSACTION } from 'types/index'
 
 const { Title } = Typography
 
 export default function InvestorDetail() {
     const navigate = useNavigate()
     const { investorID } = useParams()
-    const [isOpenPayment, setIsOpenPayment] = useState(false);
 
+    const [transactionType, setTransactionType] = useState<TRANSACTION>();
     const { data: investor } = useFetchInvestorQuery(investorID as string)
     const { user } = useAppSelector(state => state.auth)
+
+    const [investorIncome] = useInvestorIncomeMutation()
+    const [investorOutcome] = useInvestorOutcomeMutation()
 
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
     };
+
+    const makeTransaction = useCallback((data: PaymentLog.DTOUpload) => {
+        if(transactionType === TRANSACTION.INCOME) {
+            investorIncome({ ...data, investor: investorID as ID }).unwrap()
+                .then(() => {
+                    setTransactionType(undefined)
+                    toast.success("Баланс пополнен")
+                })
+                .catch(() => toast.error("Что-то пошло не так"))
+        } else {
+            investorOutcome({ ...data, investor: investorID as ID }).unwrap()
+                .then(() => {
+                    setTransactionType(undefined)
+                    toast.success("Списано с баланса")
+                })
+                .catch(() => toast.error("Что-то пошло не так"))
+        }
+    }, [investorID, investorIncome, investorOutcome, transactionType])
+
 
     return (
         <>
@@ -69,20 +96,24 @@ export default function InvestorDetail() {
                                 </Col>
                                 <Col span={24}>
                                     <BorderBox p='20px 12px'>
-                                        <Title level={3}>{investor?.balance?.toLocaleString()}</Title>
+                                        <Title level={3}>{investor?.balance?.toLocaleString()} so’m</Title>
                                         <Space>
-                                            <Button size="middle" onClick={() => setIsOpenPayment(true)}>
+                                            <Button size="middle" onClick={() => setTransactionType(TRANSACTION.INCOME)}>
                                                 Balansni to’ldirish
                                             </Button>
-                                            <Button size="middle">
+                                            <Button size="middle" onClick={() => setTransactionType(TRANSACTION.OUTCOME)}>
                                                 Balansni yechish
                                             </Button>
                                         </Space>
                                     </BorderBox>
                                 </Col>
-                                {isOpenPayment && (
+                                {transactionType && (
                                     <Col span={24}>
-                                        <Payment btnText='Balansni to’ldirish' onClose={() => setIsOpenPayment(false)} />
+                                        <Payment
+                                            btnText={transactionType === TRANSACTION.INCOME ? 'To’ldirish' : 'Yechish'}
+                                            onClose={() => setTransactionType(undefined)} 
+                                            onSubmit={(data) => makeTransaction(data)}
+                                        />
                                     </Col>
                                 )}
                                 <Col span={24}>
@@ -168,7 +199,7 @@ export default function InvestorDetail() {
                                     </Col>
                                     <Col>
                                         <Space size='small'>
-                                            <Button size='middle' onClick={() => setIsOpenPayment(true)}>
+                                            <Button size='middle'>
                                                 Harajat qo’shish
                                             </Button>
                                             <CustomDatePicker placeholder='Sana' size='middle' onChange={onChange} />
@@ -176,11 +207,6 @@ export default function InvestorDetail() {
                                     </Col>
                                 </Row>
                             </Col>
-                            {isOpenPayment && (
-                                <Col span={24}>
-                                    <Payment btnText='Harajat qo’shish' note={true} onClose={() => setIsOpenPayment(false)} />
-                                </Col>
-                            )}
                             <Col span={24}>
                                 <BorderBox className={clsx('bill', true ? 'income' : 'outgoings')}>
                                     <div className='d-flex jc-sb w-100'>

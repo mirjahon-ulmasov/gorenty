@@ -1,24 +1,56 @@
-
+import { useCallback, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { 
     Button, Col, Row, Space, Typography, 
 } from 'antd'
+import toast from 'react-hot-toast';
 import { 
     CustomBreadcrumb, Label, StyledTextL1, 
-    StyledTextL2, BorderBox, SmallImg 
+    StyledTextL2, BorderBox, SmallImg,
+    MinusIcon, PlusIcon, BranchPayment
 } from 'components/input'
-import { useFetchBranchQuery } from 'services/branch';
-import { BucketFile } from 'types/api'
-import { MinusIcon, PlusIcon } from 'components/input'
+import { 
+    useBranchIncomeMutation, useBranchOutcomeMutation, 
+    useFetchBranchQuery, useFetchPaymentLogsQuery 
+} from 'services';
+import { PaymentLog } from 'types/branch-payment';
+import { ID, TRANSACTION } from 'types/index';
 import { formatPhone } from 'utils/index';
+import { BucketFile } from 'types/api'
 
 const { Title } = Typography
 
 export default function CarDetail() {
     const navigate = useNavigate()
     const { branchID } = useParams()
+    const [transactionType, setTransactionType] = useState<TRANSACTION>();
 
     const { data: branch } = useFetchBranchQuery(branchID as string)
+    const { data: paymentLogs } = useFetchPaymentLogsQuery({
+        branch: branchID
+    })
+
+    const [branchIncome] = useBranchIncomeMutation()
+    const [branchOutcome] = useBranchOutcomeMutation()
+    
+    const makeTransaction = useCallback((data: PaymentLog.Branch) => {
+        if(transactionType === TRANSACTION.INCOME) {
+            branchIncome(data).unwrap()
+                .then(() => {
+                    setTransactionType(undefined)
+                    toast.success("Баланс пополнен")
+                })
+                .catch(() => toast.error("Что-то пошло не так"))
+        } else {
+            branchOutcome(data).unwrap()
+                .then(() => {
+                    setTransactionType(undefined)
+                    toast.success("Списано с баланса")
+                })
+                .catch(() => toast.error("Что-то пошло не так"))
+        }
+    }, [branchIncome, branchOutcome, transactionType])    
+
 
     return (
         <>
@@ -76,20 +108,32 @@ export default function CarDetail() {
                                     <Space>
                                         <Button 
                                             size="middle" 
-                                            icon={<PlusIcon />} 
                                             className="d-flex"
+                                            icon={<PlusIcon />}
+                                            onClick={() => setTransactionType(TRANSACTION.INCOME)} 
                                         >
                                             Kirim qilish
                                         </Button>
                                         <Button 
                                             size="middle" 
-                                            icon={<MinusIcon />} 
                                             className="d-flex"
+                                            icon={<MinusIcon />}
+                                            onClick={() => setTransactionType(TRANSACTION.OUTCOME)}
                                         >
                                             Chiqim qilish
                                         </Button>
                                     </Space>
                                 </Col>
+                                {transactionType && (
+                                    <Col span={24}>
+                                        <BranchPayment
+                                            branch={branch?.id as ID}
+                                            onClose={() => setTransactionType(undefined)} 
+                                            onSubmit={(data) => makeTransaction(data)}
+                                            btnText={transactionType === TRANSACTION.INCOME ? 'Kirim' : 'Chiqim'}
+                                        />
+                                    </Col>
+                                )}
                                 <Col span={24} className='mt-1'>
                                     <Label>Aktiv pullar</Label>
                                 </Col>

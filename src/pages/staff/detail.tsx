@@ -1,29 +1,52 @@
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button, Col, DatePickerProps, Row, Space, Typography } from 'antd'
 import clsx from 'clsx'
+import toast from 'react-hot-toast'
 import { 
     CustomBreadcrumb, CustomDatePicker, Payment, 
     BillingHistory, BorderBox, IDTag, Label, 
     StyledTextL1, StyledTextL2, SmallImg  
 } from 'components/input'
+import { useFetchStaffQuery, useStaffIncomeMutation, useStaffOutcomeMutation } from 'services'
 import { BucketFile, TBranch, TPosition } from 'types/api'
-import { useFetchStaffQuery } from 'services'
+import { PaymentLog } from 'types/branch-payment'
 import { formatPhone } from 'utils/index'
+import { ID, TRANSACTION } from 'types/index'
 
 const { Title } = Typography
 
 export default function StaffDetail() {
     const navigate = useNavigate()
     const { staffID } = useParams()
-    const [isOpenPayment, setIsOpenPayment] = useState(false);
+    const [transactionType, setTransactionType] = useState<TRANSACTION>();
 
     const { data: staff } = useFetchStaffQuery(staffID as string)
+    const [staffIncome] = useStaffIncomeMutation()
+    const [staffOutcome] = useStaffOutcomeMutation()
 
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
     };
+    
+    const makeTransaction = useCallback((data: PaymentLog.DTOUpload) => {
+        if(transactionType === TRANSACTION.INCOME) {
+            staffIncome({ ...data, staff: staffID as ID }).unwrap()
+                .then(() => {
+                    setTransactionType(undefined)
+                    toast.success("Баланс пополнен")
+                })
+                .catch(() => toast.error("Что-то пошло не так"))
+        } else {
+            staffOutcome({ ...data, staff: staffID as ID }).unwrap()
+                .then(() => {
+                    setTransactionType(undefined)
+                    toast.success("Списано с баланса")
+                })
+                .catch(() => toast.error("Что-то пошло не так"))
+        }
+    }, [staffID, staffIncome, staffOutcome, transactionType])
 
     return (
         <>
@@ -57,6 +80,31 @@ export default function StaffDetail() {
                         </Col>
                         <Col span={24}>
                             <Row gutter={[12, 12]}>
+                                <Col span={24}>
+                                    <Label>Mijozning joriy balansi</Label>
+                                </Col>
+                                <Col span={24}>
+                                    <BorderBox p='20px 12px'>
+                                        <Title level={3}>{staff?.balance?.toLocaleString()} so’m</Title>
+                                        <Space>
+                                            <Button size="middle" onClick={() => setTransactionType(TRANSACTION.INCOME)}>
+                                                Balansni to’ldirish
+                                            </Button>
+                                            <Button size="middle" onClick={() => setTransactionType(TRANSACTION.OUTCOME)}>
+                                                Balansni yechish
+                                            </Button>
+                                        </Space>
+                                    </BorderBox>
+                                </Col>
+                                {transactionType && (
+                                    <Col span={24}>
+                                        <Payment
+                                            btnText={transactionType === TRANSACTION.INCOME ? 'To’ldirish' : 'Yechish'}
+                                            onClose={() => setTransactionType(undefined)} 
+                                            onSubmit={(data) => makeTransaction(data)}
+                                        />
+                                    </Col>
+                                )}
                                 <Col span={24}>
                                     <Label>Ishchi ma’lumotlari</Label>
                                 </Col>
@@ -131,7 +179,7 @@ export default function StaffDetail() {
                                     </Col>
                                     <Col>
                                         <Space size='small'>
-                                            <Button size='middle' onClick={() => setIsOpenPayment(true)}>
+                                            <Button size='middle'>
                                                 Hisob-kitob qo’shish
                                             </Button>
                                             <CustomDatePicker 
@@ -143,11 +191,6 @@ export default function StaffDetail() {
                                     </Col>
                                 </Row>
                             </Col>
-                            {isOpenPayment && (
-                                <Col span={24}>
-                                    <Payment onClose={() => setIsOpenPayment(false)} />
-                                </Col>
-                            )}
                             <Col span={24}>
                                 <BorderBox className={clsx('bill', true ? 'income' : 'outgoings')}>
                                     <div className='d-flex jc-sb w-100'>

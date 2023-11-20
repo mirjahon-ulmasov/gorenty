@@ -17,7 +17,7 @@ export const staffAPI = staffWithTags.injectEndpoints({
         }),
         fetchStaff: build.query<Staff.DTO, string>({
             query: id => `/staff/${id}/`,
-            providesTags: () => ['Staff'],
+            providesTags: () => ['Staff', 'BranchPaymentLog'],
         }),
         createStaff: build.mutation<unknown, Staff.DTO>({
             query: data => ({

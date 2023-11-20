@@ -1,9 +1,10 @@
-import { ID } from '.'
+import { ID, PAYMENT_CATEGORY, PAYMENT_LOG_STATE, TRANSACTION } from '.'
 import { UploadFile } from 'antd'
 import { Payment } from './payment'
+import { Account, ResultList } from './api'
 
 export declare namespace BranchPayment {
-    export type List = DTO[]
+    type List = DTO[]
 
     interface DTO {
         id: ID
@@ -22,7 +23,33 @@ export declare namespace BranchPayment {
 }
 
 export declare namespace PaymentLog {
+    type List = ResultList<DTO>
+
     interface DTO {
+        branch: {
+            id: ID
+            title: string
+        }
+        branch_payment_log_images: any[]
+        branch_payment_logs: any[]
+        created_at: string
+        creator: Account.DTO
+        customer: ID
+        description: string
+        id: ID
+        is_active: boolean
+        is_debt: boolean
+        object_index: string
+        payment: {
+            id: ID
+            title: string
+        }
+        payment_category: PAYMENT_CATEGORY
+        payment_type: TRANSACTION
+        state: PAYMENT_LOG_STATE
+        total: number
+    }
+    interface DTOLocal {
         total: number
         branch: ID
         creator: ID
@@ -32,7 +59,7 @@ export declare namespace PaymentLog {
         branch_payment_log_images: UploadFile[]
     }
 
-    interface DTOUpload extends Omit<DTO, 'branch_payment_log_images'> {
+    interface DTOUpload extends Omit<DTOLocal, 'branch_payment_log_images'> {
         branch_payment_log_images: ID[]
     }
 
@@ -41,5 +68,11 @@ export declare namespace PaymentLog {
     }
     interface Investor extends DTOUpload {
         investor: ID
+    }
+    interface Staff extends DTOUpload {
+        staff: ID
+    }
+    interface Branch extends DTOUpload {
+        branch_payment: ID
     }
 }

@@ -6,6 +6,8 @@ export interface Route {
     icon: React.ComponentType<{ color: string }>
 }
 
+export type ID = number | string
+
 export enum ROLE {
     ADMIN = 1,
     OPERATOR,
@@ -41,12 +43,18 @@ export enum PAYMENT_METHOD {
     CASH,
 }
 
-export type ID = number | string
+export enum PAYMENT_CATEGORY {
+    TOP_UP_BALANCE = 1,
+    WITHDRAW_BALANCE
+}
 
-// TODO
-export enum DEBT {
-    GORENTY_DEBTS = 1,
-    GORENTY_OWES
+export enum PAYMENT_LOG_STATE {
+    BRANCH = 1,
+    CUSTOMER,
+    INVESTOR,
+    ORDER,
+    STAFF,
+    VEHICLE
 }
 
 export enum TRANSACTION {
@@ -54,4 +62,11 @@ export enum TRANSACTION {
     OUTCOME
 }
 
-export type ALL_STATUS = CLIENT_STATUS | CAR_STATUS | ORDER_STATUS | DEBT | TRANSACTION
+// TODO
+export enum DEBT {
+    GORENTY_DEBTS = 1,
+    GORENTY_OWES
+}
+
+
+export type ALL_STATUS = CLIENT_STATUS | CAR_STATUS | ORDER_STATUS | DEBT | TRANSACTION | PAYMENT_CATEGORY

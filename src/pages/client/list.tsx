@@ -123,7 +123,7 @@ export default function Clients() {
             dataIndex: 'balance',
             key: 'balance',
             sorter: true,
-            render: (_, record) => record.balance?.toLocaleString(),
+            render: (_, record) => `${record.balance?.toLocaleString()} so’m`,
         },
         {
             title: 'Buyurtmalar soni',

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { 
     Button, Col, DatePickerProps, 
@@ -6,14 +6,19 @@ import {
 } from 'antd'
 import clsx from 'clsx'
 import toast from 'react-hot-toast'
+import moment from 'moment'
 import { 
     CustomBreadcrumb, CustomDatePicker, Payment, 
     Status, BillingHistory, BorderBox, IDTag, 
     Label, StyledLink, StyledTextL1, StyledTextL2  
 } from 'components/input'
 import { formatPhone, getStatus } from 'utils/index'
+import { 
+    useCustomerIncomeMutation, useCustomerOutcomeMutation, 
+    useFetchClientQuery, useFetchPaymentLogsQuery 
+} from 'services'
 import { CLIENT_STATUS, ID, TRANSACTION } from 'types/index'
-import { useCustomerIncomeMutation, useCustomerOutcomeMutation, useFetchClientQuery } from 'services'
+import { PaymentLog } from 'types/branch-payment'
 import { TBranch } from 'types/api'
 
 const { Title } = Typography
@@ -21,15 +26,37 @@ const { Title } = Typography
 export default function ClientDetail() {
     const navigate = useNavigate()
     const { clientID } = useParams()
-
     const [transactionType, setTransactionType] = useState<TRANSACTION>();
+
     const { data: client } = useFetchClientQuery(clientID as string)
+    const { data: paymentLogs } = useFetchPaymentLogsQuery({
+        customer: clientID
+    })
+
     const [customerIncome] = useCustomerIncomeMutation()
     const [customerOutcome] = useCustomerOutcomeMutation()
 
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
     };
+
+    const makeTransaction = useCallback((data: PaymentLog.DTOUpload) => {
+        if(transactionType === TRANSACTION.INCOME) {
+            customerIncome({ ...data, customer: clientID as ID }).unwrap()
+                .then(() => {
+                    setTransactionType(undefined)
+                    toast.success("Баланс пополнен")
+                })
+                .catch(() => toast.error("Что-то пошло не так"))
+        } else {
+            customerOutcome({ ...data, customer: clientID as ID }).unwrap()
+                .then(() => {
+                    setTransactionType(undefined)
+                    toast.success("Списано с баланса")
+                })
+                .catch(() => toast.error("Что-то пошло не так"))
+        }
+    }, [clientID, customerIncome, customerOutcome, transactionType])    
 
     return (
         <>
@@ -70,7 +97,7 @@ export default function ClientDetail() {
                                 </Col>
                                 <Col span={24}>
                                     <BorderBox p='20px 12px'>
-                                        <Title level={3}>{client?.balance?.toLocaleString()}</Title>
+                                        <Title level={3}>{client?.balance?.toLocaleString()} so’m</Title>
                                         <Space>
                                             <Button size="middle" onClick={() => setTransactionType(TRANSACTION.INCOME)}>
                                                 Balansni to’ldirish
@@ -86,23 +113,7 @@ export default function ClientDetail() {
                                         <Payment
                                             btnText={transactionType === TRANSACTION.INCOME ? 'To’ldirish' : 'Yechish'}
                                             onClose={() => setTransactionType(undefined)} 
-                                            onSubmit={(data) => {
-                                                if(transactionType === TRANSACTION.INCOME) {
-                                                    customerIncome({ ...data, customer: clientID as ID }).unwrap()
-                                                        .then(() => {
-                                                            setTransactionType(undefined)
-                                                            toast.success("Баланс пополнен")
-                                                        })
-                                                        .catch(() => toast.error("Что-то пошло не так"))
-                                                } else {
-                                                    customerOutcome({ ...data, customer: clientID as ID }).unwrap()
-                                                        .then(() => {
-                                                            setTransactionType(undefined)
-                                                            toast.success("Списано с баланса")
-                                                        })
-                                                        .catch(() => toast.error("Что-то пошло не так"))
-                                                }
-                                            }}
+                                            onSubmit={(data) => makeTransaction(data)}
                                         />
                                     </Col>
                                 )}
@@ -186,28 +197,32 @@ export default function ClientDetail() {
                                     </Col>
                                     <Col>
                                         <Space size='small'>
-                                            <Button size='middle'>
-                                                Harajat qo’shish
-                                            </Button>
                                             <CustomDatePicker placeholder='Sana' size='middle' onChange={onChange} />
                                         </Space>
                                     </Col>
                                 </Row>
                             </Col>
-                            <Col span={24}>
-                                <BorderBox className={clsx('bill', true ? 'income' : 'outgoings')}>
-                                    <div className='d-flex jc-sb w-100'>
-                                        <div className='d-flex ai-start fd-col gap-4'>
-                                            <StyledTextL2>Balans to’ldirish</StyledTextL2>
-                                            <StyledTextL1>Asaka bank</StyledTextL1>
+                            {paymentLogs?.results?.map(log => (
+                                <Col span={24} key={log.id}>
+                                    <BorderBox className={clsx(
+                                        'bill', 
+                                        log.payment_type === TRANSACTION.INCOME ? 'income' : 'outgoings'
+                                    )}>
+                                        <div className='d-flex jc-sb w-100'>
+                                            <div className='d-flex ai-start fd-col gap-4'>
+                                                <StyledTextL2>
+                                                    {getStatus(log.payment_category, 'payment_category')}
+                                                </StyledTextL2>
+                                                <StyledTextL1>{`${log.branch?.title}: ${log.payment?.title}`}</StyledTextL1>
+                                            </div>
+                                            <div className='d-flex ai-end fd-col gap-4'>
+                                                <StyledTextL2>{log.total.toLocaleString()} so’m</StyledTextL2>
+                                                <StyledTextL1>{moment(log.created_at).format('LL')}</StyledTextL1>
+                                            </div>
                                         </div>
-                                        <div className='d-flex ai-end fd-col gap-4'>
-                                            <StyledTextL2>+500 000 so’m</StyledTextL2>
-                                            <StyledTextL1>23-Mart, 2023</StyledTextL1>
-                                        </div>
-                                    </div>
-                                </BorderBox>
-                            </Col>
+                                    </BorderBox>
+                                </Col>
+                            ))}
                             <Col span={24}>
                                 <BorderBox className={clsx('bill', false ? 'income' : 'outgoings')}>
                                     <div className='d-flex jc-sb w-100 gap-4'>
@@ -218,38 +233,6 @@ export default function ClientDetail() {
                                                     Buyurtma N341232
                                                 </Link>    
                                             </StyledTextL1>
-                                        </div>
-                                        <div className='d-flex ai-end fd-col gap-4'>
-                                            <StyledTextL2>+500 000 so’m</StyledTextL2>
-                                            <StyledTextL1>23-Mart, 2023</StyledTextL1>
-                                        </div>
-                                    </div>
-                                </BorderBox>
-                            </Col>
-                            <Col span={24}>
-                                <BorderBox className={clsx('bill', true ? 'income' : 'outgoings')}>
-                                    <div className='d-flex jc-sb w-100'>
-                                        <div className='d-flex ai-start fd-col gap-4'>
-                                            <StyledTextL2>Gai jarima</StyledTextL2>
-                                            <StyledTextL1>
-                                                <Link to={'/order/'.concat('N341232', '/detail')}>
-                                                    Buyurtma N341232
-                                                </Link>
-                                            </StyledTextL1>
-                                        </div>
-                                        <div className='d-flex ai-end fd-col gap-4'>
-                                            <StyledTextL2>+500 000 so’m</StyledTextL2>
-                                            <StyledTextL1>23-Mart, 2023</StyledTextL1>
-                                        </div>
-                                    </div>
-                                </BorderBox>
-                            </Col>
-                            <Col span={24}>
-                                <BorderBox className={clsx('bill', false ? 'income' : 'outgoings')}>
-                                    <div className='d-flex jc-sb w-100'>
-                                        <div className='d-flex ai-start fd-col gap-4'>
-                                            <StyledTextL2>Balansni yechish</StyledTextL2>
-                                            <StyledTextL1>Asaka bank</StyledTextL1>
                                         </div>
                                         <div className='d-flex ai-end fd-col gap-4'>
                                             <StyledTextL2>+500 000 so’m</StyledTextL2>

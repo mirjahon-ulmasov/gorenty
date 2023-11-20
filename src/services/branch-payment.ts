@@ -1,5 +1,5 @@
 import { BranchPayment, PaymentLog } from 'types/branch-payment'
-import { ID } from 'types/index'
+import { ID, PAYMENT_METHOD } from 'types/index'
 import { api } from './baseQuery'
 
 const branchPaymentWithTags = api.enhanceEndpoints({
@@ -13,12 +13,31 @@ interface SearchParams {
     branch_exclude?: ID
 }
 
+interface SearchParamsPaymentLogs {
+    object_index?: ID
+    created_at?: string
+    branch?: ID
+    creator?: ID
+    payment?: ID
+    branch_payment?: ID
+    customer?: ID
+    investor?: ID
+    order?: ID
+    staff?: ID
+    vehicle?: ID
+    debt?: ID
+    payment_category?: ID
+    payment_type?: PAYMENT_METHOD
+    state?: ID
+}
+
 export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
     endpoints: build => ({
         fetchBranchPayments: build.query<BranchPayment.List, SearchParams>({
-            query: () => ({
+            query: params => ({
                 url: '/branch_payment/',
                 method: 'GET',
+                params
             }),
             providesTags: () => ['BranchPayment'],
         }),
@@ -33,6 +52,16 @@ export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
                 body: data,
             }),
             invalidatesTags: ['BranchPayment'],
+        }),
+
+        // -------------- Payment Logs --------------
+        fetchPaymentLogs: build.query<PaymentLog.List, SearchParamsPaymentLogs>({
+            query: params => ({
+                url: '/branch_payment_log/',
+                method: 'GET',
+                params
+            }),
+            providesTags: () => ['BranchPayment'],
         }),
 
         // -------------- Customer --------------
@@ -52,14 +81,60 @@ export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
             }),
             invalidatesTags: ['BranchPaymentLog'],
         }),
-        // updateBranch: build.mutation<unknown, Branch.DTO>({
-        //     query: data => ({
-        //         url: `/branch/${data.id}/`,
-        //         method: 'PUT',
-        //         body: data,
-        //     }),
-        //     invalidatesTags: ['Branch'],
-        // }),
+
+        // -------------- Investor --------------
+        investorIncome: build.mutation<unknown, PaymentLog.Investor>({
+            query: data => ({
+                url: '/branch_payment_log/investor_income/',
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['BranchPaymentLog'],
+        }),
+        investorOutcome: build.mutation<unknown, PaymentLog.Investor>({
+            query: data => ({
+                url: '/branch_payment_log/investor_outcome/',
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['BranchPaymentLog'],
+        }),
+
+        // -------------- Staff --------------
+        staffIncome: build.mutation<unknown, PaymentLog.Staff>({
+            query: data => ({
+                url: '/branch_payment_log/staff_income/',
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['BranchPaymentLog'],
+        }),
+        staffOutcome: build.mutation<unknown, PaymentLog.Staff>({
+            query: data => ({
+                url: '/branch_payment_log/staff_outcome/',
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['BranchPaymentLog'],
+        }),
+
+        // -------------- Branch --------------
+        branchIncome: build.mutation<unknown, PaymentLog.Branch>({
+            query: data => ({
+                url: '/branch_payment_log/branch_income/',
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['BranchPaymentLog'],
+        }),
+        branchOutcome: build.mutation<unknown, PaymentLog.Branch>({
+            query: data => ({
+                url: '/branch_payment_log/branch_outcome/',
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['BranchPaymentLog'],
+        }),
 
         // addBranchImage: build.mutation<
         // { branch: number, id: number, image: number }, 
@@ -84,6 +159,17 @@ export const {
     useFetchBranchPaymentsQuery,
     useCreateBranchPaymentMutation,
 
+    useFetchPaymentLogsQuery,
+
     useCustomerIncomeMutation,
-    useCustomerOutcomeMutation
+    useCustomerOutcomeMutation,
+
+    useInvestorIncomeMutation,
+    useInvestorOutcomeMutation,
+
+    useStaffIncomeMutation,
+    useStaffOutcomeMutation,
+
+    useBranchIncomeMutation,
+    useBranchOutcomeMutation
 } = branchPaymentAPI

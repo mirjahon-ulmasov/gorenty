@@ -73,6 +73,7 @@ export type SearchParams = Partial<{
 export declare namespace Account {
     export interface DTO {
         id: number
+        branch: unknown
         state: ROLE
         full_name: string
         phone_number: string
@@ -170,6 +171,7 @@ export declare namespace Staff {
         full_name: string
         phone_number: string
         address: string
+        balance: number
         passport_number: string
         additional_information: string
         branch: number | TBranch

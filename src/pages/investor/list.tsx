@@ -96,7 +96,7 @@ export default function Investors() {
             dataIndex: 'balanse',
             key: 'balanse',
             sorter: true,
-            render: (_, record) => record.balance?.toLocaleString(),
+            render: (_, record) => `${record.balance?.toLocaleString()} so’m`,
         },
         {
             title: 'Avtomobillar soni',

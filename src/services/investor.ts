@@ -43,15 +43,14 @@ export const investorAPI = investorWithTags.injectEndpoints({
                 method: 'POST',
                 body: data,
             }),
-            // TODO
-            invalidatesTags: ['Investor'],
+            invalidatesTags: ['Investor', 'BranchPaymentLog'],
         }),
         deleteInvestorImage: build.mutation<unknown, { id: number }>({
             query: ({ id }) => ({
                 url: `/investor_image/${id}/`,
                 method: 'DELETE',
             }),
-            invalidatesTags: ['Investor'],
+            invalidatesTags: ['Investor', 'BranchPaymentLog'],
         })
     }),
 })

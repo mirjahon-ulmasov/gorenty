@@ -16,7 +16,7 @@ export const branchAPI = branchWithTags.injectEndpoints({
         }),
         fetchBranch: build.query<Branch.DTO, string>({
             query: id => `/branch/${id}/`,
-            providesTags: () => ['Branch'],
+            providesTags: () => ['Branch', 'BranchPaymentLog'],
         }),
         createBranch: build.mutation<unknown, Branch.DTO>({
             query: data => ({

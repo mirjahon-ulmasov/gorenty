@@ -7,7 +7,7 @@ import {
 } from "components/input";
 import { 
     useFetchPaymentsQuery, useCreateBranchPaymentMutation, 
-    useFetchBranchPaymentsQuery 
+    useFetchBranchPaymentsQuery, useFetchBranchQuery
 } from "services";
 import { BranchPayment } from "types/branch-payment";
 import { formatCardNumber } from "utils/index";
@@ -22,6 +22,7 @@ export default function BranchPayments() {
         branch: branchID as ID,
         payment: ''
     })
+    const { data: branch } = useFetchBranchQuery(branchID as string)
     const { data: payments, isLoading: loadingPayments } = useFetchPaymentsQuery()
     const { data: branchPayments } = useFetchBranchPaymentsQuery({
         branch: branchID
@@ -38,6 +39,8 @@ export default function BranchPayments() {
             <CustomBreadcrumb
                 items={[
                     { title: 'Filiallar', link: '/admin/branch/list' },
+                    { title: branch?.title ?? '-', link: `/admin/branch/${branchID}/detail` },
+                    { title: 'Hisoblar' },
                 ]}
             />
             <Title level={3}>Hisoblar</Title>
@@ -94,7 +97,7 @@ export default function BranchPayments() {
                         {payment.payment.card_date && (
                             <StyledTextL1 fs={16}>{payment.payment.card_date}</StyledTextL1>
                         )}
-                        <StyledTextL2 fs={16}>Balans: {payment.total} so’m</StyledTextL2>
+                        <StyledTextL2 fs={16}>Balans: {payment.total.toLocaleString()} so’m</StyledTextL2>
                     </Card>
                 ))}
             </div>

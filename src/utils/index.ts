@@ -1,7 +1,7 @@
 import dayjs, { Dayjs } from 'dayjs'
-import { CAR_STATUS, CLIENT_STATUS, ORDER_STATUS, ALL_STATUS, PAYMENT_METHOD } from 'types/index'
+import { CAR_STATUS, CLIENT_STATUS, ORDER_STATUS, ALL_STATUS, PAYMENT_METHOD, PAYMENT_CATEGORY } from 'types/index'
 
-export type format = 'client' | 'car' | 'order'
+export type format = 'client' | 'car' | 'order' | 'payment_category'
 
 export function getStatus(value: ALL_STATUS, type: format) {
     switch (type) {
@@ -39,6 +39,16 @@ export function getStatus(value: ALL_STATUS, type: format) {
                     return 'Tugatildi'
                 case ORDER_STATUS.CANCELLED:
                     return 'Bekor qilindi'
+                default:
+                    return 'Unknown'
+            }
+        
+        case 'payment_category': 
+            switch (value) {
+                case PAYMENT_CATEGORY.TOP_UP_BALANCE:
+                    return 'Balans to’ldirish'
+                case PAYMENT_CATEGORY.WITHDRAW_BALANCE:
+                    return 'Balansni yechish'
                 default:
                     return 'Unknown'
             }
