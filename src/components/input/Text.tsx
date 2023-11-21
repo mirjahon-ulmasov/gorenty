@@ -59,6 +59,7 @@ export const LargeLabel = styled(Label)`
 
 export const BorderBox = styled.div<{ bg?: string; p?: string; gap?: string }>`
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     border-radius: 8px;
     border: 1px solid rgba(27, 16, 5, 0.06);
@@ -121,4 +122,13 @@ export const Card = styled.div<{ w?: number, p?: string, gap?: number, ai?: stri
     &:hover {
         background: #FFD9C2;
     }
+`
+
+export const LogList = styled.div<{ mh?: number, gap?: number}>`
+    width: 100%;
+    display: flex;
+    overflow: auto;
+    flex-direction: column;
+    gap: ${props => props.gap ? `${props.gap}px` : '12px'};
+    max-height: ${props => props.mh ? `${props.mh}rem` : '24rem'};
 `

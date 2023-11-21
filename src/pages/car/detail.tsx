@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { 
@@ -17,19 +17,26 @@ import {
     CustomBreadcrumb, Payment, Label, 
     StyledTextL1, StyledTextL2, BorderBox, 
     CustomDatePicker, IDTag, StyledLink, 
-    BillingHistory, Status, CustomUpload  
+    BillingHistory, Status, CustomUpload, LogList  
 } from 'components/input'
 import { BucketFile, CarBrand, Investor } from 'types/api'
 import { 
     useAddCarImageMutation, useBlockCarMutation, 
     useDeleteCarImageMutation, useFetchCarQuery, 
-    useUnblockCarMutation 
-} from 'services/car'
+    useUnblockCarMutation, useCarIncomeMutation,
+    useFetchPaymentLogsQuery,
+    useInvestorCarDebtIncomeMutation
+} from 'services'
 import { LockIcon } from 'components/input'
-import { CAR_STATUS, ROLE } from 'types/index';
+import { CAR_STATUS, ID, ROLE, TRANSACTION } from 'types/index';
 import { formatPlate, getStatus } from 'utils/index';
+import { PaymentLog } from 'types/branch-payment';
 
 const { Title } = Typography
+
+interface LogType extends PaymentLog.DTO {
+    open_payment: boolean
+}
 
 export default function CarDetail() {
     const navigate = useNavigate()
@@ -37,13 +44,28 @@ export default function CarDetail() {
     const [modal, contextHolder] = Modal.useModal();
     const [isOpenPayment, setIsOpenPayment] = useState(false);
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
+    const [logs, setLogs] = useState<LogType[]>([]);
 
-    const [blockCar] = useBlockCarMutation()
-    const [unblockCar] = useUnblockCarMutation()
     const { data: car, isError } = useFetchCarQuery(carID as string)
     const { user } = useAppSelector(state => state.auth)
+    const { data: paymentLogs } = useFetchPaymentLogsQuery({
+        vehicle: carID
+    })
+    
+    const [blockCar] = useBlockCarMutation()
+    const [unblockCar] = useUnblockCarMutation()
     const [addCarImage] = useAddCarImageMutation()
     const [deleteCarImage] = useDeleteCarImageMutation()
+
+    const [carIncome] = useCarIncomeMutation()
+    const [investorCarDebtIncome] = useInvestorCarDebtIncomeMutation()
+
+    useEffect(() => {
+        setLogs(paymentLogs?.results?.map(log => ({
+            ...log,
+            open_payment: false
+        })) || []);
+      }, [paymentLogs]);
 
     useEffect(() => {
         if(isError) return;
@@ -58,6 +80,19 @@ export default function CarDetail() {
             })))
         }
     }, [car, isError])
+
+
+    const changeLog = useCallback((id: ID, key: keyof LogType, value: unknown) => {
+        setLogs(prev => prev.map(log => {
+            if(log.id === id) {
+                return {
+                    ...log,
+                    [key]: value
+                }
+            }
+            return log
+        }))
+    }, [])
 
     // ------------- Image Upload -------------
     function changeImage(data: UploadChangeParam<UploadFile<any>>) {
@@ -107,6 +142,24 @@ export default function CarDetail() {
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
     };
+
+    const addExpense = useCallback((data: PaymentLog.DTOUpload) => {
+        carIncome({ ...data, vehicle: car?.id as ID }).unwrap()
+            .then(() => {
+                setIsOpenPayment(false)
+                toast.success("Harajat qo’shildi")
+            })
+            .catch(() => toast.error("Что-то пошло не так"))
+    }, [car?.id, carIncome])   
+
+    const closeExpense = useCallback((data: PaymentLog.DTOUpload, log: LogType) => {
+        investorCarDebtIncome({ ...data, vehicle: car?.id as ID, debt: log.id }).unwrap()
+            .then(() => {
+                changeLog(log.id, 'open_payment', false)
+                toast.success("Harajat yopildi")
+            })
+            .catch(() => toast.error("Что-то пошло не так"))
+    }, [car?.id, changeLog, investorCarDebtIncome])
 
     const confirm = () => {
         modal.confirm({
@@ -318,10 +371,56 @@ export default function CarDetail() {
                             </Col>
                             {isOpenPayment && (
                                 <Col span={24}>
-                                    <Payment note={true} onClose={() => setIsOpenPayment(false)} />
+                                    <Payment
+                                        btnText="Harajat qo’shish"
+                                        onClose={() => setIsOpenPayment(false)} 
+                                        onSubmit={(data) => addExpense(data)}
+                                    />
                                 </Col>
                             )}
-                            {[
+                            <LogList mh={60}>
+                                {logs.map(log => (
+                                    <BorderBox key={log.id} className={clsx(
+                                        'bill', 
+                                        log.payment_type === TRANSACTION.INCOME ? 'income' : 'outgoings'
+                                    )}>
+                                        <div className='d-flex jc-sb w-100'>
+                                            <div className='d-flex ai-start fd-col gap-4'>
+                                                <StyledTextL2>
+                                                    {getStatus(log.payment_category, 'payment_category')}
+                                                </StyledTextL2>
+                                                <StyledTextL1>
+                                                    {`${log.branch?.title}: ${log.payment?.title}`}
+                                                </StyledTextL1>
+                                            </div>
+                                            <div className='d-flex ai-end fd-col gap-4'>
+                                                <StyledTextL2>
+                                                    {log.total.toLocaleString()} so’m
+                                                </StyledTextL2>
+                                                <StyledTextL1>{moment(log.created_at).format('LL')}</StyledTextL1>
+                                            </div>
+                                        </div>
+                                        <div className='d-flex fd-col ai-start gap-16'>
+                                            {log.is_debt && (
+                                                <Button 
+                                                    type='default' 
+                                                    onClick={() => changeLog(log.id, 'open_payment', true)}
+                                                >
+                                                    Bajarish
+                                                </Button> 
+                                            )}
+                                            {log.open_payment && (
+                                                <Payment
+                                                    btnText="Harajat to’lash"
+                                                    onClose={() => changeLog(log.id, 'open_payment', false)}
+                                                    onSubmit={(data) => closeExpense(data, log)}
+                                                />
+                                            )}
+                                        </div>
+                                    </BorderBox>
+                                ))}
+                            </LogList>
+                            {/* {[
                                 {title: 'Moyka', source: 'Naqd - Sergeli Filial', amount: '300 000 so’m', is_finished: null},
                                 {title: 'Moyka', source: 'Humokarta Tenge Bank', amount: '300 000 so’m', is_finished: null},
                                 {title: 'Remont', source: null, order_id: '0709202300001', amount: '300 000 so’m', is_finished: false},
@@ -360,9 +459,6 @@ export default function CarDetail() {
                                                             <Button type='default' onClick={() => setIsOpenPayment(true)}>
                                                                 Bajarish
                                                             </Button> 
-                                                            {isOpenPayment && (
-                                                                <Payment category={false} amount={false} btnText='Tasdiqlash' onClose={() => setIsOpenPayment(false)} />
-                                                            )}
                                                         </>
                                                     )}
                                                 </>
@@ -370,7 +466,7 @@ export default function CarDetail() {
                                         </div>
                                     </BorderBox>
                                 </Col>
-                            ))}
+                            ))} */}
                         </Row>
                     </BillingHistory>
                 </Col>

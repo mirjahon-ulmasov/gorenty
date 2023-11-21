@@ -1,18 +1,22 @@
 
 import { useCallback, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Button, Col, DatePickerProps, Row, Space, Typography } from 'antd'
 import clsx from 'clsx'
 import toast from 'react-hot-toast'
+import moment from 'moment'
 import { 
     CustomBreadcrumb, CustomDatePicker, Payment, 
     BillingHistory, BorderBox, IDTag, Label, 
-    StyledTextL1, StyledTextL2, SmallImg  
+    StyledTextL1, StyledTextL2, SmallImg, LogList  
 } from 'components/input'
-import { useFetchStaffQuery, useStaffIncomeMutation, useStaffOutcomeMutation } from 'services'
+import { 
+    useFetchStaffQuery, useStaffIncomeMutation, 
+    useStaffOutcomeMutation, useFetchPaymentLogsQuery
+} from 'services'
 import { BucketFile, TBranch, TPosition } from 'types/api'
 import { PaymentLog } from 'types/branch-payment'
-import { formatPhone } from 'utils/index'
+import { formatPhone, getStatus } from 'utils/index'
 import { ID, TRANSACTION } from 'types/index'
 
 const { Title } = Typography
@@ -23,6 +27,10 @@ export default function StaffDetail() {
     const [transactionType, setTransactionType] = useState<TRANSACTION>();
 
     const { data: staff } = useFetchStaffQuery(staffID as string)
+    const { data: paymentLogs } = useFetchPaymentLogsQuery({
+        staff: staffID
+    })
+
     const [staffIncome] = useStaffIncomeMutation()
     const [staffOutcome] = useStaffOutcomeMutation()
 
@@ -173,88 +181,41 @@ export default function StaffDetail() {
                     <BillingHistory>
                         <Row gutter={[0, 16]}>
                             <Col span={24}>
-                                <Row justify='space-between' align='middle' className='gap-8'>
-                                    <Col>
-                                        <Title level={5}>Hisob-kitob tarixi</Title>
-                                    </Col>
-                                    <Col>
-                                        <Space size='small'>
-                                            <Button size='middle'>
-                                                Hisob-kitob qo’shish
-                                            </Button>
-                                            <CustomDatePicker 
-                                                size='middle' 
-                                                placeholder='Sanani tanlang'
-                                                onChange={onChange} 
-                                            />
-                                        </Space>
-                                    </Col>
-                                </Row>
+                                <div className='d-flex jc-sb gap-8 fw-wrap'>
+                                    <Title level={5}>Hisob-kitob tarixi</Title>
+                                    <CustomDatePicker 
+                                        placeholder='Sana' 
+                                        size='middle' 
+                                        onChange={onChange} 
+                                    />
+                                </div>
                             </Col>
-                            <Col span={24}>
-                                <BorderBox className={clsx('bill', true ? 'income' : 'outgoings')}>
-                                    <div className='d-flex jc-sb w-100'>
-                                        <div className='d-flex ai-start fd-col gap-4'>
-                                            <StyledTextL2>Balans to’ldirish</StyledTextL2>
-                                            <StyledTextL1>Asaka bank</StyledTextL1>
+                            <LogList>
+                                {paymentLogs?.results?.map(log => (
+                                    <BorderBox key={log.id} className={clsx(
+                                        'bill', 
+                                        log.payment_type === TRANSACTION.INCOME ? 'income' : 'outgoings'
+                                    )}>
+                                        <div className='d-flex jc-sb w-100'>
+                                            <div className='d-flex ai-start fd-col gap-4'>
+                                                <StyledTextL2>
+                                                    {getStatus(log.payment_category, 'payment_category')}
+                                                </StyledTextL2>
+                                                <StyledTextL1>
+                                                    {`${log.branch?.title}: ${log.payment?.title}`}
+                                                </StyledTextL1>
+                                            </div>
+                                            <div className='d-flex ai-end fd-col gap-4'>
+                                                <StyledTextL2>
+                                                    {log.payment_type === TRANSACTION.INCOME ? "+" : "-"}
+                                                    {log.total.toLocaleString()} so’m
+                                                </StyledTextL2>
+                                                <StyledTextL1>{moment(log.created_at).format('LL')}</StyledTextL1>
+                                            </div>
                                         </div>
-                                        <div className='d-flex ai-end fd-col gap-4'>
-                                            <StyledTextL2>+500 000 so’m</StyledTextL2>
-                                            <StyledTextL1>23-Mart, 2023</StyledTextL1>
-                                        </div>
-                                    </div>
-                                </BorderBox>
-                            </Col>
-                            <Col span={24}>
-                                <BorderBox className={clsx('bill', false ? 'income' : 'outgoings')}>
-                                    <div className='d-flex jc-sb w-100 gap-4'>
-                                        <div className='d-flex ai-start fd-col gap-4'>
-                                            <StyledTextL2>Gorenty jarima</StyledTextL2>
-                                            <StyledTextL1>
-                                                <Link to={'/order/'.concat('N341232', '/detail')}>
-                                                    Buyurtma N341232
-                                                </Link>    
-                                            </StyledTextL1>
-                                        </div>
-                                        <div className='d-flex ai-end fd-col gap-4'>
-                                            <StyledTextL2>+500 000 so’m</StyledTextL2>
-                                            <StyledTextL1>23-Mart, 2023</StyledTextL1>
-                                        </div>
-                                    </div>
-                                </BorderBox>
-                            </Col>
-                            <Col span={24}>
-                                <BorderBox className={clsx('bill', true ? 'income' : 'outgoings')}>
-                                    <div className='d-flex jc-sb w-100'>
-                                        <div className='d-flex ai-start fd-col gap-4'>
-                                            <StyledTextL2>Gai jarima</StyledTextL2>
-                                            <StyledTextL1>
-                                                <Link to={'/order/'.concat('N341232', '/detail')}>
-                                                    Buyurtma N341232
-                                                </Link>
-                                            </StyledTextL1>
-                                        </div>
-                                        <div className='d-flex ai-end fd-col gap-4'>
-                                            <StyledTextL2>+500 000 so’m</StyledTextL2>
-                                            <StyledTextL1>23-Mart, 2023</StyledTextL1>
-                                        </div>
-                                    </div>
-                                </BorderBox>
-                            </Col>
-                            <Col span={24}>
-                                <BorderBox className={clsx('bill', false ? 'income' : 'outgoings')}>
-                                    <div className='d-flex jc-sb w-100'>
-                                        <div className='d-flex ai-start fd-col gap-4'>
-                                            <StyledTextL2>Balansni yechish</StyledTextL2>
-                                            <StyledTextL1>Asaka bank</StyledTextL1>
-                                        </div>
-                                        <div className='d-flex ai-end fd-col gap-4'>
-                                            <StyledTextL2>+500 000 so’m</StyledTextL2>
-                                            <StyledTextL1>23-Mart, 2023</StyledTextL1>
-                                        </div>
-                                    </div>
-                                </BorderBox>
-                            </Col>
+                                    </BorderBox>
+                                ))}
+                            </LogList>
                         </Row>
                     </BillingHistory>
                 </Col>

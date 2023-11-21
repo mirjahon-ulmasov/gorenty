@@ -4,10 +4,12 @@ import {
     Button, Col, Row, Space, Typography, 
 } from 'antd'
 import toast from 'react-hot-toast';
+import clsx from 'clsx';
+import moment from 'moment';
 import { 
     CustomBreadcrumb, Label, StyledTextL1, 
     StyledTextL2, BorderBox, SmallImg,
-    MinusIcon, PlusIcon, BranchPayment
+    MinusIcon, PlusIcon, BranchPayment, LogList
 } from 'components/input'
 import { 
     useBranchIncomeMutation, useBranchOutcomeMutation, 
@@ -15,7 +17,7 @@ import {
 } from 'services';
 import { PaymentLog } from 'types/branch-payment';
 import { ID, TRANSACTION } from 'types/index';
-import { formatPhone } from 'utils/index';
+import { formatPhone, getStatus } from 'utils/index';
 import { BucketFile } from 'types/api'
 
 const { Title } = Typography
@@ -27,7 +29,7 @@ export default function CarDetail() {
 
     const { data: branch } = useFetchBranchQuery(branchID as string)
     const { data: paymentLogs } = useFetchPaymentLogsQuery({
-        branch: branchID
+        branch: branchID,
     })
 
     const [branchIncome] = useBranchIncomeMutation()
@@ -64,7 +66,7 @@ export default function CarDetail() {
                 <Col span={12}>
                     <Row gutter={[24, 24]}>
                         <Col span={24}>
-                            <div className='d-flex jc-sb'>  
+                            <div className='d-flex jc-sb gap-12 fw-wrap'>  
                                 <Title level={3}>{branch?.title ?? '-'}</Title>
                                 <Space size="small">
                                     <Button
@@ -101,10 +103,8 @@ export default function CarDetail() {
                                 <Col span={24}>
                                     <Label>Filialdagi kassa</Label>
                                 </Col>
-                                <Col span={24} className='mt-05'>
-                                    <StyledTextL2 fs={38}>78 000 000 so’m</StyledTextL2>
-                                </Col>
-                                <Col span={24} className='mt-05'>
+                                <BorderBox p='20px 12px' gap='12px' className='w-100'>
+                                    <Title level={2}>78 000 000 so’m</Title>
                                     <Space>
                                         <Button 
                                             size="middle" 
@@ -123,7 +123,7 @@ export default function CarDetail() {
                                             Chiqim qilish
                                         </Button>
                                     </Space>
-                                </Col>
+                                </BorderBox>
                                 {transactionType && (
                                     <Col span={24}>
                                         <BranchPayment
@@ -134,7 +134,33 @@ export default function CarDetail() {
                                         />
                                     </Col>
                                 )}
-                                <Col span={24} className='mt-1'>
+                                <LogList>
+                                    {paymentLogs?.results?.map(log => (
+                                        <BorderBox key={log.id} className={clsx(
+                                            'bill', 
+                                            log.payment_type === TRANSACTION.INCOME ? 'income' : 'outgoings'
+                                        )}>
+                                            <div className='d-flex jc-sb w-100'>
+                                                <div className='d-flex ai-start fd-col gap-4'>
+                                                    <StyledTextL2>
+                                                        {getStatus(log.payment_category, 'payment_category')}
+                                                    </StyledTextL2>
+                                                    <StyledTextL1>
+                                                        {`${log.branch?.title}: ${log.payment?.title}`}
+                                                    </StyledTextL1>
+                                                </div>
+                                                <div className='d-flex ai-end fd-col gap-4'>
+                                                    <StyledTextL2>
+                                                        {log.payment_type === TRANSACTION.INCOME ? "+" : "-"}
+                                                        {log.total.toLocaleString()} so’m
+                                                    </StyledTextL2>
+                                                    <StyledTextL1>{moment(log.created_at).format('LL')}</StyledTextL1>
+                                                </div>
+                                            </div>
+                                        </BorderBox>
+                                    ))}
+                                </LogList>
+                                {/* <Col span={24} className='mt-1'>
                                     <Label>Aktiv pullar</Label>
                                 </Col>
                                 <Col span={24}>
@@ -159,7 +185,7 @@ export default function CarDetail() {
                                             </li>
                                         ))}
                                     </ul>
-                                </Col>
+                                </Col> */}
                             </Row>
                         </Col>
                     </Row>

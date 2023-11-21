@@ -75,4 +75,11 @@ export declare namespace PaymentLog {
     interface Branch extends DTOUpload {
         branch_payment: ID
     }
+
+    interface Vehicle extends DTOUpload {
+        vehicle: ID
+    }
+    interface InvestorVehicleDebt extends Vehicle {
+        debt: ID
+    }
 }

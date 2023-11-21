@@ -10,7 +10,7 @@ import moment from 'moment'
 import { 
     CustomBreadcrumb, CustomDatePicker, Payment, 
     Status, BillingHistory, BorderBox, IDTag, 
-    Label, StyledLink, StyledTextL1, StyledTextL2  
+    Label, StyledLink, StyledTextL1, StyledTextL2, LogList  
 } from 'components/input'
 import { formatPhone, getStatus } from 'utils/index'
 import { 
@@ -96,7 +96,7 @@ export default function ClientDetail() {
                                     <Label>Mijozning joriy balansi</Label>
                                 </Col>
                                 <Col span={24}>
-                                    <BorderBox p='20px 12px'>
+                                    <BorderBox p='20px 12px' gap='12px'>
                                         <Title level={3}>{client?.balance?.toLocaleString()} so’m</Title>
                                         <Space>
                                             <Button size="middle" onClick={() => setTransactionType(TRANSACTION.INCOME)}>
@@ -191,20 +191,18 @@ export default function ClientDetail() {
                     <BillingHistory>
                         <Row gutter={[0, 16]}>
                             <Col span={24}>
-                                <Row justify='space-between' align='middle' className='gap-8'>
-                                    <Col>
-                                        <Title level={5}>Hisob-kitob tarixi</Title>
-                                    </Col>
-                                    <Col>
-                                        <Space size='small'>
-                                            <CustomDatePicker placeholder='Sana' size='middle' onChange={onChange} />
-                                        </Space>
-                                    </Col>
-                                </Row>
+                                <div className='d-flex jc-sb gap-8 fw-wrap'>
+                                    <Title level={5}>Hisob-kitob tarixi</Title>
+                                    <CustomDatePicker 
+                                        placeholder='Sana' 
+                                        size='middle' 
+                                        onChange={onChange} 
+                                    />
+                                </div>
                             </Col>
-                            {paymentLogs?.results?.map(log => (
-                                <Col span={24} key={log.id}>
-                                    <BorderBox className={clsx(
+                            <LogList>
+                                {paymentLogs?.results?.map(log => (
+                                    <BorderBox key={log.id} className={clsx(
                                         'bill', 
                                         log.payment_type === TRANSACTION.INCOME ? 'income' : 'outgoings'
                                     )}>
@@ -213,17 +211,22 @@ export default function ClientDetail() {
                                                 <StyledTextL2>
                                                     {getStatus(log.payment_category, 'payment_category')}
                                                 </StyledTextL2>
-                                                <StyledTextL1>{`${log.branch?.title}: ${log.payment?.title}`}</StyledTextL1>
+                                                <StyledTextL1>
+                                                    {`${log.branch?.title}: ${log.payment?.title}`}
+                                                </StyledTextL1>
                                             </div>
                                             <div className='d-flex ai-end fd-col gap-4'>
-                                                <StyledTextL2>{log.total.toLocaleString()} so’m</StyledTextL2>
+                                                <StyledTextL2>
+                                                    {log.payment_type === TRANSACTION.INCOME ? "+" : "-"}
+                                                    {log.total.toLocaleString()} so’m
+                                                </StyledTextL2>
                                                 <StyledTextL1>{moment(log.created_at).format('LL')}</StyledTextL1>
                                             </div>
                                         </div>
                                     </BorderBox>
-                                </Col>
-                            ))}
-                            <Col span={24}>
+                                ))}
+                            </LogList>
+                            {/* <Col span={24}>
                                 <BorderBox className={clsx('bill', false ? 'income' : 'outgoings')}>
                                     <div className='d-flex jc-sb w-100 gap-4'>
                                         <div className='d-flex ai-start fd-col gap-4'>
@@ -240,7 +243,7 @@ export default function ClientDetail() {
                                         </div>
                                     </div>
                                 </BorderBox>
-                            </Col>
+                            </Col> */}
                         </Row>
                     </BillingHistory>
                 </Col>

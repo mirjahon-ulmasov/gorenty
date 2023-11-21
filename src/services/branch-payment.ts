@@ -13,9 +13,11 @@ interface SearchParams {
     branch_exclude?: ID
 }
 
-interface SearchParamsPaymentLogs {
-    object_index?: ID
+interface PaymentLogsParams {
+    page?: number
+    page_size?: number
     created_at?: string
+    object_index?: ID
     branch?: ID
     creator?: ID
     payment?: ID
@@ -55,13 +57,13 @@ export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
         }),
 
         // -------------- Payment Logs --------------
-        fetchPaymentLogs: build.query<PaymentLog.List, SearchParamsPaymentLogs>({
+        fetchPaymentLogs: build.query<PaymentLog.List, PaymentLogsParams>({
             query: params => ({
                 url: '/branch_payment_log/',
                 method: 'GET',
                 params
             }),
-            providesTags: () => ['BranchPayment'],
+            providesTags: () => ['BranchPaymentLog'],
         }),
 
         // -------------- Customer --------------
@@ -136,6 +138,23 @@ export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
             invalidatesTags: ['BranchPaymentLog'],
         }),
 
+        // -------------- Vehicle --------------
+        carIncome: build.mutation<unknown, PaymentLog.Vehicle>({
+            query: data => ({
+                url: '/branch_payment_log/vehicle_income/',
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['BranchPaymentLog'],
+        }),
+        investorCarDebtIncome: build.mutation<unknown, PaymentLog.InvestorVehicleDebt>({
+            query: data => ({
+                url: '/branch_payment_log/investor_vehicle_debt_income/',
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['BranchPaymentLog'],
+        }),
         // addBranchImage: build.mutation<
         // { branch: number, id: number, image: number }, 
         // { branch: number, image: number }>({
@@ -171,5 +190,8 @@ export const {
     useStaffOutcomeMutation,
 
     useBranchIncomeMutation,
-    useBranchOutcomeMutation
+    useBranchOutcomeMutation,
+
+    useCarIncomeMutation,
+    useInvestorCarDebtIncomeMutation
 } = branchPaymentAPI
