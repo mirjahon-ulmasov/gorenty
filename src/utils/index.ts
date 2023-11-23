@@ -1,7 +1,7 @@
 import dayjs, { Dayjs } from 'dayjs'
 import { CAR_STATUS, CLIENT_STATUS, ORDER_STATUS, ALL_STATUS, PAYMENT_METHOD, PAYMENT_CATEGORY } from 'types/index'
 
-export type format = 'client' | 'car' | 'order' | 'payment_category'
+export type format = 'client' | 'car' | 'order' | 'payment_category' | 'success' | 'danger'
 
 export function getStatus(value: ALL_STATUS, type: format) {
     switch (type) {

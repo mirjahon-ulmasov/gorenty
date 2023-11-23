@@ -1,23 +1,25 @@
-import { useCallback, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useCallback, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { 
     Button, Col, DatePickerProps, 
+    Divider, 
     Row, Space, Typography
 } from 'antd'
-import clsx from 'clsx'
 import toast from 'react-hot-toast'
 import moment from 'moment'
 import { 
     CustomBreadcrumb, CustomDatePicker, Payment, 
     Status, BillingHistory, BorderBox, IDTag, 
-    Label, StyledLink, StyledTextL1, StyledTextL2, LogList  
+    Label, StyledLink, StyledTextL1, StyledTextL2, LogList, ButtonIcon, ArrowDown  
 } from 'components/input'
 import { formatPhone, getStatus } from 'utils/index'
 import { 
-    useCustomerIncomeMutation, useCustomerOutcomeMutation, 
-    useFetchClientQuery, useFetchPaymentLogsQuery 
+    useBranchOrderCustomerDebtOutcomeMutation,
+    useCustomerIncomeMutation, useCustomerOrderDebtIncomeMutation, 
+    useCustomerOutcomeMutation, useFetchClientQuery, 
+    useFetchPaymentLogsQuery 
 } from 'services'
-import { CLIENT_STATUS, ID, TRANSACTION } from 'types/index'
+import { CLIENT_STATUS, ID, PAYMENT_TYPE } from 'types/index'
 import { PaymentLog } from 'types/branch-payment'
 import { TBranch } from 'types/api'
 
@@ -26,7 +28,8 @@ const { Title } = Typography
 export default function ClientDetail() {
     const navigate = useNavigate()
     const { clientID } = useParams()
-    const [transactionType, setTransactionType] = useState<TRANSACTION>();
+    const [transactionType, setTransactionType] = useState<PAYMENT_TYPE>();
+    const [logs, setLogs] = useState<PaymentLog.LogType[]>([]);
 
     const { data: client } = useFetchClientQuery(clientID as string)
     const { data: paymentLogs } = useFetchPaymentLogsQuery({
@@ -35,13 +38,37 @@ export default function ClientDetail() {
 
     const [customerIncome] = useCustomerIncomeMutation()
     const [customerOutcome] = useCustomerOutcomeMutation()
+    const [customerOrderDebtIncome] = useCustomerOrderDebtIncomeMutation()
+    const [branchOrderDebtOutcome] = useBranchOrderCustomerDebtOutcomeMutation()
+
+    useEffect(() => {
+        setLogs(paymentLogs?.results?.map(log => ({
+            ...log,
+            open_payment: false,
+            open_logs: false
+        })) || []);
+    }, [paymentLogs]);
 
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
     };
 
+    // ---------------- Expenses ----------------
+
+    const changeLog = useCallback((id: ID, key: keyof PaymentLog.LogType, value: unknown) => {
+        setLogs(prev => prev.map(log => {
+            if(log.id === id) {
+                return {
+                    ...log,
+                    [key]: value
+                }
+            }
+            return log
+        }))
+    }, [])
+
     const makeTransaction = useCallback((data: PaymentLog.DTOUpload) => {
-        if(transactionType === TRANSACTION.INCOME) {
+        if(transactionType === PAYMENT_TYPE.INCOME) {
             customerIncome({ ...data, customer: clientID as ID }).unwrap()
                 .then(() => {
                     setTransactionType(undefined)
@@ -56,7 +83,35 @@ export default function ClientDetail() {
                 })
                 .catch(() => toast.error("Что-то пошло не так"))
         }
-    }, [clientID, customerIncome, customerOutcome, transactionType])    
+    }, [clientID, customerIncome, customerOutcome, transactionType])
+
+    const closeExpense = useCallback((data: PaymentLog.DTOUpload, log: PaymentLog.LogType) => {
+        if(log.is_applies_to_customer) {
+            customerOrderDebtIncome({ ...data, order: log.order, debt: log.id }).unwrap()
+                .then(() => {
+                    changeLog(log.id, 'open_payment', false)
+                    toast.success("Harajat yopildi")
+                })
+                .catch(() => toast.error("Что-то пошло не так"))
+        } else if(log.is_applies_to_branch) {
+            branchOrderDebtOutcome({ ...data, order: log.order, debt: log.id }).unwrap()
+                .then(() => {
+                    changeLog(log.id, 'open_payment', false)
+                    toast.success("Harajat yopildi")
+                })
+                .catch(() => toast.error("Что-то пошло не так"))
+        }
+
+    }, [branchOrderDebtOutcome, customerOrderDebtIncome, changeLog])
+    
+    function getButtonStyle(open: boolean): React.CSSProperties  {
+        return {
+            display: 'flex', 
+            rotate: `${open ? '180deg' : '0deg'}`,
+            transition: 'ease-in 0.2s'
+        }
+    }
+
 
     return (
         <>
@@ -97,12 +152,14 @@ export default function ClientDetail() {
                                 </Col>
                                 <Col span={24}>
                                     <BorderBox p='20px 12px' gap='12px'>
-                                        <Title level={3}>{client?.balance?.toLocaleString()} so’m</Title>
+                                        <Title level={3}>
+                                            {client?.balance?.toLocaleString()} so’m
+                                        </Title>
                                         <Space>
-                                            <Button size="middle" onClick={() => setTransactionType(TRANSACTION.INCOME)}>
+                                            <Button size="middle" onClick={() => setTransactionType(PAYMENT_TYPE.INCOME)}>
                                                 Balansni to’ldirish
                                             </Button>
-                                            <Button size="middle" onClick={() => setTransactionType(TRANSACTION.OUTCOME)}>
+                                            <Button size="middle" onClick={() => setTransactionType(PAYMENT_TYPE.OUTCOME)}>
                                                 Balansni yechish
                                             </Button>
                                         </Space>
@@ -111,7 +168,7 @@ export default function ClientDetail() {
                                 {transactionType && (
                                     <Col span={24}>
                                         <Payment
-                                            btnText={transactionType === TRANSACTION.INCOME ? 'To’ldirish' : 'Yechish'}
+                                            btnText={transactionType === PAYMENT_TYPE.INCOME ? 'To’ldirish' : 'Yechish'}
                                             onClose={() => setTransactionType(undefined)} 
                                             onSubmit={(data) => makeTransaction(data)}
                                         />
@@ -200,50 +257,88 @@ export default function ClientDetail() {
                                     />
                                 </div>
                             </Col>
-                            <LogList>
-                                {paymentLogs?.results?.map(log => (
-                                    <BorderBox key={log.id} className={clsx(
-                                        'bill', 
-                                        log.payment_type === TRANSACTION.INCOME ? 'income' : 'outgoings'
-                                    )}>
-                                        <div className='d-flex jc-sb w-100'>
-                                            <div className='d-flex ai-start fd-col gap-4'>
+                            <LogList mh={60}>
+                                {logs.map(log => (
+                                    <BorderBox key={log.id} className="bill">
+                                        <div className='d-flex fd-col gap-4 w-100'>
+                                            <div className='d-flex jc-sb w-100'>
+                                                <Status type={(log.is_paid || log.is_paid_immediately) ? 'success' : 'danger'}>
+                                                    {(log.is_paid || log.is_paid_immediately) ? 'To’langan': 'Qarz'}
+                                                </Status>
+                                                <Space>
+                                                    <Status type='client' value={CLIENT_STATUS.NEW}>
+                                                        {log.is_applies_to_branch && 'Filial'}
+                                                        {log.is_applies_to_customer && 'Mijoz'}
+                                                    </Status>
+                                                    {!!log.branch_payment_logs?.length && (
+                                                        <ButtonIcon onClick={() => changeLog(log.id, 'open_logs', !log.open_logs)}>
+                                                            <span style={getButtonStyle(log.open_logs)}>
+                                                                <ArrowDown />
+                                                            </span>
+                                                        </ButtonIcon>
+                                                    )}
+                                                </Space>
+                                            </div>
+                                            <div className='d-flex jc-sb w-100'>
                                                 <StyledTextL2>
                                                     {getStatus(log.payment_category, 'payment_category')}
                                                 </StyledTextL2>
+                                                <StyledTextL2 fs={18}>{log.total.toLocaleString()} so’m</StyledTextL2>
+                                            </div>
+                                            <div className='d-flex jc-sb w-100'>
+                                                <Space>
+                                                    <StyledLink fs={14} fw={500} to={`/admin/branch/${log.branch?.id}/detail`}>
+                                                        {log.branch?.title}
+                                                    </StyledLink>
+                                                    <StyledTextL1>{log.payment?.title}</StyledTextL1>
+                                                </Space>
                                                 <StyledTextL1>
-                                                    {`${log.branch?.title}: ${log.payment?.title}`}
+                                                    {moment(log.created_at).format('LL')}
                                                 </StyledTextL1>
                                             </div>
-                                            <div className='d-flex ai-end fd-col gap-4'>
-                                                <StyledTextL2>
-                                                    {log.payment_type === TRANSACTION.INCOME ? "+" : "-"}
-                                                    {log.total.toLocaleString()} so’m
-                                                </StyledTextL2>
-                                                <StyledTextL1>{moment(log.created_at).format('LL')}</StyledTextL1>
-                                            </div>
+                                            {(log.is_debt && !log.is_paid) && (
+                                                <div className='d-flex jc-sb mt-05 w-100'>
+                                                    <Button type='primary' onClick={() => changeLog(log.id, 'open_payment', true)}>
+                                                        To’lash
+                                                    </Button>
+                                                    <StyledTextL2 color='#ff4d4f'>
+                                                        Qoldiq: {log.remain?.toLocaleString()} so’m
+                                                    </StyledTextL2>
+                                                </div>
+                                            )}
+                                            {log.open_logs && (
+                                                <div className='d-flex fd-col gap-8 w-100'>
+                                                    <Divider style={{ background: '#FFBD99', margin: '8px 0' }} />
+                                                    {log.branch_payment_logs.map(el => (
+                                                        <div className='d-flex fd-col w-100'>
+                                                            <div className='d-flex jc-sb w-100'>
+                                                                <StyledTextL1>{el.branch?.title}</StyledTextL1>
+                                                                <StyledTextL2 fs={16}>{el.total.toLocaleString()} so’m</StyledTextL2>
+                                                            </div>
+                                                            <div className='d-flex jc-sb w-100'>
+                                                                <StyledTextL1>{el.payment?.title}</StyledTextL1>
+                                                                <StyledTextL1>
+                                                                    {moment(el.created_at).format('LL')}
+                                                                </StyledTextL1>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            {log.open_payment && (
+                                                <div className='mt-05'>
+                                                    <Payment
+                                                        log={log}
+                                                        btnText="Harajat to’lash"
+                                                        onClose={() => changeLog(log.id, 'open_payment', false)}
+                                                        onSubmit={(data) => closeExpense(data, log)}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </BorderBox>
                                 ))}
                             </LogList>
-                            {/* <Col span={24}>
-                                <BorderBox className={clsx('bill', false ? 'income' : 'outgoings')}>
-                                    <div className='d-flex jc-sb w-100 gap-4'>
-                                        <div className='d-flex ai-start fd-col gap-4'>
-                                            <StyledTextL2>Gorenty jarima</StyledTextL2>
-                                            <StyledTextL1>
-                                                <Link to={'/order/'.concat('N341232', '/detail')}>
-                                                    Buyurtma N341232
-                                                </Link>    
-                                            </StyledTextL1>
-                                        </div>
-                                        <div className='d-flex ai-end fd-col gap-4'>
-                                            <StyledTextL2>+500 000 so’m</StyledTextL2>
-                                            <StyledTextL1>23-Mart, 2023</StyledTextL1>
-                                        </div>
-                                    </div>
-                                </BorderBox>
-                            </Col> */}
                         </Row>
                     </BillingHistory>
                 </Col>

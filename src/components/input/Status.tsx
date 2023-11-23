@@ -68,4 +68,21 @@ export const Status = styled.span<{ value?: ALL_STATUS; type?: format }>`
             background: #f0fff5;
             border: 1px solid #1bbe72;
         `}
+
+    // ---------------- Log Status ----------------
+    ${props =>
+        props.type === 'success' &&
+        css`
+            color: #1bbe72;
+            background: #f0fff5;
+            border: 1px solid #1bbe72;
+        `}
+
+    ${props =>
+        props.type === 'danger' &&
+        css`
+            color: #ff4d4f;
+            background: #fff1f0;
+            border: 1px solid #ffa39e;
+        `}
 `

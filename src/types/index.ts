@@ -48,6 +48,11 @@ export enum PAYMENT_CATEGORY {
     WITHDRAW_BALANCE
 }
 
+export enum PAYMENT_TYPE {
+    INCOME = 1,
+    OUTCOME
+}
+
 export enum PAYMENT_LOG_STATE {
     BRANCH = 1,
     CUSTOMER,
@@ -57,11 +62,6 @@ export enum PAYMENT_LOG_STATE {
     VEHICLE
 }
 
-export enum TRANSACTION {
-    INCOME = 1,
-    OUTCOME
-}
-
 // TODO
 export enum DEBT {
     GORENTY_DEBTS = 1,
@@ -69,4 +69,4 @@ export enum DEBT {
 }
 
 
-export type ALL_STATUS = CLIENT_STATUS | CAR_STATUS | ORDER_STATUS | DEBT | TRANSACTION | PAYMENT_CATEGORY
+export type ALL_STATUS = CLIENT_STATUS | CAR_STATUS | ORDER_STATUS | DEBT | PAYMENT_TYPE | PAYMENT_CATEGORY

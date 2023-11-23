@@ -16,7 +16,7 @@ import {
     useFetchBranchQuery, useFetchPaymentLogsQuery 
 } from 'services';
 import { PaymentLog } from 'types/branch-payment';
-import { ID, TRANSACTION } from 'types/index';
+import { ID, PAYMENT_TYPE } from 'types/index';
 import { formatPhone, getStatus } from 'utils/index';
 import { BucketFile } from 'types/api'
 
@@ -25,7 +25,7 @@ const { Title } = Typography
 export default function CarDetail() {
     const navigate = useNavigate()
     const { branchID } = useParams()
-    const [transactionType, setTransactionType] = useState<TRANSACTION>();
+    const [transactionType, setTransactionType] = useState<PAYMENT_TYPE>();
 
     const { data: branch } = useFetchBranchQuery(branchID as string)
     const { data: paymentLogs } = useFetchPaymentLogsQuery({
@@ -36,7 +36,7 @@ export default function CarDetail() {
     const [branchOutcome] = useBranchOutcomeMutation()
     
     const makeTransaction = useCallback((data: PaymentLog.Branch) => {
-        if(transactionType === TRANSACTION.INCOME) {
+        if(transactionType === PAYMENT_TYPE.INCOME) {
             branchIncome(data).unwrap()
                 .then(() => {
                     setTransactionType(undefined)
@@ -110,7 +110,7 @@ export default function CarDetail() {
                                             size="middle" 
                                             className="d-flex"
                                             icon={<PlusIcon />}
-                                            onClick={() => setTransactionType(TRANSACTION.INCOME)} 
+                                            onClick={() => setTransactionType(PAYMENT_TYPE.INCOME)} 
                                         >
                                             Kirim qilish
                                         </Button>
@@ -118,7 +118,7 @@ export default function CarDetail() {
                                             size="middle" 
                                             className="d-flex"
                                             icon={<MinusIcon />}
-                                            onClick={() => setTransactionType(TRANSACTION.OUTCOME)}
+                                            onClick={() => setTransactionType(PAYMENT_TYPE.OUTCOME)}
                                         >
                                             Chiqim qilish
                                         </Button>
@@ -130,7 +130,7 @@ export default function CarDetail() {
                                             branch={branch?.id as ID}
                                             onClose={() => setTransactionType(undefined)} 
                                             onSubmit={(data) => makeTransaction(data)}
-                                            btnText={transactionType === TRANSACTION.INCOME ? 'Kirim' : 'Chiqim'}
+                                            btnText={transactionType === PAYMENT_TYPE.INCOME ? 'Kirim' : 'Chiqim'}
                                         />
                                     </Col>
                                 )}
@@ -138,7 +138,7 @@ export default function CarDetail() {
                                     {paymentLogs?.results?.map(log => (
                                         <BorderBox key={log.id} className={clsx(
                                             'bill', 
-                                            log.payment_type === TRANSACTION.INCOME ? 'income' : 'outgoings'
+                                            log.payment_type === PAYMENT_TYPE.INCOME ? 'income' : 'outgoings'
                                         )}>
                                             <div className='d-flex jc-sb w-100'>
                                                 <div className='d-flex ai-start fd-col gap-4'>
@@ -151,8 +151,8 @@ export default function CarDetail() {
                                                 </div>
                                                 <div className='d-flex ai-end fd-col gap-4'>
                                                     <StyledTextL2>
-                                                        {log.payment_type === TRANSACTION.INCOME ? "+" : "-"}
-                                                        {log.total.toLocaleString()} so’m
+                                                        {log.payment_type === PAYMENT_TYPE.INCOME ? "+" : "-"}
+                                                        {log.total?.toLocaleString()} so’m
                                                     </StyledTextL2>
                                                     <StyledTextL1>{moment(log.created_at).format('LL')}</StyledTextL1>
                                                 </div>

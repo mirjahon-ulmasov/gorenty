@@ -1,13 +1,11 @@
-
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { 
     Button, Col, DatePickerProps, 
     Row, Space, Typography, 
-    Checkbox, Modal, UploadFile
+    Modal, UploadFile, Divider
 } from 'antd'
-import clsx from 'clsx';
 import moment from 'moment'
 import { UploadChangeParam } from 'antd/es/upload';
 import { v4 as uuid } from 'uuid'
@@ -17,26 +15,22 @@ import {
     CustomBreadcrumb, Payment, Label, 
     StyledTextL1, StyledTextL2, BorderBox, 
     CustomDatePicker, IDTag, StyledLink, 
-    BillingHistory, Status, CustomUpload, LogList  
+    BillingHistory, Status, CustomUpload, LogList, ArrowDown, ButtonIcon  
 } from 'components/input'
 import { BucketFile, CarBrand, Investor } from 'types/api'
 import { 
     useAddCarImageMutation, useBlockCarMutation, 
     useDeleteCarImageMutation, useFetchCarQuery, 
     useUnblockCarMutation, useCarIncomeMutation,
-    useFetchPaymentLogsQuery,
-    useInvestorCarDebtIncomeMutation
+    useFetchPaymentLogsQuery, useInvestorCarDebtIncomeMutation,
+    useBranchCarDebtOutcomeMutation
 } from 'services'
 import { LockIcon } from 'components/input'
-import { CAR_STATUS, ID, ROLE, TRANSACTION } from 'types/index';
+import { CAR_STATUS, ID, ROLE, CLIENT_STATUS } from 'types/index';
 import { formatPlate, getStatus } from 'utils/index';
 import { PaymentLog } from 'types/branch-payment';
 
 const { Title } = Typography
-
-interface LogType extends PaymentLog.DTO {
-    open_payment: boolean
-}
 
 export default function CarDetail() {
     const navigate = useNavigate()
@@ -44,7 +38,7 @@ export default function CarDetail() {
     const [modal, contextHolder] = Modal.useModal();
     const [isOpenPayment, setIsOpenPayment] = useState(false);
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
-    const [logs, setLogs] = useState<LogType[]>([]);
+    const [logs, setLogs] = useState<PaymentLog.LogType[]>([]);
 
     const { data: car, isError } = useFetchCarQuery(carID as string)
     const { user } = useAppSelector(state => state.auth)
@@ -59,11 +53,13 @@ export default function CarDetail() {
 
     const [carIncome] = useCarIncomeMutation()
     const [investorCarDebtIncome] = useInvestorCarDebtIncomeMutation()
+    const [branchCarDebtOutcome] = useBranchCarDebtOutcomeMutation()
 
     useEffect(() => {
         setLogs(paymentLogs?.results?.map(log => ({
             ...log,
-            open_payment: false
+            open_payment: false,
+            open_logs: false
         })) || []);
       }, [paymentLogs]);
 
@@ -80,19 +76,6 @@ export default function CarDetail() {
             })))
         }
     }, [car, isError])
-
-
-    const changeLog = useCallback((id: ID, key: keyof LogType, value: unknown) => {
-        setLogs(prev => prev.map(log => {
-            if(log.id === id) {
-                return {
-                    ...log,
-                    [key]: value
-                }
-            }
-            return log
-        }))
-    }, [])
 
     // ------------- Image Upload -------------
     function changeImage(data: UploadChangeParam<UploadFile<any>>) {
@@ -137,11 +120,25 @@ export default function CarDetail() {
             })
     }
 
-    // --------------------------
+    // ---------------------------------------------
 
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
     };
+
+    // ---------------- Expenses ----------------
+
+    const changeLog = useCallback((id: ID, key: keyof PaymentLog.LogType, value: unknown) => {
+        setLogs(prev => prev.map(log => {
+            if(log.id === id) {
+                return {
+                    ...log,
+                    [key]: value
+                }
+            }
+            return log
+        }))
+    }, [])
 
     const addExpense = useCallback((data: PaymentLog.DTOUpload) => {
         carIncome({ ...data, vehicle: car?.id as ID }).unwrap()
@@ -152,14 +149,35 @@ export default function CarDetail() {
             .catch(() => toast.error("Что-то пошло не так"))
     }, [car?.id, carIncome])   
 
-    const closeExpense = useCallback((data: PaymentLog.DTOUpload, log: LogType) => {
-        investorCarDebtIncome({ ...data, vehicle: car?.id as ID, debt: log.id }).unwrap()
-            .then(() => {
-                changeLog(log.id, 'open_payment', false)
-                toast.success("Harajat yopildi")
-            })
-            .catch(() => toast.error("Что-то пошло не так"))
-    }, [car?.id, changeLog, investorCarDebtIncome])
+    const closeExpense = useCallback((data: PaymentLog.DTOUpload, log: PaymentLog.LogType) => {
+        if(log.is_applies_to_investor) {
+            investorCarDebtIncome({ ...data, vehicle: car?.id as ID, debt: log.id }).unwrap()
+                .then(() => {
+                    changeLog(log.id, 'open_payment', false)
+                    toast.success("Harajat yopildi")
+                })
+                .catch(() => toast.error("Что-то пошло не так"))
+        } else if(log.is_applies_to_branch) {
+            branchCarDebtOutcome({ ...data, vehicle: car?.id as ID, debt: log.id }).unwrap()
+                .then(() => {
+                    changeLog(log.id, 'open_payment', false)
+                    toast.success("Harajat yopildi")
+                })
+                .catch(() => toast.error("Что-то пошло не так"))
+        }
+
+    }, [branchCarDebtOutcome, car?.id, changeLog, investorCarDebtIncome])
+
+
+    function getButtonStyle(open: boolean): React.CSSProperties  {
+        return {
+            display: 'flex', 
+            rotate: `${open ? '180deg' : '0deg'}`,
+            transition: 'ease-in 0.2s'
+        }
+    }
+
+    // ---------------------------------------------
 
     const confirm = () => {
         modal.confirm({
@@ -182,6 +200,7 @@ export default function CarDetail() {
             centered: true
         });
     };
+
 
     return (
         <>
@@ -380,93 +399,86 @@ export default function CarDetail() {
                             )}
                             <LogList mh={60}>
                                 {logs.map(log => (
-                                    <BorderBox key={log.id} className={clsx(
-                                        'bill', 
-                                        log.payment_type === TRANSACTION.INCOME ? 'income' : 'outgoings'
-                                    )}>
-                                        <div className='d-flex jc-sb w-100'>
-                                            <div className='d-flex ai-start fd-col gap-4'>
+                                    <BorderBox key={log.id} className="bill">
+                                        <div className='d-flex fd-col gap-4 w-100'>
+                                            <div className='d-flex jc-sb w-100'>
+                                                <Status type={(log.is_paid || log.is_paid_immediately) ? 'success' : 'danger'}>
+                                                    {(log.is_paid || log.is_paid_immediately) ? 'To’langan': 'Qarz'}
+                                                </Status>
+                                                <Space>
+                                                    <Status type='client' value={CLIENT_STATUS.NEW}>
+                                                        {log.is_applies_to_branch && 'Filial'}
+                                                        {log.is_applies_to_investor && 'Investor'}
+                                                    </Status>
+                                                    {!!log.branch_payment_logs?.length && (
+                                                        <ButtonIcon onClick={() => changeLog(log.id, 'open_logs', !log.open_logs)}>
+                                                            <span style={getButtonStyle(log.open_logs)}>
+                                                                <ArrowDown />
+                                                            </span>
+                                                        </ButtonIcon>
+                                                    )}
+                                                </Space>
+                                            </div>
+                                            <div className='d-flex jc-sb w-100'>
                                                 <StyledTextL2>
                                                     {getStatus(log.payment_category, 'payment_category')}
                                                 </StyledTextL2>
+                                                <StyledTextL2 fs={18}>{log.total.toLocaleString()} so’m</StyledTextL2>
+                                            </div>
+                                            <div className='d-flex jc-sb w-100'>
+                                                <Space>
+                                                    <StyledLink fs={14} fw={500} to={`/admin/branch/${log.branch?.id}/detail`}>
+                                                        {log.branch?.title}
+                                                    </StyledLink>
+                                                    <StyledTextL1>{log.payment?.title}</StyledTextL1>
+                                                </Space>
                                                 <StyledTextL1>
-                                                    {`${log.branch?.title}: ${log.payment?.title}`}
+                                                    {moment(log.created_at).format('LL')}
                                                 </StyledTextL1>
                                             </div>
-                                            <div className='d-flex ai-end fd-col gap-4'>
-                                                <StyledTextL2>
-                                                    {log.total.toLocaleString()} so’m
-                                                </StyledTextL2>
-                                                <StyledTextL1>{moment(log.created_at).format('LL')}</StyledTextL1>
-                                            </div>
-                                        </div>
-                                        <div className='d-flex fd-col ai-start gap-16'>
-                                            {log.is_debt && (
-                                                <Button 
-                                                    type='default' 
-                                                    onClick={() => changeLog(log.id, 'open_payment', true)}
-                                                >
-                                                    Bajarish
-                                                </Button> 
+                                            {(log.is_debt && !log.is_paid) && (
+                                                <div className='d-flex jc-sb mt-05 w-100'>
+                                                    <Button type='primary' onClick={() => changeLog(log.id, 'open_payment', true)}>
+                                                        To’lash
+                                                    </Button>
+                                                    <StyledTextL2 color='#ff4d4f'>
+                                                        Qoldiq: {log.remain?.toLocaleString()} so’m
+                                                    </StyledTextL2>
+                                                </div>
+                                            )}
+                                            {log.open_logs && (
+                                                <div className='d-flex fd-col gap-8 w-100'>
+                                                    <Divider style={{ background: '#FFBD99', margin: '8px 0' }} />
+                                                    {log.branch_payment_logs.map(el => (
+                                                        <div className='d-flex fd-col w-100'>
+                                                            <div className='d-flex jc-sb w-100'>
+                                                                <StyledTextL1>{el.branch?.title}</StyledTextL1>
+                                                                <StyledTextL2 fs={16}>{el.total.toLocaleString()} so’m</StyledTextL2>
+                                                            </div>
+                                                            <div className='d-flex jc-sb w-100'>
+                                                                <StyledTextL1>{el.payment?.title}</StyledTextL1>
+                                                                <StyledTextL1>
+                                                                    {moment(el.created_at).format('LL')}
+                                                                </StyledTextL1>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             )}
                                             {log.open_payment && (
-                                                <Payment
-                                                    btnText="Harajat to’lash"
-                                                    onClose={() => changeLog(log.id, 'open_payment', false)}
-                                                    onSubmit={(data) => closeExpense(data, log)}
-                                                />
+                                                <div className='mt-05'>
+                                                    <Payment
+                                                        log={log}
+                                                        btnText="Harajat to’lash"
+                                                        onClose={() => changeLog(log.id, 'open_payment', false)}
+                                                        onSubmit={(data) => closeExpense(data, log)}
+                                                    />
+                                                </div>
                                             )}
                                         </div>
                                     </BorderBox>
                                 ))}
                             </LogList>
-                            {/* {[
-                                {title: 'Moyka', source: 'Naqd - Sergeli Filial', amount: '300 000 so’m', is_finished: null},
-                                {title: 'Moyka', source: 'Humokarta Tenge Bank', amount: '300 000 so’m', is_finished: null},
-                                {title: 'Remont', source: null, order_id: '0709202300001', amount: '300 000 so’m', is_finished: false},
-                                {title: 'Remont', source: 'Humokarta Tenge Bank', order_id: '0709202300002', amount: '300 000 so’m', is_finished: true}
-                            ].map((el, index) => (
-                                <Col span={24} key={index}>
-                                    <BorderBox className={clsx('bill', (el.is_finished || el.is_finished === null) ? 'income' : 'outgoings')}>
-                                        <div className='d-flex fd-col ai-start gap-12 w-100'>
-                                            <div className='d-flex jc-sb w-100'>
-                                                <div className='d-flex ai-start fd-col gap-4'>
-                                                    <StyledTextL2>{el.title}</StyledTextL2>
-                                                    <StyledTextL1>
-                                                        {el.order_id 
-                                                            ? (
-                                                                <Link to={'/order/'.concat('N341232', '/detail')}>
-                                                                    Buyurtma {el.order_id}
-                                                                </Link>
-                                                            )  
-                                                            : el.source
-                                                        }
-                                                    </StyledTextL1>
-                                                </div>
-                                                <div className='d-flex ai-end fd-col gap-4'>
-                                                    <StyledTextL2>{el.amount}</StyledTextL2>
-                                                    <StyledTextL1>23-Mart, 2023</StyledTextL1>
-                                                </div>
-                                            </div>
-                                            {el.is_finished !== null && (
-                                                <>
-                                                    {el.is_finished ? (
-                                                        <Checkbox checked={el.is_finished}>
-                                                            <StyledTextL1 fs={16}>Bajarildi (14:00, 28-mart, 2023 y)</StyledTextL1>
-                                                        </Checkbox>
-                                                    ) : (
-                                                        <>
-                                                            <Button type='default' onClick={() => setIsOpenPayment(true)}>
-                                                                Bajarish
-                                                            </Button> 
-                                                        </>
-                                                    )}
-                                                </>
-                                            )}
-                                        </div>
-                                    </BorderBox>
-                                </Col>
-                            ))} */}
                         </Row>
                     </BillingHistory>
                 </Col>

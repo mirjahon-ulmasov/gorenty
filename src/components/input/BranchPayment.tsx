@@ -138,7 +138,7 @@ export const BranchPayment = memo((props: PropTypes) => {
                                 loading={sourcePaymentsLoading}
                                 options={sourcePayments?.map(el => ({
                                     value: el.payment.id,
-                                    label: `${el.payment.title}: ${el.total.toLocaleString()}`
+                                    label: `${el.payment.title}: ${el.total?.toLocaleString()}`
                                 }))}
                                 value={state.payment || undefined}
                                 onChange={el => changeState('payment', el)}
@@ -181,7 +181,7 @@ export const BranchPayment = memo((props: PropTypes) => {
                                 loading={destPaymentsLoading}
                                 options={destPayments?.map(el => ({
                                     value: el.id,
-                                    label: `${el.payment.title}: ${el.total.toLocaleString()}`
+                                    label: `${el.payment.title}: ${el.total?.toLocaleString()}`
                                 }))}
                                 value={state.branch_payment || undefined}
                                 onChange={el => changeState('branch_payment', el)}

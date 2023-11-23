@@ -97,7 +97,7 @@ export default function BranchPayments() {
                         {payment.payment.card_date && (
                             <StyledTextL1 fs={16}>{payment.payment.card_date}</StyledTextL1>
                         )}
-                        <StyledTextL2 fs={16}>Balans: {payment.total.toLocaleString()} so’m</StyledTextL2>
+                        <StyledTextL2 fs={16}>Balans: {payment.total?.toLocaleString()} so’m</StyledTextL2>
                     </Card>
                 ))}
             </div>

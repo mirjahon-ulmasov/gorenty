@@ -17,7 +17,7 @@ export const investorAPI = investorWithTags.injectEndpoints({
         }),
         fetchInvestor: build.query<Investor.DTO, string>({
             query: id => `/investor/${id}/`,
-            providesTags: () => ['Investor'],
+            providesTags: () => ['Investor', 'BranchPaymentLog'],
         }),
         createInvestor: build.mutation<unknown, Investor.DTO>({
             query: data => ({
@@ -43,14 +43,14 @@ export const investorAPI = investorWithTags.injectEndpoints({
                 method: 'POST',
                 body: data,
             }),
-            invalidatesTags: ['Investor', 'BranchPaymentLog'],
+            invalidatesTags: ['Investor'],
         }),
         deleteInvestorImage: build.mutation<unknown, { id: number }>({
             query: ({ id }) => ({
                 url: `/investor_image/${id}/`,
                 method: 'DELETE',
             }),
-            invalidatesTags: ['Investor', 'BranchPaymentLog'],
+            invalidatesTags: ['Investor'],
         })
     }),
 })

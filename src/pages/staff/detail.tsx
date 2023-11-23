@@ -17,14 +17,14 @@ import {
 import { BucketFile, TBranch, TPosition } from 'types/api'
 import { PaymentLog } from 'types/branch-payment'
 import { formatPhone, getStatus } from 'utils/index'
-import { ID, TRANSACTION } from 'types/index'
+import { ID, PAYMENT_TYPE } from 'types/index'
 
 const { Title } = Typography
 
 export default function StaffDetail() {
     const navigate = useNavigate()
     const { staffID } = useParams()
-    const [transactionType, setTransactionType] = useState<TRANSACTION>();
+    const [transactionType, setTransactionType] = useState<PAYMENT_TYPE>();
 
     const { data: staff } = useFetchStaffQuery(staffID as string)
     const { data: paymentLogs } = useFetchPaymentLogsQuery({
@@ -39,7 +39,7 @@ export default function StaffDetail() {
     };
     
     const makeTransaction = useCallback((data: PaymentLog.DTOUpload) => {
-        if(transactionType === TRANSACTION.INCOME) {
+        if(transactionType === PAYMENT_TYPE.INCOME) {
             staffIncome({ ...data, staff: staffID as ID }).unwrap()
                 .then(() => {
                     setTransactionType(undefined)
@@ -95,10 +95,10 @@ export default function StaffDetail() {
                                     <BorderBox p='20px 12px'>
                                         <Title level={3}>{staff?.balance?.toLocaleString()} so’m</Title>
                                         <Space>
-                                            <Button size="middle" onClick={() => setTransactionType(TRANSACTION.INCOME)}>
+                                            <Button size="middle" onClick={() => setTransactionType(PAYMENT_TYPE.INCOME)}>
                                                 Balansni to’ldirish
                                             </Button>
-                                            <Button size="middle" onClick={() => setTransactionType(TRANSACTION.OUTCOME)}>
+                                            <Button size="middle" onClick={() => setTransactionType(PAYMENT_TYPE.OUTCOME)}>
                                                 Balansni yechish
                                             </Button>
                                         </Space>
@@ -107,7 +107,7 @@ export default function StaffDetail() {
                                 {transactionType && (
                                     <Col span={24}>
                                         <Payment
-                                            btnText={transactionType === TRANSACTION.INCOME ? 'To’ldirish' : 'Yechish'}
+                                            btnText={transactionType === PAYMENT_TYPE.INCOME ? 'To’ldirish' : 'Yechish'}
                                             onClose={() => setTransactionType(undefined)} 
                                             onSubmit={(data) => makeTransaction(data)}
                                         />
@@ -194,7 +194,7 @@ export default function StaffDetail() {
                                 {paymentLogs?.results?.map(log => (
                                     <BorderBox key={log.id} className={clsx(
                                         'bill', 
-                                        log.payment_type === TRANSACTION.INCOME ? 'income' : 'outgoings'
+                                        log.payment_type === PAYMENT_TYPE.INCOME ? 'income' : 'outgoings'
                                     )}>
                                         <div className='d-flex jc-sb w-100'>
                                             <div className='d-flex ai-start fd-col gap-4'>
@@ -207,7 +207,7 @@ export default function StaffDetail() {
                                             </div>
                                             <div className='d-flex ai-end fd-col gap-4'>
                                                 <StyledTextL2>
-                                                    {log.payment_type === TRANSACTION.INCOME ? "+" : "-"}
+                                                    {log.payment_type === PAYMENT_TYPE.INCOME ? "+" : "-"}
                                                     {log.total.toLocaleString()} so’m
                                                 </StyledTextL2>
                                                 <StyledTextL1>{moment(log.created_at).format('LL')}</StyledTextL1>

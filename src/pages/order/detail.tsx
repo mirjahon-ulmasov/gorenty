@@ -1,5 +1,5 @@
 
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
@@ -21,17 +21,23 @@ import {
     CustomBreadcrumb, Payment, Status, 
     Label, StyledTextL1, StyledTextL2, 
     OrderCard, BorderBox, CustomDatePicker, 
-    CustomUpload  
+    CustomUpload,  
+    LogList
 } from 'components/input'
 import { 
     useActivateOrderMutation, useAddOrderImageMutation, 
     useCancelOrderMutation, useDeleteOrderImageMutation, 
-    useFetchOrderQuery, useFinishOrderMutation 
+    useFetchOrderQuery, useFinishOrderMutation, 
+    useOrderIncomeMutation, useFetchPaymentLogsQuery,
+    useCustomerOrderDebtIncomeMutation,
+    useBranchOrderCustomerDebtOutcomeMutation
 } from 'services';
-import { CLIENT_STATUS, ORDER_STATUS, ROLE } from 'types/index'
+import { CLIENT_STATUS, ID, ORDER_STATUS, PAYMENT_TYPE, ROLE } from 'types/index'
 import { disabledDate, formatPlate, getStatus } from 'utils/index'
 import { DocumentIcon, PlusIcon } from 'components/input'
 import { Account, BucketFile, Car, CarBrand, Client, TBranch } from 'types/api';
+import { PaymentLog } from 'types/branch-payment';
+import clsx from 'clsx';
 
 const { Title } = Typography
 
@@ -44,14 +50,24 @@ export default function OrderDetail() {
     const [extendDate, setExtendDate] = useState<Dayjs | null>(null)
     const [dateModal, setDateModal] = useState(false)
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
+    const [logs, setLogs] = useState<PaymentLog.LogType[]>([]);
 
+    const { user } = useAppSelector(state => state.auth)
     const { data: order, isError } = useFetchOrderQuery(orderID as string)
+    const { data: paymentLogs } = useFetchPaymentLogsQuery({
+        order: orderID
+    })
+
     const [activateOrder] = useActivateOrderMutation()
     const [cancelOrder] = useCancelOrderMutation()
     const [finishOrder] = useFinishOrderMutation()
+
     const [addOrderImage] = useAddOrderImageMutation()
     const [deleteOrderImage] = useDeleteOrderImageMutation()
-    const { user } = useAppSelector(state => state.auth)
+
+    const [orderIncome] = useOrderIncomeMutation()
+    const [customerOrderDebtIncome] = useCustomerOrderDebtIncomeMutation()
+    const [branchOrderCustomerDebtOutcome] = useBranchOrderCustomerDebtOutcomeMutation()
 
     useEffect(() => {
         if(isError) return;
@@ -67,7 +83,59 @@ export default function OrderDetail() {
         }
     }, [order, isError])
 
+    useEffect(() => {
+        setLogs(paymentLogs?.results?.map(log => ({
+            ...log,
+            open_payment: false
+        })) || []);
+      }, [paymentLogs]);
+
+
+    // ------------- Expenses -------------
+
+    const changeLog = useCallback((id: ID, key: keyof PaymentLog.LogType, value: unknown) => {
+        setLogs(prev => prev.map(log => {
+            if(log.id === id) {
+                return {
+                    ...log,
+                    [key]: value
+                }
+            }
+            return log
+        }))
+    }, [])
+
+    const addExpense = useCallback((data: PaymentLog.DTOUpload) => {
+        orderIncome({ ...data, order: order?.id as ID }).unwrap()
+            .then(() => {
+                setIsOpenPayment(false)
+                toast.success("Harajat qo’shildi")
+            })
+            .catch(() => toast.error("Что-то пошло не так"))
+    }, [order?.id, orderIncome])
+
+    const closeExpense = useCallback((data: PaymentLog.DTOUpload, log: PaymentLog.LogType) => {
+        if(log.is_applies_to_customer) {
+            customerOrderDebtIncome({ ...data, order: order?.id as ID, debt: log.id }).unwrap()
+                .then(() => {
+                    changeLog(log.id, 'open_payment', false)
+                    toast.success("Harajat yopildi")
+                })
+                .catch(() => toast.error("Что-то пошло не так"))
+        } else if(log.is_applies_to_branch) {
+            branchOrderCustomerDebtOutcome({ ...data, order: order?.id as ID, debt: log.id }).unwrap()
+                .then(() => {
+                    changeLog(log.id, 'open_payment', false)
+                    toast.success("Harajat yopildi")
+                })
+                .catch(() => toast.error("Что-то пошло не так"))
+        }
+
+    }, [branchOrderCustomerDebtOutcome, changeLog, customerOrderDebtIncome, order?.id])
+    
+
     // ------------- Image Upload -------------
+
     function changeImage(data: UploadChangeParam<UploadFile<any>>) {
         setImageFiles(data.fileList)
 
@@ -511,10 +579,57 @@ export default function OrderDetail() {
                                     </Col>
                                     {isOpenPayment && (
                                         <Col span={24}>
-                                            <Payment btnText='Balansni to’ldirish' note={true} onClose={() => setIsOpenPayment(false)} />
+                                            <Payment
+                                                btnText="Harajat qo’shish"
+                                                onClose={() => setIsOpenPayment(false)} 
+                                                onSubmit={(data) => addExpense(data)}
+                                            />
                                         </Col>
                                     )}
-                                    <Col span={24}>
+                                    <LogList mh={60}>
+                                        {logs.map(log => (
+                                            <BorderBox key={log.id} className={clsx(
+                                                'bill', 
+                                                log.payment_type === PAYMENT_TYPE.INCOME ? 'income' : 'outgoings'
+                                            )}>
+                                                <div className='d-flex jc-sb w-100'>
+                                                    <div className='d-flex ai-start fd-col gap-4'>
+                                                        <StyledTextL2>
+                                                            {getStatus(log.payment_category, 'payment_category')}
+                                                        </StyledTextL2>
+                                                        <StyledTextL1>
+                                                            {`${log.branch?.title}: ${log.payment?.title}`}
+                                                        </StyledTextL1>
+                                                    </div>
+                                                    <div className='d-flex ai-end fd-col gap-4'>
+                                                        <StyledTextL2>
+                                                            {log.total.toLocaleString()} so’m
+                                                        </StyledTextL2>
+                                                        <StyledTextL1>{moment(log.created_at).format('LL')}</StyledTextL1>
+                                                    </div>
+                                                </div>
+                                                <div className='d-flex fd-col ai-start gap-16'>
+                                                    {log.is_debt && (
+                                                        <Button 
+                                                            type='default' 
+                                                            onClick={() => changeLog(log.id, 'open_payment', true)}
+                                                        >
+                                                            {log.is_applies_to_branch && 'Filial qarzi to’lash'}
+                                                            {log.is_applies_to_investor && 'Investor qarzi to’lash'}
+                                                        </Button> 
+                                                    )}
+                                                    {log.open_payment && (
+                                                        <Payment
+                                                            btnText="Harajat to’lash"
+                                                            onClose={() => changeLog(log.id, 'open_payment', false)}
+                                                            onSubmit={(data) => closeExpense(data, log)}
+                                                        />
+                                                    )}
+                                                </div>
+                                            </BorderBox>
+                                        ))}
+                                    </LogList>
+                                    {/* <Col span={24}>
                                         <Expenses>
                                             {[
                                                 {title: 'GAI RA897394827 14:00, 23-mart, 2023 y', amount: '300 000 so’m', is_finished: false},
@@ -550,7 +665,7 @@ export default function OrderDetail() {
                                                 </Fragment>
                                             ))}
                                         </Expenses>
-                                    </Col>
+                                    </Col> */}
                                 </Row>
                             </OrderCard>
                         </Col>

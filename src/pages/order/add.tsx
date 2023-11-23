@@ -449,7 +449,9 @@ export default function AddOrder() {
                                             <div className='d-flex gap-4 jc-sb'>
                                                 <div className='d-flex fd-col ai-start gap-4'>
                                                     <StyledTextL1>Joriy balans</StyledTextL1>
-                                                    <StyledTextL2 fs={20}>{client.balance}</StyledTextL2>
+                                                    <StyledTextL2 fs={20}>
+                                                        {client.balance?.toLocaleString()} so’m
+                                                    </StyledTextL2>
                                                 </div>
                                                 <Button type='default' onClick={() => setIsOpenPayment(true)} icon={<PlusIcon />} className='d-flex'>
                                                     Balansni to’ldirish
@@ -556,8 +558,7 @@ export default function AddOrder() {
                                                     <div className='d-flex fd-col ai-start gap-4'>
                                                         <StyledTextL1>Umumiy summa</StyledTextL1>
                                                         <StyledTextL2>
-                                                            {(daysDifference * (car.payment ?? 0))
-                                                                .toLocaleString()}
+                                                            {(daysDifference * (car.payment ?? 0))?.toLocaleString()}
                                                         </StyledTextL2>
                                                     </div>
                                                 </Col>
@@ -565,8 +566,7 @@ export default function AddOrder() {
                                                     <div className='d-flex fd-col ai-start gap-4'>
                                                         <StyledTextL1>Bonus</StyledTextL1>
                                                         <StyledTextL2>
-                                                            {((bonus ?? 0) * (car.payment ?? 0))
-                                                                .toLocaleString()}
+                                                            {((bonus ?? 0) * (car.payment ?? 0))?.toLocaleString()}
                                                         </StyledTextL2>
                                                     </div>
                                                 </Col>
@@ -574,8 +574,7 @@ export default function AddOrder() {
                                                     <div className='d-flex fd-col ai-start gap-4'>
                                                         <StyledTextL1>To’lov</StyledTextL1>
                                                         <StyledTextL2>
-                                                            {((daysDifference - (bonus ?? 0)) * (car.payment ?? 0))
-                                                                .toLocaleString()}
+                                                            {((daysDifference - (bonus ?? 0)) * (car.payment ?? 0))?.toLocaleString()}
                                                         </StyledTextL2>
                                                     </div>
                                                 </Col>

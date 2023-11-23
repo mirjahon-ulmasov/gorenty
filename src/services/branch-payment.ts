@@ -39,7 +39,7 @@ export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
             query: params => ({
                 url: '/branch_payment/',
                 method: 'GET',
-                params
+                params,
             }),
             providesTags: () => ['BranchPayment'],
         }),
@@ -61,7 +61,7 @@ export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
             query: params => ({
                 url: '/branch_payment_log/',
                 method: 'GET',
-                params
+                params,
             }),
             providesTags: () => ['BranchPaymentLog'],
         }),
@@ -147,7 +147,7 @@ export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
             }),
             invalidatesTags: ['BranchPaymentLog'],
         }),
-        investorCarDebtIncome: build.mutation<unknown, PaymentLog.InvestorVehicleDebt>({
+        investorCarDebtIncome: build.mutation<unknown, PaymentLog.VehicleDebt>({
             query: data => ({
                 url: '/branch_payment_log/investor_vehicle_debt_income/',
                 method: 'POST',
@@ -155,21 +155,41 @@ export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
             }),
             invalidatesTags: ['BranchPaymentLog'],
         }),
-        // addBranchImage: build.mutation<
-        // { branch: number, id: number, image: number }, 
-        // { branch: number, image: number }>({
-        //     query: data => ({
-        //         url: '/branch_image/',
-        //         method: 'POST',
-        //         body: data,
-        //     }),
-        // }),
-        // deleteBranchImage: build.mutation<unknown, { id: number }>({
-        //     query: ({ id }) => ({
-        //         url: `/branch_image/${id}/`,
-        //         method: 'DELETE',
-        //     }),
-        // })
+        branchCarDebtOutcome: build.mutation<unknown, PaymentLog.VehicleDebt>({
+            query: data => ({
+                url: '/branch_payment_log/branch_vehicle_investor_debt_outcome/',
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['BranchPaymentLog'],
+        }),
+
+        // -------------- Order --------------
+        orderIncome: build.mutation<unknown, PaymentLog.Order>({
+            query: data => ({
+                url: '/branch_payment_log/order_income/',
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['BranchPaymentLog'],
+        }),
+        customerOrderDebtIncome: build.mutation<unknown, PaymentLog.OrderDebt>({
+            query: data => ({
+                url: '/branch_payment_log/customer_order_debt_income/',
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['BranchPaymentLog'],
+        }),
+        branchOrderCustomerDebtOutcome: build.mutation<unknown, PaymentLog.OrderDebt>({
+            query: data => ({
+                url: '/branch_payment_log/branch_order_customer_debt_outcome/',
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['BranchPaymentLog'],
+        }),
+
     }),
 })
 
@@ -193,5 +213,10 @@ export const {
     useBranchOutcomeMutation,
 
     useCarIncomeMutation,
-    useInvestorCarDebtIncomeMutation
+    useInvestorCarDebtIncomeMutation,
+    useBranchCarDebtOutcomeMutation,
+
+    useOrderIncomeMutation,
+    useCustomerOrderDebtIncomeMutation,
+    useBranchOrderCustomerDebtOutcomeMutation
 } = branchPaymentAPI

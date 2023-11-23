@@ -13,14 +13,14 @@ import {
     useFetchBranchesQuery 
 } from 'services';
 import { CustomBreadcrumb, CustomSelect, StatusSelect } from 'components/input'
-import { TRANSACTION } from 'types/index';
+import { PAYMENT_TYPE } from 'types/index';
 
 const { Title } = Typography
 
 
 export default function AddInOut() {
     const navigate = useNavigate();
-    const [exchangeStatus, setExchangeStatus] = useState<TRANSACTION>(TRANSACTION.IN)
+    const [exchangeStatus, setExchangeStatus] = useState<PAYMENT_TYPE>(PAYMENT_TYPE.IN)
 
     const [createInvestor, { isLoading: createLoading }] = useCreateInvestorMutation()
     const { data: branches, isLoading: branchesLoading } = useFetchBranchesQuery({})
@@ -69,11 +69,11 @@ export default function AddInOut() {
                             statuses={[
                                 {
                                     title: "Kirim",
-                                    value: TRANSACTION.IN,
+                                    value: PAYMENT_TYPE.IN,
                                 },
                                 {
                                     title: "Chiqim",
-                                    value: TRANSACTION.OUT,
+                                    value: PAYMENT_TYPE.OUT,
                                 }
                             ]} 
                         /> 

@@ -18,16 +18,17 @@ export const StyledTextL1 = styled(Text)<{ fs?: number }>`
     line-height: ${props => (props.fs ? `${props.fs + 8}px` : '22px')};
 `
 
-export const StyledTextL2 = styled(Text)<{ fs?: number }>`
+export const StyledTextL2 = styled(Text)<{ fs?: number, color?: string }>`
     font-weight: 600;
+    color: ${props => (props.color ? props.color : 'inherit')};
     font-size: ${props => (props.fs ? `${props.fs}px` : '16px')};
     line-height: ${props => (props.fs ? `${props.fs + 8}px` : '24px')};
 `
 
-export const StyledLink = styled(Link)<{ color?: string, underline?: number }>`
-    font-size: 16px;
-    font-weight: 400;
+export const StyledLink = styled(Link)<{ color?: string, underline?: number, fs?: number, fw?: number }>`
     line-height: 24px;
+    font-weight: ${props => (props.fw ? props.fw : 400)};
+    font-size: ${props => (props.fs ? `${props.fs}px` : '16px')};
     color: ${props => (props.color ? props.color : '#ff561f')} ;
     text-decoration-line: ${props => props.underline ? 'underline' : 'none'};
 
@@ -71,17 +72,23 @@ export const BorderBox = styled.div<{ bg?: string; p?: string; gap?: string }>`
         color: inherit;
         cursor: pointer;
         font-weight: inherit;
-        border-bottom: 1px solid;
+        text-decoration: underline;
+        /* border-bottom: 1px solid; */
     }
+
     &.bill {
         gap: 4px;
         padding: 8px 16px;
+        border-color: rgba(27, 16, 5, 0.15);
 
         &.income {
             background: #f0fff5;
         }
         &.outgoings {
             background: #fff1f0;
+        }
+        &.debt {
+            border-color: #FF4D4F;
         }
     }
 `
@@ -129,6 +136,17 @@ export const LogList = styled.div<{ mh?: number, gap?: number}>`
     display: flex;
     overflow: auto;
     flex-direction: column;
+    padding-right: 1rem;
     gap: ${props => props.gap ? `${props.gap}px` : '12px'};
     max-height: ${props => props.mh ? `${props.mh}rem` : '24rem'};
+`
+
+export const ButtonIcon = styled.button<{ p?: number }>`
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F5F5F5;
+    border: 1px solid #1b100526;
+    padding: ${props => props.p ? props.p : '3px'};
 `

@@ -360,3 +360,11 @@ export function RGPSIcon() {
         </svg>
     )
 }
+
+export function ArrowDown() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="10" viewBox="0 0 12 10" fill="none">
+            <path d="M1.3125 6.95361L5.77916 2.48736V2.48736C5.90095 2.3654 6.09855 2.36526 6.22052 2.48705C6.22062 2.48715 6.22073 2.48726 6.22083 2.48736L10.6875 6.95361" stroke="#1B1005" stroke-opacity="0.45" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    )
+}

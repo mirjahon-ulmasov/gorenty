@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { Button, Col, Form, InputNumber, Input, Row, Space } from 'antd'
 import { styled } from 'styled-components'
 import clsx from 'clsx'
@@ -13,11 +13,12 @@ interface PropTypes {
     btnText?: string
     onClose: () => void
     onSubmit: (data: PaymentLog.DTOUpload) => void
+    log?: PaymentLog.LogType
 }
 
 export const Payment = memo((props: PropTypes) => {
-    const [form] = Form.useForm()
-    const { btnText = 'Qo’shish', onClose, onSubmit } = props
+    const { btnText = 'Qo’shish', onClose, onSubmit, log } = props
+    const [form] = Form.useForm<PaymentLog.DTOLocal>()
     const [state, setState] = useState<PaymentLog.DTOLocal>({
         total: 0,
         branch: '',
@@ -33,7 +34,16 @@ export const Payment = memo((props: PropTypes) => {
     const { data: payments, isLoading: paymentsLoading } = useFetchBranchPaymentsQuery(
         { branch: state.branch },
         { skip: !state.branch }
-    )    
+    )
+
+    useEffect(() => {
+        if(!log) return;
+
+        form.setFieldsValue({
+            payment_category: log?.payment_category,
+            branch: log?.branch.id
+        })
+    }, [form, log])
 
     const changeState = useCallback((key: keyof PaymentLog.DTOLocal, value: unknown) => {
         setState(prev => {
@@ -90,6 +100,7 @@ export const Payment = memo((props: PropTypes) => {
                                 size="large"
                                 placeholder='Tanlang'
                                 options={[{ value: 1, label: 'Naqd' }]}
+                                disabled={!!log}
                             ></CustomSelect>
                         </Form.Item>
                     </Col>
@@ -112,6 +123,7 @@ export const Payment = memo((props: PropTypes) => {
                                 }))}
                                 value={state?.branch}
                                 onChange={el => changeState('branch', el)}
+                                disabled={!!log}
                             ></CustomSelect>
                         </Form.Item>
                     </Col>
@@ -130,7 +142,7 @@ export const Payment = memo((props: PropTypes) => {
                                 loading={paymentsLoading}
                                 options={payments?.map(el => ({
                                     value: el.payment.id,
-                                    label: `${el.payment.title}: ${el.total.toLocaleString()}`
+                                    label: `${el.payment.title}: ${el.total?.toLocaleString()}`
                                 }))}
                             ></CustomSelect>
                         </Form.Item>
