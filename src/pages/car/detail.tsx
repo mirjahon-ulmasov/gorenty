@@ -151,14 +151,14 @@ export default function CarDetail() {
 
     const closeExpense = useCallback((data: PaymentLog.DTOUpload, log: PaymentLog.LogType) => {
         if(log.is_applies_to_investor) {
-            investorCarDebtIncome({ ...data, vehicle: car?.id as ID, debt: log.id }).unwrap()
+            investorCarDebtIncome({ ...data, vehicle: log.vehicle, debt: log.id }).unwrap()
                 .then(() => {
                     changeLog(log.id, 'open_payment', false)
                     toast.success("Harajat yopildi")
                 })
                 .catch(() => toast.error("Что-то пошло не так"))
         } else if(log.is_applies_to_branch) {
-            branchCarDebtOutcome({ ...data, vehicle: car?.id as ID, debt: log.id }).unwrap()
+            branchCarDebtOutcome({ ...data, vehicle: log.vehicle, debt: log.id }).unwrap()
                 .then(() => {
                     changeLog(log.id, 'open_payment', false)
                     toast.success("Harajat yopildi")
@@ -166,14 +166,14 @@ export default function CarDetail() {
                 .catch(() => toast.error("Что-то пошло не так"))
         }
 
-    }, [branchCarDebtOutcome, car?.id, changeLog, investorCarDebtIncome])
+    }, [branchCarDebtOutcome, changeLog, investorCarDebtIncome])
 
 
     function getButtonStyle(open: boolean): React.CSSProperties  {
         return {
             display: 'flex', 
+            transition: 'ease-in 0.2s',
             rotate: `${open ? '180deg' : '0deg'}`,
-            transition: 'ease-in 0.2s'
         }
     }
 
@@ -426,12 +426,9 @@ export default function CarDetail() {
                                                 <StyledTextL2 fs={18}>{log.total.toLocaleString()} so’m</StyledTextL2>
                                             </div>
                                             <div className='d-flex jc-sb w-100'>
-                                                <Space>
-                                                    <StyledLink fs={14} fw={500} to={`/admin/branch/${log.branch?.id}/detail`}>
-                                                        {log.branch?.title}
-                                                    </StyledLink>
-                                                    <StyledTextL1>{log.payment?.title}</StyledTextL1>
-                                                </Space>
+                                                <StyledLink fs={14} fw={500} to={`/admin/branch/${log.branch?.id}/detail`}>
+                                                    {log.branch?.title}
+                                                </StyledLink>
                                                 <StyledTextL1>
                                                     {moment(log.created_at).format('LL')}
                                                 </StyledTextL1>
@@ -450,7 +447,7 @@ export default function CarDetail() {
                                                 <div className='d-flex fd-col gap-8 w-100'>
                                                     <Divider style={{ background: '#FFBD99', margin: '8px 0' }} />
                                                     {log.branch_payment_logs.map(el => (
-                                                        <div className='d-flex fd-col w-100'>
+                                                        <div key={el.id} className='d-flex fd-col w-100'>
                                                             <div className='d-flex jc-sb w-100'>
                                                                 <StyledTextL1>{el.branch?.title}</StyledTextL1>
                                                                 <StyledTextL2 fs={16}>{el.total.toLocaleString()} so’m</StyledTextL2>

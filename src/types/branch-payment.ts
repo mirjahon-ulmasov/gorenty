@@ -28,6 +28,9 @@ export declare namespace PaymentLog {
     interface DTO {
         id: ID
         object_index: string
+        description: string
+        created_at: string
+        creator: Account.DTO
         branch: {
             id: ID
             title: string
@@ -37,12 +40,12 @@ export declare namespace PaymentLog {
             title: string
         }
         order: ID
+        vehicle: ID
+        investor: ID
         customer: ID
-        description: string
-        creator: Account.DTO
+
         branch_payment_logs: DTO[]
         branch_payment_log_images: BucketFile[]
-        created_at: string
         state: PAYMENT_LOG_STATE
         payment_type: PAYMENT_TYPE
         payment_category: PAYMENT_CATEGORY

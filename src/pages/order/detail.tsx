@@ -1,5 +1,5 @@
 
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
@@ -12,17 +12,17 @@ import { v4 as uuid } from 'uuid'
 import { 
     Button, Col, DatePickerProps, 
     Row, Space, Typography, Divider, 
-    Checkbox, Modal, Form, InputNumber,
+    Modal, Form, InputNumber,
     UploadFile
 } from 'antd'
 import { UploadChangeParam } from 'antd/es/upload';
 import { useAppSelector } from 'hooks/redux';
 import { 
-    CustomBreadcrumb, Payment, Status, 
-    Label, StyledTextL1, StyledTextL2, 
-    OrderCard, BorderBox, CustomDatePicker, 
-    CustomUpload,  
-    LogList
+    CustomBreadcrumb, Payment, Status, Label, 
+    StyledTextL1, StyledTextL2, OrderCard, 
+    BorderBox, CustomDatePicker, CustomUpload,  
+    LogList, ArrowDown, ButtonIcon,
+    StyledLink, DocumentIcon, PlusIcon
 } from 'components/input'
 import { 
     useActivateOrderMutation, useAddOrderImageMutation, 
@@ -32,12 +32,10 @@ import {
     useCustomerOrderDebtIncomeMutation,
     useBranchOrderCustomerDebtOutcomeMutation
 } from 'services';
-import { CLIENT_STATUS, ID, ORDER_STATUS, PAYMENT_TYPE, ROLE } from 'types/index'
+import { CLIENT_STATUS, ID, ORDER_STATUS, ROLE } from 'types/index'
 import { disabledDate, formatPlate, getStatus } from 'utils/index'
-import { DocumentIcon, PlusIcon } from 'components/input'
 import { Account, BucketFile, Car, CarBrand, Client, TBranch } from 'types/api';
 import { PaymentLog } from 'types/branch-payment';
-import clsx from 'clsx';
 
 const { Title } = Typography
 
@@ -86,9 +84,10 @@ export default function OrderDetail() {
     useEffect(() => {
         setLogs(paymentLogs?.results?.map(log => ({
             ...log,
-            open_payment: false
+            open_payment: false,
+            open_logs: false
         })) || []);
-      }, [paymentLogs]);
+    }, [paymentLogs]);
 
 
     // ------------- Expenses -------------
@@ -116,14 +115,14 @@ export default function OrderDetail() {
 
     const closeExpense = useCallback((data: PaymentLog.DTOUpload, log: PaymentLog.LogType) => {
         if(log.is_applies_to_customer) {
-            customerOrderDebtIncome({ ...data, order: order?.id as ID, debt: log.id }).unwrap()
+            customerOrderDebtIncome({ ...data, order: log.order, debt: log.id }).unwrap()
                 .then(() => {
                     changeLog(log.id, 'open_payment', false)
                     toast.success("Harajat yopildi")
                 })
                 .catch(() => toast.error("Что-то пошло не так"))
         } else if(log.is_applies_to_branch) {
-            branchOrderCustomerDebtOutcome({ ...data, order: order?.id as ID, debt: log.id }).unwrap()
+            branchOrderCustomerDebtOutcome({ ...data, order: log.order, debt: log.id }).unwrap()
                 .then(() => {
                     changeLog(log.id, 'open_payment', false)
                     toast.success("Harajat yopildi")
@@ -131,8 +130,15 @@ export default function OrderDetail() {
                 .catch(() => toast.error("Что-то пошло не так"))
         }
 
-    }, [branchOrderCustomerDebtOutcome, changeLog, customerOrderDebtIncome, order?.id])
-    
+    }, [branchOrderCustomerDebtOutcome, changeLog, customerOrderDebtIncome])
+
+    function getButtonStyle(open: boolean): React.CSSProperties  {
+        return {
+            display: 'flex', 
+            rotate: `${open ? '180deg' : '0deg'}`,
+            transition: 'ease-in 0.2s'
+        }
+    }    
 
     // ------------- Image Upload -------------
 
@@ -588,84 +594,83 @@ export default function OrderDetail() {
                                     )}
                                     <LogList mh={60}>
                                         {logs.map(log => (
-                                            <BorderBox key={log.id} className={clsx(
-                                                'bill', 
-                                                log.payment_type === PAYMENT_TYPE.INCOME ? 'income' : 'outgoings'
-                                            )}>
-                                                <div className='d-flex jc-sb w-100'>
-                                                    <div className='d-flex ai-start fd-col gap-4'>
+                                            <BorderBox key={log.id} className="bill">
+                                                <div className='d-flex fd-col gap-4 w-100'>
+                                                    <div className='d-flex jc-sb w-100'>
+                                                        <Status type={(log.is_paid || log.is_paid_immediately) ? 'success' : 'danger'}>
+                                                            {(log.is_paid || log.is_paid_immediately) ? 'To’langan': 'Qarz'}
+                                                        </Status>
+                                                        <Space>
+                                                            <Status type='client' value={CLIENT_STATUS.NEW}>
+                                                                {log.is_applies_to_branch && 'Filial'}
+                                                                {log.is_applies_to_customer && 'Mijoz'}
+                                                            </Status>
+                                                            {!!log.branch_payment_logs?.length && (
+                                                                <ButtonIcon onClick={() => changeLog(log.id, 'open_logs', !log.open_logs)}>
+                                                                    <span style={getButtonStyle(log.open_logs)}>
+                                                                        <ArrowDown />
+                                                                    </span>
+                                                                </ButtonIcon>
+                                                            )}
+                                                        </Space>
+                                                    </div>
+                                                    <div className='d-flex jc-sb w-100'>
                                                         <StyledTextL2>
                                                             {getStatus(log.payment_category, 'payment_category')}
                                                         </StyledTextL2>
+                                                        <StyledTextL2 fs={18}>{log.total.toLocaleString()} so’m</StyledTextL2>
+                                                    </div>
+                                                    <div className='d-flex jc-sb w-100'>
+                                                        <StyledLink fs={14} fw={500} to={`/admin/branch/${log.branch?.id}/detail`}>
+                                                            {log.branch?.title}
+                                                        </StyledLink>
                                                         <StyledTextL1>
-                                                            {`${log.branch?.title}: ${log.payment?.title}`}
+                                                            {moment(log.created_at).format('LL')}
                                                         </StyledTextL1>
                                                     </div>
-                                                    <div className='d-flex ai-end fd-col gap-4'>
-                                                        <StyledTextL2>
-                                                            {log.total.toLocaleString()} so’m
-                                                        </StyledTextL2>
-                                                        <StyledTextL1>{moment(log.created_at).format('LL')}</StyledTextL1>
-                                                    </div>
-                                                </div>
-                                                <div className='d-flex fd-col ai-start gap-16'>
-                                                    {log.is_debt && (
-                                                        <Button 
-                                                            type='default' 
-                                                            onClick={() => changeLog(log.id, 'open_payment', true)}
-                                                        >
-                                                            {log.is_applies_to_branch && 'Filial qarzi to’lash'}
-                                                            {log.is_applies_to_investor && 'Investor qarzi to’lash'}
-                                                        </Button> 
+                                                    {(log.is_debt && !log.is_paid) && (
+                                                        <div className='d-flex jc-sb mt-05 w-100'>
+                                                            <Button type='primary' onClick={() => changeLog(log.id, 'open_payment', true)}>
+                                                                To’lash
+                                                            </Button>
+                                                            <StyledTextL2 color='#ff4d4f'>
+                                                                Qoldiq: {log.remain?.toLocaleString()} so’m
+                                                            </StyledTextL2>
+                                                        </div>
+                                                    )}
+                                                    {log.open_logs && (
+                                                        <div className='d-flex fd-col gap-8 w-100'>
+                                                            <Divider style={{ background: '#FFBD99', margin: '8px 0' }} />
+                                                            {log.branch_payment_logs.map(el => (
+                                                                <div key={el.id} className='d-flex fd-col w-100'>
+                                                                    <div className='d-flex jc-sb w-100'>
+                                                                        <StyledTextL1>{el.branch?.title}</StyledTextL1>
+                                                                        <StyledTextL2 fs={16}>{el.total.toLocaleString()} so’m</StyledTextL2>
+                                                                    </div>
+                                                                    <div className='d-flex jc-sb w-100'>
+                                                                        <StyledTextL1>{el.payment?.title}</StyledTextL1>
+                                                                        <StyledTextL1>
+                                                                            {moment(el.created_at).format('LL')}
+                                                                        </StyledTextL1>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     )}
                                                     {log.open_payment && (
-                                                        <Payment
-                                                            btnText="Harajat to’lash"
-                                                            onClose={() => changeLog(log.id, 'open_payment', false)}
-                                                            onSubmit={(data) => closeExpense(data, log)}
-                                                        />
+                                                        <div className='mt-05'>
+                                                            <Payment
+                                                                log={log}
+                                                                btnText="Harajat to’lash"
+                                                                onClose={() => changeLog(log.id, 'open_payment', false)}
+                                                                onSubmit={(data) => closeExpense(data, log)}
+                                                            />
+                                                        </div>
                                                     )}
                                                 </div>
                                             </BorderBox>
                                         ))}
                                     </LogList>
-                                    {/* <Col span={24}>
-                                        <Expenses>
-                                            {[
-                                                {title: 'GAI RA897394827 14:00, 23-mart, 2023 y', amount: '300 000 so’m', is_finished: false},
-                                                {title: 'Gorenty, muddat o’tishi', amount: '300 000 so’m', is_finished: null},
-                                                {title: 'Moy almashtirish', amount: '300 000 so’m', is_finished: true}
-                                            ].map((el, index) => (
-                                                <Fragment key={index}>
-                                                    <li>
-                                                        <StyledTextL1 fs={16}>{index + 1}. {el.title}</StyledTextL1>
-                                                        <StyledTextL2 fs={18}>{el.amount}</StyledTextL2>
-                                                        {el.is_finished !== null && (
-                                                            <>
-                                                                {el.is_finished ? (
-                                                                    <Checkbox checked={el.is_finished}>
-                                                                        <StyledTextL1 fs={16}>Bajarildi (14:00, 28-mart, 2023 y)</StyledTextL1>
-                                                                    </Checkbox>
-                                                                ) : (
-                                                                    <>
-                                                                        <Button type='default' onClick={() => setIsOpenPayment(true)}>
-                                                                            Bajarish
-                                                                        </Button> 
-                                                                        {isOpenPayment && (
-                                                                            <Col span={24}>
-                                                                                <Payment category={false} amount={false} btnText='Tasdiqlash' onClose={() => setIsOpenPayment(false)} />
-                                                                            </Col>
-                                                                        )}
-                                                                    </>
-                                                                )}
-                                                            </>
-                                                        )}
-                                                    </li>
-                                                    <Divider style={{ margin: '1rem 0'}}/>
-                                                </Fragment>
-                                            ))}
-                                        </Expenses>
-                                    </Col> */}
                                 </Row>
                             </OrderCard>
                         </Col>

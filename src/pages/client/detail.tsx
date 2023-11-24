@@ -107,8 +107,8 @@ export default function ClientDetail() {
     function getButtonStyle(open: boolean): React.CSSProperties  {
         return {
             display: 'flex', 
+            transition: 'ease-in 0.2s',
             rotate: `${open ? '180deg' : '0deg'}`,
-            transition: 'ease-in 0.2s'
         }
     }
 
@@ -286,12 +286,9 @@ export default function ClientDetail() {
                                                 <StyledTextL2 fs={18}>{log.total.toLocaleString()} so’m</StyledTextL2>
                                             </div>
                                             <div className='d-flex jc-sb w-100'>
-                                                <Space>
-                                                    <StyledLink fs={14} fw={500} to={`/admin/branch/${log.branch?.id}/detail`}>
-                                                        {log.branch?.title}
-                                                    </StyledLink>
-                                                    <StyledTextL1>{log.payment?.title}</StyledTextL1>
-                                                </Space>
+                                                <StyledLink fs={14} fw={500} to={`/admin/branch/${log.branch?.id}/detail`}>
+                                                    {log.branch?.title}
+                                                </StyledLink>
                                                 <StyledTextL1>
                                                     {moment(log.created_at).format('LL')}
                                                 </StyledTextL1>
@@ -310,7 +307,7 @@ export default function ClientDetail() {
                                                 <div className='d-flex fd-col gap-8 w-100'>
                                                     <Divider style={{ background: '#FFBD99', margin: '8px 0' }} />
                                                     {log.branch_payment_logs.map(el => (
-                                                        <div className='d-flex fd-col w-100'>
+                                                        <div key={el.id} className='d-flex fd-col w-100'>
                                                             <div className='d-flex jc-sb w-100'>
                                                                 <StyledTextL1>{el.branch?.title}</StyledTextL1>
                                                                 <StyledTextL2 fs={16}>{el.total.toLocaleString()} so’m</StyledTextL2>
