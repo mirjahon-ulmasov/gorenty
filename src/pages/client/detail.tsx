@@ -323,7 +323,7 @@ export default function ClientDetail() {
                                                 </div>
                                             )}
                                             {log.open_payment && (
-                                                <div className='mt-05'>
+                                                <div className='mt-05 w-100'>
                                                     <Payment
                                                         log={log}
                                                         btnText="Harajat to’lash"

@@ -41,7 +41,7 @@ export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
                 method: 'GET',
                 params,
             }),
-            providesTags: () => ['BranchPayment'],
+            providesTags: () => ['BranchPayment', 'BranchPaymentLog'],
         }),
         fetchBranchPayment: build.query<BranchPayment.DTO, ID>({
             query: id => `/branch_payment/${id}/`,

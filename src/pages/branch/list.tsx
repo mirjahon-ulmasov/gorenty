@@ -36,7 +36,7 @@ export default function Branches() {
                         <StyledTextL2 fs={20}>{branch.title}</StyledTextL2>
                         <StyledTextL1>Tel: {branch.phone_number}</StyledTextL1>
                         <Divider style={{ margin: '10px 0px', borderColor: '#FFBD99' }} dashed />
-                        <StyledTextL1>Joriy kassa: 500 000 000 so’m</StyledTextL1>
+                        <StyledTextL1>Joriy kassa: {branch.total?.toLocaleString()} so’m</StyledTextL1>
                         <Button className='mt-1' onClick={(e) => navigateToOrders(e, branch.id)}>
                             Aktiv buyurtmalar
                         </Button>

@@ -39,6 +39,12 @@ export const Payment = memo((props: PropTypes) => {
     useEffect(() => {
         if(!log) return;
 
+        setState(prev => ({
+            ...prev,
+            branch: log?.branch.id,
+            payment_category: log?.payment_category,
+        }))
+
         form.setFieldsValue({
             payment_category: log?.payment_category,
             branch: log?.branch.id

@@ -43,6 +43,7 @@ export declare namespace PaymentLog {
         vehicle: ID
         investor: ID
         customer: ID
+        branch_payment: ID
 
         branch_payment_logs: DTO[]
         branch_payment_log_images: BucketFile[]

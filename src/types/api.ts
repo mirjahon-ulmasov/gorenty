@@ -118,6 +118,8 @@ export declare namespace Branch {
     export type DTO = Partial<{
         id: number
         title: string
+        is_main: boolean
+        total: number
         phone_number: string
         address: string
         description: string
