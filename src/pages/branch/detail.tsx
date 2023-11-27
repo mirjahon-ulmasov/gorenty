@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { 
-    Button, Col, Divider, Row, Space, Typography, 
+    Button, Col, Divider, Pagination, PaginationProps, Row, Space, Typography, 
 } from 'antd'
 import toast from 'react-hot-toast';
 import moment from 'moment';
@@ -13,14 +13,14 @@ import {
 } from 'components/input'
 import {
     useBranchIncomeMutation, useBranchOutcomeMutation, 
-    useFetchBranchQuery, useFetchPaymentLogsQuery,
+    useFetchBranchQuery, useFetchBranchPaymentLogsQuery,
     useBranchOrderCustomerDebtOutcomeMutation,
     useFetchBranchPaymentsQuery
 } from 'services';
 import { PaymentLog } from 'types/branch-payment';
 import { CLIENT_STATUS, ID, PAYMENT_TYPE } from 'types/index';
 import { formatPhone, getStatus } from 'utils/index';
-import { BucketFile } from 'types/api'
+import { BucketFile, Pagination as IPagination } from 'types/api'
 
 const { Title } = Typography
 
@@ -29,12 +29,17 @@ export default function CarDetail() {
     const { branchID } = useParams()
     const [transactionType, setTransactionType] = useState<PAYMENT_TYPE>();
     const [logs, setLogs] = useState<PaymentLog.LogType[]>([]);
+    const [pagination, setPagination] = useState<IPagination>({
+        page: 1,
+        page_size: 5
+    });
 
-    const { data: branch } = useFetchBranchQuery(branchID as string)
-    const { data: paymentLogs } = useFetchPaymentLogsQuery({
-        branch: branchID,
-    })
     const { data: branchPayments } = useFetchBranchPaymentsQuery({});
+    const { data: branch } = useFetchBranchQuery(branchID as string)
+    const { data: paymentLogs } = useFetchBranchPaymentLogsQuery({
+        params: { ...pagination },
+        id: branchID as ID
+    })
 
     const [branchIncome] = useBranchIncomeMutation()
     const [branchOutcome] = useBranchOutcomeMutation()
@@ -98,6 +103,10 @@ export default function CarDetail() {
             rotate: `${open ? '180deg' : '0deg'}`,
         }
     }
+
+    const changePagination: PaginationProps['onChange'] = (page, page_size) => {
+        setPagination({ page, page_size });
+    };
 
     const foundBranch = useCallback((id: ID) => {
         return branchPayments?.find(el => el.id === id)
@@ -277,6 +286,14 @@ export default function CarDetail() {
                                         </BorderBox>
                                     ))}
                                 </LogList>
+                                {!!logs.length && (
+                                    <Pagination
+                                        current={pagination.page}
+                                        pageSize={pagination.page_size}
+                                        onChange={changePagination} 
+                                        total={paymentLogs?.count} 
+                                    />
+                                )}
                                 {/* <Col span={24} className='mt-1'>
                                     <Label>Aktiv pullar</Label>
                                 </Col>

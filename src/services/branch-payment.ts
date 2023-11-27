@@ -1,41 +1,34 @@
 import { BranchPayment, PaymentLog } from 'types/branch-payment'
-import { ID, PAYMENT_METHOD } from 'types/index'
+import { ID } from 'types/index'
 import { api } from './baseQuery'
 
 const branchPaymentWithTags = api.enhanceEndpoints({
     addTagTypes: ['BranchPayment'],
 })
 
-interface SearchParams {
+interface PaymentParams {
     branch?: ID
     payment?: ID
     payment_exclude?: ID
     branch_exclude?: ID
 }
 
-interface PaymentLogsParams {
+interface SearchParams {
     page?: number
     page_size?: number
     created_at?: string
     object_index?: ID
-    branch?: ID
-    creator?: ID
-    payment?: ID
-    branch_payment?: ID
-    customer?: ID
-    investor?: ID
-    order?: ID
-    staff?: ID
-    vehicle?: ID
-    debt?: ID
-    payment_category?: ID
-    payment_type?: PAYMENT_METHOD
-    state?: ID
+}
+
+interface PaymentLog {
+    params: SearchParams
+    id: ID
 }
 
 export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
     endpoints: build => ({
-        fetchBranchPayments: build.query<BranchPayment.List, SearchParams>({
+        // -------------- Branch Payment --------------
+        fetchBranchPayments: build.query<BranchPayment.List, PaymentParams>({
             query: params => ({
                 url: '/branch_payment/',
                 method: 'GET',
@@ -56,17 +49,15 @@ export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
             invalidatesTags: ['BranchPayment'],
         }),
 
-        // -------------- Payment Logs --------------
-        fetchPaymentLogs: build.query<PaymentLog.List, PaymentLogsParams>({
-            query: params => ({
-                url: '/branch_payment_log/',
+        // -------------- Customer --------------
+        fetchCustomerPaymentLogs: build.query<PaymentLog.List, PaymentLog>({
+            query: ({ params, id }) => ({
+                url: `/branch_payment_log/customer/${id}`,
                 method: 'GET',
-                params,
+                params
             }),
             providesTags: () => ['BranchPaymentLog'],
         }),
-
-        // -------------- Customer --------------
         customerIncome: build.mutation<unknown, PaymentLog.Customer>({
             query: data => ({
                 url: '/branch_payment_log/customer_income/',
@@ -85,6 +76,14 @@ export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
         }),
 
         // -------------- Investor --------------
+        fetchInvestorPaymentLogs: build.query<PaymentLog.List, PaymentLog>({
+            query: ({ params, id }) => ({
+                url: `/branch_payment_log/investor/${id}`,
+                method: 'GET',
+                params
+            }),
+            providesTags: () => ['BranchPaymentLog'],
+        }),
         investorIncome: build.mutation<unknown, PaymentLog.Investor>({
             query: data => ({
                 url: '/branch_payment_log/investor_income/',
@@ -103,6 +102,14 @@ export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
         }),
 
         // -------------- Staff --------------
+        fetchStaffPaymentLogs: build.query<PaymentLog.List, PaymentLog>({
+            query: ({ params, id }) => ({
+                url: `/branch_payment_log/staff/${id}`,
+                method: 'GET',
+                params
+            }),
+            providesTags: () => ['BranchPaymentLog'],
+        }),
         staffIncome: build.mutation<unknown, PaymentLog.Staff>({
             query: data => ({
                 url: '/branch_payment_log/staff_income/',
@@ -121,6 +128,14 @@ export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
         }),
 
         // -------------- Branch --------------
+        fetchBranchPaymentLogs: build.query<PaymentLog.List, PaymentLog>({
+            query: ({ params, id }) => ({
+                url: `/branch_payment_log/branch/${id}`,
+                method: 'GET',
+                params
+            }),
+            providesTags: () => ['BranchPaymentLog'],
+        }),
         branchIncome: build.mutation<unknown, PaymentLog.Branch>({
             query: data => ({
                 url: '/branch_payment_log/branch_income/',
@@ -139,6 +154,14 @@ export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
         }),
 
         // -------------- Vehicle --------------
+        fetchCarPaymentLogs: build.query<PaymentLog.List, PaymentLog>({
+            query: ({ params, id }) => ({
+                url: `/branch_payment_log/vehicle/${id}`,
+                method: 'GET',
+                params
+            }),
+            providesTags: () => ['BranchPaymentLog'],
+        }),
         carIncome: build.mutation<unknown, PaymentLog.Vehicle>({
             query: data => ({
                 url: '/branch_payment_log/vehicle_income/',
@@ -165,6 +188,14 @@ export const branchPaymentAPI = branchPaymentWithTags.injectEndpoints({
         }),
 
         // -------------- Order --------------
+        fetchOrderPaymentLogs: build.query<PaymentLog.List, PaymentLog>({
+            query: ({ params, id }) => ({
+                url: `/branch_payment_log/order/${id}`,
+                method: 'GET',
+                params
+            }),
+            providesTags: () => ['BranchPaymentLog'],
+        }),
         orderIncome: build.mutation<unknown, PaymentLog.Order>({
             query: data => ({
                 url: '/branch_payment_log/order_income/',
@@ -198,24 +229,28 @@ export const {
     useFetchBranchPaymentsQuery,
     useCreateBranchPaymentMutation,
 
-    useFetchPaymentLogsQuery,
-
+    useFetchCustomerPaymentLogsQuery,
     useCustomerIncomeMutation,
     useCustomerOutcomeMutation,
 
+    useFetchInvestorPaymentLogsQuery,
     useInvestorIncomeMutation,
     useInvestorOutcomeMutation,
 
+    useFetchStaffPaymentLogsQuery,
     useStaffIncomeMutation,
     useStaffOutcomeMutation,
 
+    useFetchBranchPaymentLogsQuery,
     useBranchIncomeMutation,
     useBranchOutcomeMutation,
 
+    useFetchCarPaymentLogsQuery,
     useCarIncomeMutation,
     useInvestorCarDebtIncomeMutation,
     useBranchCarDebtOutcomeMutation,
 
+    useFetchOrderPaymentLogsQuery,
     useOrderIncomeMutation,
     useCustomerOrderDebtIncomeMutation,
     useBranchOrderCustomerDebtOutcomeMutation

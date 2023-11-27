@@ -12,7 +12,7 @@ import {
 } from 'components/input'
 import { 
     useFetchStaffQuery, useStaffIncomeMutation, 
-    useStaffOutcomeMutation, useFetchPaymentLogsQuery
+    useStaffOutcomeMutation, useFetchStaffPaymentLogsQuery
 } from 'services'
 import { BucketFile, TBranch, TPosition } from 'types/api'
 import { PaymentLog } from 'types/branch-payment'
@@ -27,9 +27,7 @@ export default function StaffDetail() {
     const [transactionType, setTransactionType] = useState<PAYMENT_TYPE>();
 
     const { data: staff } = useFetchStaffQuery(staffID as string)
-    const { data: paymentLogs } = useFetchPaymentLogsQuery({
-        staff: staffID
-    })
+    const { data: paymentLogs } = useFetchStaffPaymentLogsQuery(staffID as ID)
 
     const [staffIncome] = useStaffIncomeMutation()
     const [staffOutcome] = useStaffOutcomeMutation()

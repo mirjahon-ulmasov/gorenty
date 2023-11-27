@@ -4,7 +4,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { 
     Button, Col, DatePickerProps, 
     Row, Space, Typography, 
-    Modal, UploadFile, Divider
+    Modal, UploadFile, Divider, Pagination, PaginationProps
 } from 'antd'
 import moment from 'moment'
 import { UploadChangeParam } from 'antd/es/upload';
@@ -15,14 +15,15 @@ import {
     CustomBreadcrumb, Payment, Label, 
     StyledTextL1, StyledTextL2, BorderBox, 
     CustomDatePicker, IDTag, StyledLink, 
-    BillingHistory, Status, CustomUpload, LogList, ArrowDown, ButtonIcon  
+    BillingHistory, Status, CustomUpload, 
+    LogList, ArrowDown, ButtonIcon  
 } from 'components/input'
-import { BucketFile, CarBrand, Investor } from 'types/api'
+import { BucketFile, CarBrand, Investor, Pagination as IPagination } from 'types/api'
 import { 
     useAddCarImageMutation, useBlockCarMutation, 
     useDeleteCarImageMutation, useFetchCarQuery, 
     useUnblockCarMutation, useCarIncomeMutation,
-    useFetchPaymentLogsQuery, useInvestorCarDebtIncomeMutation,
+    useFetchCarPaymentLogsQuery, useInvestorCarDebtIncomeMutation,
     useBranchCarDebtOutcomeMutation
 } from 'services'
 import { LockIcon } from 'components/input'
@@ -39,11 +40,16 @@ export default function CarDetail() {
     const [isOpenPayment, setIsOpenPayment] = useState(false);
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
     const [logs, setLogs] = useState<PaymentLog.LogType[]>([]);
+    const [pagination, setPagination] = useState<IPagination>({
+        page: 1,
+        page_size: 5
+    });
 
-    const { data: car, isError } = useFetchCarQuery(carID as string)
     const { user } = useAppSelector(state => state.auth)
-    const { data: paymentLogs } = useFetchPaymentLogsQuery({
-        vehicle: carID
+    const { data: car, isError } = useFetchCarQuery(carID as string)
+    const { data: paymentLogs } = useFetchCarPaymentLogsQuery({
+        params: { ...pagination },
+        id: carID as ID
     })
     
     const [blockCar] = useBlockCarMutation()
@@ -176,6 +182,10 @@ export default function CarDetail() {
             rotate: `${open ? '180deg' : '0deg'}`,
         }
     }
+
+    const changePagination: PaginationProps['onChange'] = (page, page_size) => {
+        setPagination({ page, page_size });
+    };
 
     // ---------------------------------------------
 
@@ -476,6 +486,14 @@ export default function CarDetail() {
                                     </BorderBox>
                                 ))}
                             </LogList>
+                            {!!logs.length && (
+                                <Pagination
+                                    current={pagination.page}
+                                    pageSize={pagination.page_size}
+                                    onChange={changePagination} 
+                                    total={paymentLogs?.count} 
+                                />
+                            )}
                         </Row>
                     </BillingHistory>
                 </Col>

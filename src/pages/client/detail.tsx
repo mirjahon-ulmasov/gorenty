@@ -14,10 +14,9 @@ import {
 } from 'components/input'
 import { formatPhone, getStatus } from 'utils/index'
 import { 
-    useBranchOrderCustomerDebtOutcomeMutation,
-    useCustomerIncomeMutation, useCustomerOrderDebtIncomeMutation, 
-    useCustomerOutcomeMutation, useFetchClientQuery, 
-    useFetchPaymentLogsQuery 
+    useBranchOrderCustomerDebtOutcomeMutation, useCustomerIncomeMutation, 
+    useCustomerOrderDebtIncomeMutation, useCustomerOutcomeMutation, 
+    useFetchClientQuery, useFetchCustomerPaymentLogsQuery 
 } from 'services'
 import { CLIENT_STATUS, ID, PAYMENT_TYPE } from 'types/index'
 import { PaymentLog } from 'types/branch-payment'
@@ -32,9 +31,7 @@ export default function ClientDetail() {
     const [logs, setLogs] = useState<PaymentLog.LogType[]>([]);
 
     const { data: client } = useFetchClientQuery(clientID as string)
-    const { data: paymentLogs } = useFetchPaymentLogsQuery({
-        customer: clientID
-    })
+    const { data: paymentLogs } = useFetchCustomerPaymentLogsQuery(clientID as ID)
 
     const [customerIncome] = useCustomerIncomeMutation()
     const [customerOutcome] = useCustomerOutcomeMutation()

@@ -28,7 +28,7 @@ import {
     useActivateOrderMutation, useAddOrderImageMutation, 
     useCancelOrderMutation, useDeleteOrderImageMutation, 
     useFetchOrderQuery, useFinishOrderMutation, 
-    useOrderIncomeMutation, useFetchPaymentLogsQuery,
+    useOrderIncomeMutation, useFetchOrderPaymentLogsQuery,
     useCustomerOrderDebtIncomeMutation,
     useBranchOrderCustomerDebtOutcomeMutation
 } from 'services';
@@ -52,9 +52,7 @@ export default function OrderDetail() {
 
     const { user } = useAppSelector(state => state.auth)
     const { data: order, isError } = useFetchOrderQuery(orderID as string)
-    const { data: paymentLogs } = useFetchPaymentLogsQuery({
-        order: orderID
-    })
+    const { data: paymentLogs } = useFetchOrderPaymentLogsQuery(orderID as ID)
 
     const [activateOrder] = useActivateOrderMutation()
     const [cancelOrder] = useCancelOrderMutation()

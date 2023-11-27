@@ -7,7 +7,7 @@ import moment from 'moment'
 import { useAppSelector } from 'hooks/redux'
 import { 
     useFetchInvestorQuery, useInvestorIncomeMutation, 
-    useInvestorOutcomeMutation, useFetchPaymentLogsQuery,
+    useInvestorOutcomeMutation, useFetchInvestorPaymentLogsQuery,
     useInvestorCarDebtIncomeMutation
 } from 'services'
 import { 
@@ -28,11 +28,9 @@ export default function InvestorDetail() {
     const [transactionType, setTransactionType] = useState<PAYMENT_TYPE>();
     const [logs, setLogs] = useState<PaymentLog.LogType[]>([]);
 
-    const { data: investor } = useFetchInvestorQuery(investorID as string)
-    const { data: paymentLogs } = useFetchPaymentLogsQuery({
-        investor: investorID
-    })
     const { user } = useAppSelector(state => state.auth)
+    const { data: investor } = useFetchInvestorQuery(investorID as string)
+    const { data: paymentLogs } = useFetchInvestorPaymentLogsQuery(investorID as ID)
 
     const [investorIncome] = useInvestorIncomeMutation()
     const [investorOutcome] = useInvestorOutcomeMutation()
