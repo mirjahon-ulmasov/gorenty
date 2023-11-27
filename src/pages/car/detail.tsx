@@ -436,9 +436,14 @@ export default function CarDetail() {
                                                 <StyledTextL2 fs={18}>{log.total.toLocaleString()} so’m</StyledTextL2>
                                             </div>
                                             <div className='d-flex jc-sb w-100'>
-                                                <StyledLink fs={14} fw={500} to={`/admin/branch/${log.branch?.id}/detail`}>
-                                                    {log.branch?.title}
-                                                </StyledLink>
+                                                <Space>
+                                                    <StyledLink fs={14} fw={500} to={`/admin/branch/${log.branch?.id}/detail`}>
+                                                        {log.branch?.title}
+                                                    </StyledLink>
+                                                    {!log.is_debt && (
+                                                        <StyledTextL1>{log.payment?.title}</StyledTextL1>
+                                                    )}
+                                                </Space>
                                                 <StyledTextL1>
                                                     {moment(log.created_at).format('LL')}
                                                 </StyledTextL1>

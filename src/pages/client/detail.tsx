@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { 
     Button, Col, DatePickerProps, 
     Divider, 
+    Pagination, 
+    PaginationProps, 
     Row, Space, Typography
 } from 'antd'
 import toast from 'react-hot-toast'
@@ -20,7 +22,7 @@ import {
 } from 'services'
 import { CLIENT_STATUS, ID, PAYMENT_TYPE } from 'types/index'
 import { PaymentLog } from 'types/branch-payment'
-import { TBranch } from 'types/api'
+import { TBranch, Pagination as IPagination } from 'types/api'
 
 const { Title } = Typography
 
@@ -29,9 +31,16 @@ export default function ClientDetail() {
     const { clientID } = useParams()
     const [transactionType, setTransactionType] = useState<PAYMENT_TYPE>();
     const [logs, setLogs] = useState<PaymentLog.LogType[]>([]);
+    const [pagination, setPagination] = useState<IPagination>({
+        page: 1,
+        page_size: 5
+    });
 
     const { data: client } = useFetchClientQuery(clientID as string)
-    const { data: paymentLogs } = useFetchCustomerPaymentLogsQuery(clientID as ID)
+    const { data: paymentLogs } = useFetchCustomerPaymentLogsQuery({
+        params: { ...pagination },
+        id: clientID as ID
+    })
 
     const [customerIncome] = useCustomerIncomeMutation()
     const [customerOutcome] = useCustomerOutcomeMutation()
@@ -109,6 +118,9 @@ export default function ClientDetail() {
         }
     }
 
+    const changePagination: PaginationProps['onChange'] = (page, page_size) => {
+        setPagination({ page, page_size });
+    };
 
     return (
         <>
@@ -283,9 +295,14 @@ export default function ClientDetail() {
                                                 <StyledTextL2 fs={18}>{log.total.toLocaleString()} so’m</StyledTextL2>
                                             </div>
                                             <div className='d-flex jc-sb w-100'>
-                                                <StyledLink fs={14} fw={500} to={`/admin/branch/${log.branch?.id}/detail`}>
-                                                    {log.branch?.title}
-                                                </StyledLink>
+                                                <Space>
+                                                    <StyledLink fs={14} fw={500} to={`/admin/branch/${log.branch?.id}/detail`}>
+                                                        {log.branch?.title}
+                                                    </StyledLink>
+                                                    {!log.is_debt && (
+                                                        <StyledTextL1>{log.payment?.title}</StyledTextL1>
+                                                    )}
+                                                </Space>
                                                 <StyledTextL1>
                                                     {moment(log.created_at).format('LL')}
                                                 </StyledTextL1>
@@ -333,6 +350,14 @@ export default function ClientDetail() {
                                     </BorderBox>
                                 ))}
                             </LogList>
+                            {!!logs.length && (
+                                <Pagination
+                                    current={pagination.page}
+                                    pageSize={pagination.page_size}
+                                    onChange={changePagination} 
+                                    total={paymentLogs?.count} 
+                                />
+                            )}
                         </Row>
                     </BillingHistory>
                 </Col>

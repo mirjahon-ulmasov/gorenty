@@ -294,32 +294,6 @@ export default function CarDetail() {
                                         total={paymentLogs?.count} 
                                     />
                                 )}
-                                {/* <Col span={24} className='mt-1'>
-                                    <Label>Aktiv pullar</Label>
-                                </Col>
-                                <Col span={24}>
-                                    <ul className='d-flex fd-col gap-8 p-8'>
-                                        {[1,2,3,4,5].map((_el, index) => (
-                                            <li className='d-flex jc-sb w-100' key={index}>
-                                                <StyledTextL1 fs={16}>Naqd</StyledTextL1>
-                                                <StyledTextL1 fs={16}>30 000 000 so’m</StyledTextL1>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </Col>
-                                <Col span={24} className='mt-1'>
-                                    <Label>Band pullar</Label>
-                                </Col>
-                                <Col span={24}>
-                                    <ul className='d-flex fd-col gap-8 p-8'>
-                                        {[1,2,3,4,5].map((_el, index) => (
-                                            <li className='d-flex jc-sb w-100' key={index}>
-                                                <StyledTextL1 fs={16}>Naqd</StyledTextL1>
-                                                <StyledTextL1 fs={16}>30 000 000 so’m</StyledTextL1>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </Col> */}
                             </Row>
                         </Col>
                     </Row>

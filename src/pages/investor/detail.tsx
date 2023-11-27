@@ -1,7 +1,10 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Button, Col, DatePickerProps, Divider, Row, Space, Typography } from 'antd'
+import { 
+    Button, Col, DatePickerProps, Divider, 
+    Pagination, PaginationProps, Row, Space, Typography 
+} from 'antd'
 import toast from 'react-hot-toast'
 import moment from 'moment'
 import { useAppSelector } from 'hooks/redux'
@@ -13,9 +16,10 @@ import {
 import { 
     CustomBreadcrumb, CustomDatePicker, Payment, 
     BillingHistory, BorderBox, IDTag, 
-    Label, StyledLink, StyledTextL1, StyledTextL2, SmallImg, LogList, Status, ButtonIcon, ArrowDown  
+    Label, StyledLink, StyledTextL1, StyledTextL2, 
+    SmallImg, LogList, Status, ButtonIcon, ArrowDown  
 } from 'components/input'
-import { TBranch, BucketFile } from 'types/api'
+import { TBranch, BucketFile, Pagination as IPagination } from 'types/api'
 import { PaymentLog } from 'types/branch-payment'
 import { formatPhone, getStatus } from 'utils/index'
 import { ID, ROLE, PAYMENT_TYPE, CLIENT_STATUS } from 'types/index'
@@ -27,10 +31,17 @@ export default function InvestorDetail() {
     const { investorID } = useParams()
     const [transactionType, setTransactionType] = useState<PAYMENT_TYPE>();
     const [logs, setLogs] = useState<PaymentLog.LogType[]>([]);
+    const [pagination, setPagination] = useState<IPagination>({
+        page: 1,
+        page_size: 5
+    });
 
     const { user } = useAppSelector(state => state.auth)
     const { data: investor } = useFetchInvestorQuery(investorID as string)
-    const { data: paymentLogs } = useFetchInvestorPaymentLogsQuery(investorID as ID)
+    const { data: paymentLogs } = useFetchInvestorPaymentLogsQuery({
+        params: { ...pagination },
+        id: investorID as ID
+    })
 
     const [investorIncome] = useInvestorIncomeMutation()
     const [investorOutcome] = useInvestorOutcomeMutation()
@@ -99,6 +110,10 @@ export default function InvestorDetail() {
             rotate: `${open ? '180deg' : '0deg'}`,
         }
     }
+
+    const changePagination: PaginationProps['onChange'] = (page, page_size) => {
+        setPagination({ page, page_size });
+    };
 
     return (
         <>
@@ -276,9 +291,14 @@ export default function InvestorDetail() {
                                                 <StyledTextL2 fs={18}>{log.total.toLocaleString()} so’m</StyledTextL2>
                                             </div>
                                             <div className='d-flex jc-sb w-100'>
-                                                <StyledLink fs={14} fw={500} to={`/admin/branch/${log.branch?.id}/detail`}>
-                                                    {log.branch?.title}
-                                                </StyledLink>
+                                                <Space>
+                                                    <StyledLink fs={14} fw={500} to={`/admin/branch/${log.branch?.id}/detail`}>
+                                                        {log.branch?.title}
+                                                    </StyledLink>
+                                                    {!log.is_debt && (
+                                                        <StyledTextL1>{log.payment?.title}</StyledTextL1>
+                                                    )}
+                                                </Space>
                                                 <StyledTextL1>
                                                     {moment(log.created_at).format('LL')}
                                                 </StyledTextL1>
@@ -326,6 +346,14 @@ export default function InvestorDetail() {
                                     </BorderBox>
                                 ))}
                             </LogList>
+                            {!!logs.length && (
+                                <Pagination
+                                    current={pagination.page}
+                                    pageSize={pagination.page_size}
+                                    onChange={changePagination} 
+                                    total={paymentLogs?.count} 
+                                />
+                            )}
                         </Row>
                     </BillingHistory>
                 </Col>

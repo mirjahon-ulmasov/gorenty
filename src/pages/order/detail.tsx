@@ -13,7 +13,9 @@ import {
     Button, Col, DatePickerProps, 
     Row, Space, Typography, Divider, 
     Modal, Form, InputNumber,
-    UploadFile
+    UploadFile,
+    Pagination,
+    PaginationProps
 } from 'antd'
 import { UploadChangeParam } from 'antd/es/upload';
 import { useAppSelector } from 'hooks/redux';
@@ -34,7 +36,10 @@ import {
 } from 'services';
 import { CLIENT_STATUS, ID, ORDER_STATUS, ROLE } from 'types/index'
 import { disabledDate, formatPlate, getStatus } from 'utils/index'
-import { Account, BucketFile, Car, CarBrand, Client, TBranch } from 'types/api';
+import { 
+    Account, BucketFile, Car, CarBrand, Client, 
+    TBranch, Pagination as IPagination 
+} from 'types/api';
 import { PaymentLog } from 'types/branch-payment';
 
 const { Title } = Typography
@@ -49,10 +54,17 @@ export default function OrderDetail() {
     const [dateModal, setDateModal] = useState(false)
     const [imageFiles, setImageFiles] = useState<UploadFile[]>([])
     const [logs, setLogs] = useState<PaymentLog.LogType[]>([]);
+    const [pagination, setPagination] = useState<IPagination>({
+        page: 1,
+        page_size: 5
+    });
 
     const { user } = useAppSelector(state => state.auth)
     const { data: order, isError } = useFetchOrderQuery(orderID as string)
-    const { data: paymentLogs } = useFetchOrderPaymentLogsQuery(orderID as ID)
+    const { data: paymentLogs } = useFetchOrderPaymentLogsQuery({
+        params: { ...pagination },
+        id: orderID as ID
+    })
 
     const [activateOrder] = useActivateOrderMutation()
     const [cancelOrder] = useCancelOrderMutation()
@@ -136,7 +148,11 @@ export default function OrderDetail() {
             rotate: `${open ? '180deg' : '0deg'}`,
             transition: 'ease-in 0.2s'
         }
-    }    
+    }
+
+    const changePagination: PaginationProps['onChange'] = (page, page_size) => {
+        setPagination({ page, page_size });
+    };
 
     // ------------- Image Upload -------------
 
@@ -619,9 +635,14 @@ export default function OrderDetail() {
                                                         <StyledTextL2 fs={18}>{log.total.toLocaleString()} so’m</StyledTextL2>
                                                     </div>
                                                     <div className='d-flex jc-sb w-100'>
-                                                        <StyledLink fs={14} fw={500} to={`/admin/branch/${log.branch?.id}/detail`}>
-                                                            {log.branch?.title}
-                                                        </StyledLink>
+                                                        <Space>
+                                                            <StyledLink fs={14} fw={500} to={`/admin/branch/${log.branch?.id}/detail`}>
+                                                                {log.branch?.title}
+                                                            </StyledLink>
+                                                            {!log.is_debt && (
+                                                                <StyledTextL1>{log.payment?.title}</StyledTextL1>
+                                                            )}
+                                                        </Space>
                                                         <StyledTextL1>
                                                             {moment(log.created_at).format('LL')}
                                                         </StyledTextL1>
@@ -669,6 +690,14 @@ export default function OrderDetail() {
                                             </BorderBox>
                                         ))}
                                     </LogList>
+                                    {!!logs.length && (
+                                        <Pagination
+                                            current={pagination.page}
+                                            pageSize={pagination.page_size}
+                                            onChange={changePagination} 
+                                            total={paymentLogs?.count} 
+                                        />
+                                    )}
                                 </Row>
                             </OrderCard>
                         </Col>
