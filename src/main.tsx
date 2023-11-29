@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { ConfigProvider, ThemeConfig } from 'antd'
-import { Toaster } from 'react-hot-toast'
 import { setupStore } from 'store/store'
+import { Notification } from 'components/input'
 
 import dayjs from 'dayjs';
 import weekday from "dayjs/plugin/weekday"
@@ -32,6 +32,7 @@ const theme: ThemeConfig = {
     },
 }
 
+// Initialize Store
 const store = setupStore()
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
@@ -39,7 +40,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         <Provider store={store}>
             <BrowserRouter>
                 <ConfigProvider theme={theme}>
-                    <Toaster />
+                    <Notification />
                     <App />
                 </ConfigProvider>
             </BrowserRouter>

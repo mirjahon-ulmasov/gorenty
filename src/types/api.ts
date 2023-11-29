@@ -85,6 +85,7 @@ export declare namespace Account {
     export interface Credentials {
         password: string
         username: string
+        fcm_token?: string
     }
 }
 

@@ -13,6 +13,7 @@ const getInitState = () => {
         refresh_token,
         isLoggedIn: !!user,
         lang: localStorage.getItem('i18nextLng') || 'ru',
+        firebase_token: localStorage.getItem('firebase') || ''
     };
 };
 
@@ -20,6 +21,10 @@ const authSlice = createSlice({
     name: 'auth',
     initialState: getInitState(),
     reducers: {
+        setFirebaseToken: (state, action: PayloadAction<string>) => {
+            state.firebase_token = action.payload
+            localStorage.setItem('firebase', action.payload)
+        },
         setCredentials: (state, action: PayloadAction<Account.DTO>) => {
             const user = action.payload;
             state.user = user;
@@ -49,5 +54,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { setCredentials, setToken, logout } = authSlice.actions;
+export const { setCredentials, setToken, logout, setFirebaseToken } = authSlice.actions;
 export default authSlice.reducer;

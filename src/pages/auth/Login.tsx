@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { styled } from 'styled-components';
 import { toast } from 'react-hot-toast';
 import { useLoginMutation } from 'services/auth';
-import { useAppDispatch } from 'hooks/redux';
+import { useAppDispatch, useAppSelector } from 'hooks/redux';
 import { setCredentials } from 'store/reducers/authSlice';
 import { Account } from 'types/api';
 
@@ -13,10 +13,18 @@ const { Title } = Typography;
 export function Login() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    
+    const { firebase_token } = useAppSelector(state => state.auth)
     const [login, { isLoading }] = useLoginMutation();
 
-    const onFinish = (values: unknown) => {
-        login(values as Account.Credentials)
+    const onFinish = (values: any) => {
+
+        const data: Account.Credentials = {
+            ...values,
+            fcm_token: firebase_token
+        }
+
+        login(data)
             .unwrap()
             .then((response) => {                
                 toast.success('Вы успешно вошли в систему');
