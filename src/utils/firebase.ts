@@ -24,12 +24,8 @@ export const requestPermission = async () => {
             vapidKey: 'BLjec9mpJUD7CK0mJARb5lKSOO3-JA2ATxzy85qjcW3eh2adOWiqYUpX85JyHsvCwNkTwY_d-rv1RLj9aDOQBCI',
         })
             .then(currentToken => {
-                if (currentToken) {
-                    console.log('Token: ', currentToken)
-                    return currentToken
-                } else {
-                    console.log('Failed to generate the app registration token.')
-                }
+                if (currentToken) return currentToken;
+                console.log('Failed to generate token.')
             })
             .catch(err => {
                 console.log('An error occurred when requesting to receive the token.', err)
